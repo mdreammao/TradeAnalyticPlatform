@@ -10,5 +10,6 @@ namespace BackTestingPlatform.Strategies.MA
 {
     class MA5
     {
+        double a;
     }
 }
