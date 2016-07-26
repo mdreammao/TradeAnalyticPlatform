@@ -10,8 +10,10 @@ namespace BackTestingPlatform.DataAccess
     {
         List<TickPositonData> findAll();
         List<TickPositonData> findByStockCode(string stockCode);
+
+
     }
-    class TickPositionDataDAO : ITickPositionDataDAO
+    class TickPositionDataWindDAO : ITickPositionDataDAO
     {
         public List<TickPositonData> findAll()
         {

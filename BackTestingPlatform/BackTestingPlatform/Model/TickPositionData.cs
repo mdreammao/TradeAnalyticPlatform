@@ -20,4 +20,15 @@ namespace BackTestingPlatform.Model
         DateTime time;
         double open, high, low, close, volume;
     }
+
+
+    /// <summary>
+    /// 分钟序列数据
+    /// </summary>
+    public class WsiData
+    {
+        public string stockCode;
+        public DateTime time;
+        public double open, high, low, close, volume;
+    }
 }
