@@ -8,7 +8,7 @@ namespace BackTestingPlatform.Model
 {
     class ImpvSurface
     {
-       
+        double[] x;
     }
 
 
