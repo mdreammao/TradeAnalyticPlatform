@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="TestBooter..cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\MyPlatformTest.cs" />
     <Compile Include="Tests\WindApiTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -22,9 +22,10 @@ namespace BackTestingPlatform.Core
         /// </summary>
         public static void Initialize()
         {
-            //初始化Autofac核心组件 - container
+            //初始化Autofac核心 - container
             ContainerBuilder builder = new ContainerBuilder();
 
+            //Autofac中注册所有组件
             _RegisterComponents(builder);
             container = builder.Build();
 
@@ -33,7 +34,7 @@ namespace BackTestingPlatform.Core
 
 
         }
-        
+
 
         private static WindAPI _windAPI;
         /// <summary>
@@ -55,14 +56,14 @@ namespace BackTestingPlatform.Core
 
         /// <summary>
         /// 为container注册各种接口
-        /// 
+        /// 具体参见： https://autofac.org/
         /// </summary>
         /// <param name="builder"></param>
-        private static void _RegisterComponents(ContainerBuilder builder)
+        private static void _RegisterComponents(ContainerBuilder cb)
         {
-            builder.RegisterInstance(new WsiDataRepositoryFromWind()).As<WsiDataRepository>();
+            cb.RegisterInstance(new KLinesDataRepositoryFromWind()).As<KLinesDataRepository>();
 
-            builder.RegisterInstance(new TradeDaysInfoRepositoryFromWind());
+            cb.RegisterInstance(new TradeDaysInfoRepositoryFromWind());
         }
     }
 
