@@ -8,17 +8,19 @@ namespace BackTestingPlatform.DataAccess
 {
     interface ITickPositionDataDAO
     {
-        List<TickPositonData> findAll();
-        List<TickPositonData> findByStockCode(string stockCode);
+        List<KLinesDataRepository> findAll();
+        List<KLinesDataRepository> findByStockCode(string stockCode);
+
+
     }
-    class TickPositionDataDAO : ITickPositionDataDAO
+    class TickPositionDataWindDAO : ITickPositionDataDAO
     {
-        public List<TickPositonData> findAll()
+        public List<KLinesDataRepository> findAll()
         {
             throw new NotImplementedException();
         }
 
-        public List<TickPositonData> findByStockCode(string stockCode)
+        public List<KLinesDataRepository> findByStockCode(string stockCode)
         {
             throw new NotImplementedException();
         }
