@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BackTestingPlatform.Strategies;
+using BackTestingPlatform.Strategies.Sample;
 
 namespace BackTestingPlatform
 {
@@ -13,13 +15,10 @@ namespace BackTestingPlatform
     {
         static void Main(string[] args)
         {
-
+            
             Platforms.Initialize();
-         
-            var repo = Platforms.container.Resolve<KLinesDataRepository>();
-            var d=repo.fetch("510050.SH", new DateTime(2015, 7, 26, 9, 0, 0), new DateTime(2016, 7, 26, 15, 0, 0));
-            Console.WriteLine("");
-            System.Console.ReadKey();
+            Strategy stg = new TradeDaysDirectPrint();
+            stg.act();
         }
     }
 }

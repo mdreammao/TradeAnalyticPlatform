@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Strategies.Sample
+namespace BackTestingPlatform.Strategies
 {
-    class KLineDirectShow
+    public interface Strategy
     {
+        void act();
     }
 }
