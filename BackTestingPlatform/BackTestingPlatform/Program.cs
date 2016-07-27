@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BackTestingPlatform.Strategies.MA_Strategy;
 
 namespace BackTestingPlatform
 {
@@ -10,6 +11,7 @@ namespace BackTestingPlatform
     {
         static void Main(string[] args)
         {
+            MATest mytest = new MATest();               
 
         }
     }
