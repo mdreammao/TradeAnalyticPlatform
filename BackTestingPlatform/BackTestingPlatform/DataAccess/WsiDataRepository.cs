@@ -1,20 +1,19 @@
 ﻿using BackTestingPlatform.Model;
-using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WAPIWrapperCSharp;
 
 namespace BackTestingPlatform.DataAccess
 {
-    interface IWsiDAO
+    public interface WsiDataRepository
     {
         List<WsiData> fetch(string stockCode, DateTime startTime, DateTime endTime);
 
     }
-    class WsiDao : IWsiDAO
+    /// <summary>
+    /// 从万德API获取数据的实现
+    /// </summary>
+    public class WsiDataRepositoryFromWind : WsiDataRepository
     {
         public List<WsiData> fetch(string stockCode, DateTime startTime, DateTime endTime)
         {
@@ -31,15 +30,15 @@ namespace BackTestingPlatform.DataAccess
             //build target data structrue
             List<WsiData> items = new List<WsiData>(len);
             double[] dm = (double[])d.data;
-            for (int i = 0, k = 0; i < len; i++)
+            for (int i = 0, k = 0; i < len; i++, k += 4)
             {
-
-                WsiData item = new WsiData();
-                item.open = dm[k++];
-                item.high = dm[k++];
-                item.low = dm[k++];
-                item.close = dm[k++];
-                items.Add(item);
+                items.Add(new WsiData
+                {
+                    open = dm[k],
+                    high = dm[k + 1],
+                    low = dm[k + 2],
+                    close = dm[k + 3]
+                });
             }
 
             return items;

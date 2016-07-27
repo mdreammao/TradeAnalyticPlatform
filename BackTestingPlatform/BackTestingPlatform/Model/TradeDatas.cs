@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model
 {
-    class TickPositionData
+    public class TickData
     {
-        string stkcd{get;set;}
-        DateTime time;
-        double cp;
+        public string stockCode { get;set;}
+        public DateTime time;
+        public double cp;
         
     }
 
-    class MinuteData
+    public class KLinesData
     {
-        string stockName { get; set; }
-        DateTime time;
-        double open, high, low, close, volume;
+        public string stockCode { get; set; }
+        public DateTime time;
+        public double open, high, low, close, volume;
+         
     }
-
+    
 
     /// <summary>
     /// 分钟序列数据

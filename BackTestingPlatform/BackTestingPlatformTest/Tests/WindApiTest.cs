@@ -1,16 +1,19 @@
-﻿using System;
+﻿using BackTestingPlatform.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WAPIWrapperCSharp;
+using Autofac;
+using BackTestingPlatform.DataAccess;
 
 namespace BackTestingPlatform.Tests
 {
-    class WindApiTest
+    public class WindApiTest
     {
 
-        void test1()
+        public static void test1()
         {
             WindAPI w = new WindAPI();
             w.start();
@@ -18,11 +21,14 @@ namespace BackTestingPlatform.Tests
 
         }
 
-        static void Main(string[] args)
+        public static void testTDay()
         {
-            WindApiTest t = new WindApiTest();
-            t.test1();
+            TradeDaysInfoRepository  repo=Platforms.container.Resolve<TradeDaysInfoRepositoryFromWind>();
+           var d= repo.fetch(new DateTime(2016, 7, 26, 0, 0, 0), new DateTime(2016, 7, 27, 18, 0, 0));
+            Console.WriteLine(d);
         }
+
+       
 
 
     }

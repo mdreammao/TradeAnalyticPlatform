@@ -1,6 +1,6 @@
 ﻿namespace BackTestingPlatform.DataAccess
 {
-    public class TickPositonData
+    public class KLinesDataRepository
     {
     }
 }

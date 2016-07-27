@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,19 +52,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\DatabaseHelper.cs" />
-    <Compile Include="DataAccess\WsiDataDAO.cs" />
-    <Compile Include="DataAccess\TickPositionDataDAO.cs" />
-    <Compile Include="DataAccess\TickPositonData.cs" />
+    <Compile Include="DataAccess\TradeDaysInfoRepository.cs" />
+    <Compile Include="DataAccess\WsiDataRepository.cs" />
+    <Compile Include="DataAccess\TickDataRepository.cs" />
+    <Compile Include="DataAccess\KLinesDataRepository.cs" />
     <Compile Include="Model\ImpvSurface.cs" />
-    <Compile Include="Model\TickPositionData.cs" />
+    <Compile Include="Model\TradeDatas.cs" />
+    <Compile Include="Model\TradeDaysInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategies\MA\MA5.cs" />
-    <Compile Include="Utilities\Platform.cs" />
+    <Compile Include="Platforms.cs" />
     <Compile Include="WsiDataDAO.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,11 +50,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestBooter..cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\MyPlatformTest.cs" />
     <Compile Include="Tests\WindApiTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BackTestingPlatform\BackTestingPlatform.csproj">
+      <Project>{830fe9e4-2d61-42ed-9104-9cb26ca72d73}</Project>
+      <Name>BackTestingPlatform</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
