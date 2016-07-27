@@ -48,19 +48,10 @@ namespace BackTestingPlatform.Model
     /// </summary>
     public class BasicInfo
     {
-        DateTime timeToMarket;//上市时间
-        bool isST;//是否是Special Treament股
-        double dividend;//分红数额
-        double exRightRatio;//除权比例
+        public DateTime timeToMarket;//上市时间
+        public bool isST;//是否是Special Treament股
+        public double dividend;//分红数额
+        public double exRightRatio;//除权比例
     }
 
-    /// <summary>
-    /// 分钟序列数据
-    /// </summary>
-    public class WsiData
-    {
-        public string stockCode;
-        public DateTime time;
-        public double open, high, low, close, volume, amount;
-    }
 }

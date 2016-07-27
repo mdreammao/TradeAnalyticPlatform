@@ -70,7 +70,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\TALibrary\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Utilities\WAPIWrapperCSharp.dll" />
   </ItemGroup>
