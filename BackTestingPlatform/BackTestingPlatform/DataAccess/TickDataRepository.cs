@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BackTestingPlatform.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,21 +7,21 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess
 {
-    interface ITickPositionDataDAO
+    interface TickDataRepository
     {
-        List<KLinesDataRepository> findAll();
-        List<KLinesDataRepository> findByStockCode(string stockCode);
+        List<TickData> findAll();
+        List<TickData> findByStockCode(string stockCode);
 
 
     }
-    class TickPositionDataWindDAO : ITickPositionDataDAO
+    class TickDataRepositoryFromWind : TickDataRepository
     {
-        public List<KLinesDataRepository> findAll()
+        public List<TickData> findAll()
         {
             throw new NotImplementedException();
         }
 
-        public List<KLinesDataRepository> findByStockCode(string stockCode)
+        public List<TickData> findByStockCode(string stockCode)
         {
             throw new NotImplementedException();
         }

@@ -16,7 +16,7 @@ namespace BackTestingPlatform
 
             Platforms.Initialize();
          
-            var repo = Platforms.container.Resolve<WsiDataRepository>();
+            var repo = Platforms.container.Resolve<KLinesDataRepository>();
             var d=repo.fetch("510050.SH", new DateTime(2015, 7, 26, 9, 0, 0), new DateTime(2016, 7, 26, 15, 0, 0));
             Console.WriteLine("");
             System.Console.ReadKey();

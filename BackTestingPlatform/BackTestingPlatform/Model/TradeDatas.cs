@@ -8,28 +8,18 @@ namespace BackTestingPlatform.Model
 {
     public class TickData
     {
-        public string stockCode { get;set;}
+        public string stockCode { get; set; }
         public DateTime time;
         public double cp;
-        
+
     }
 
     public class KLinesData
     {
         public string stockCode { get; set; }
         public DateTime time;
-        public double open, high, low, close, volume;
-         
-    }
-    
+        public double open, high, low, close, volume, amount;
 
-    /// <summary>
-    /// 分钟序列数据
-    /// </summary>
-    public class WsiData
-    {
-        public string stockCode;
-        public DateTime time;
-        public double open, high, low, close, volume;
     }
+
 }
