@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="TradeMarket201605Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="MarketData_ZN1705_SHF">
+          <Key>
+            <PropertyRef Name="marketdataid" />
+          </Key>
+          <Property Name="marketdataid" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="stkcd" Type="char" MaxLength="11" Nullable="false" />
+          <Property Name="tdate" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="ndate" Type="char" MaxLength="8" Nullable="false" />
+          <Property Name="ttime" Type="char" MaxLength="9" Nullable="false" />
+          <Property Name="cp" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S1" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S2" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S3" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S4" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S5" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S6" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S7" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S8" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S9" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="S10" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B1" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B2" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B3" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B4" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B5" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B6" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B7" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B8" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B9" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="B10" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="SV1" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV2" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV3" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV4" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV5" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV6" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV7" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV8" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV9" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="SV10" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV1" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV2" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV3" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV4" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV5" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV6" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV7" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV8" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV9" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="BV10" Type="decimal" Precision="10" Scale="0" />
+          <Property Name="hp" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="lp" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="HighLimit" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="LowLimit" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="ts" Type="decimal" Precision="20" Scale="0" />
+          <Property Name="tt" Type="decimal" Precision="20" Scale="3" />
+          <Property Name="OPNPRC" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="PRECLOSE" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="Settle" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="PrevSettle" Type="decimal" Precision="12" Scale="3" />
+          <Property Name="CurrDelta" Type="int" />
+          <Property Name="PreDelta" Type="int" />
+          <Property Name="OpenInterest" Type="int" />
+          <Property Name="PreOpenInterest" Type="int" />
+          <Property Name="LocalRecTime" Type="char" MaxLength="9" />
+          <Property Name="TradeStatus" Type="char" MaxLength="3" />
+        </EntityType>
+        <EntityContainer Name="TradeMarket201605ModelStoreContainer">
+          <EntitySet Name="MarketData_ZN1705_SHF" EntityType="Self.MarketData_ZN1705_SHF" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TradeMarket201605Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="MarketData_ZN1705_SHF">
+          <Key>
+            <PropertyRef Name="marketdataid" />
+          </Key>
+          <Property Name="marketdataid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="stkcd" Type="String" MaxLength="11" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="tdate" Type="String" MaxLength="8" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="ndate" Type="String" MaxLength="8" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="ttime" Type="String" MaxLength="9" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="cp" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S1" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S2" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S3" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S4" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S5" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S6" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S7" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S8" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S9" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="S10" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B1" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B2" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B3" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B4" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B5" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B6" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B7" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B8" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B9" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="B10" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="SV1" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV2" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV3" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV4" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV5" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV6" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV7" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV8" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV9" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="SV10" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV1" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV2" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV3" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV4" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV5" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV6" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV7" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV8" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV9" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="BV10" Type="Decimal" Precision="10" Scale="0" />
+          <Property Name="hp" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="lp" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="HighLimit" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="LowLimit" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="ts" Type="Decimal" Precision="20" Scale="0" />
+          <Property Name="tt" Type="Decimal" Precision="20" Scale="3" />
+          <Property Name="OPNPRC" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="PRECLOSE" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="Settle" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="PrevSettle" Type="Decimal" Precision="12" Scale="3" />
+          <Property Name="CurrDelta" Type="Int32" />
+          <Property Name="PreDelta" Type="Int32" />
+          <Property Name="OpenInterest" Type="Int32" />
+          <Property Name="PreOpenInterest" Type="Int32" />
+          <Property Name="LocalRecTime" Type="String" MaxLength="9" FixedLength="true" Unicode="false" />
+          <Property Name="TradeStatus" Type="String" MaxLength="3" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityContainer Name="TradeMarket201605Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="MarketData_ZN1705_SHF" EntityType="Self.MarketData_ZN1705_SHF" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="TradeMarket201605ModelStoreContainer" CdmEntityContainer="TradeMarket201605Entities">
+          <EntitySetMapping Name="MarketData_ZN1705_SHF">
+            <EntityTypeMapping TypeName="TradeMarket201605Model.MarketData_ZN1705_SHF">
+              <MappingFragment StoreEntitySet="MarketData_ZN1705_SHF">
+                <ScalarProperty Name="marketdataid" ColumnName="marketdataid" />
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="stkcd" ColumnName="stkcd" />
+                <ScalarProperty Name="tdate" ColumnName="tdate" />
+                <ScalarProperty Name="ndate" ColumnName="ndate" />
+                <ScalarProperty Name="ttime" ColumnName="ttime" />
+                <ScalarProperty Name="cp" ColumnName="cp" />
+                <ScalarProperty Name="S1" ColumnName="S1" />
+                <ScalarProperty Name="S2" ColumnName="S2" />
+                <ScalarProperty Name="S3" ColumnName="S3" />
+                <ScalarProperty Name="S4" ColumnName="S4" />
+                <ScalarProperty Name="S5" ColumnName="S5" />
+                <ScalarProperty Name="S6" ColumnName="S6" />
+                <ScalarProperty Name="S7" ColumnName="S7" />
+                <ScalarProperty Name="S8" ColumnName="S8" />
+                <ScalarProperty Name="S9" ColumnName="S9" />
+                <ScalarProperty Name="S10" ColumnName="S10" />
+                <ScalarProperty Name="B1" ColumnName="B1" />
+                <ScalarProperty Name="B2" ColumnName="B2" />
+                <ScalarProperty Name="B3" ColumnName="B3" />
+                <ScalarProperty Name="B4" ColumnName="B4" />
+                <ScalarProperty Name="B5" ColumnName="B5" />
+                <ScalarProperty Name="B6" ColumnName="B6" />
+                <ScalarProperty Name="B7" ColumnName="B7" />
+                <ScalarProperty Name="B8" ColumnName="B8" />
+                <ScalarProperty Name="B9" ColumnName="B9" />
+                <ScalarProperty Name="B10" ColumnName="B10" />
+                <ScalarProperty Name="SV1" ColumnName="SV1" />
+                <ScalarProperty Name="SV2" ColumnName="SV2" />
+                <ScalarProperty Name="SV3" ColumnName="SV3" />
+                <ScalarProperty Name="SV4" ColumnName="SV4" />
+                <ScalarProperty Name="SV5" ColumnName="SV5" />
+                <ScalarProperty Name="SV6" ColumnName="SV6" />
+                <ScalarProperty Name="SV7" ColumnName="SV7" />
+                <ScalarProperty Name="SV8" ColumnName="SV8" />
+                <ScalarProperty Name="SV9" ColumnName="SV9" />
+                <ScalarProperty Name="SV10" ColumnName="SV10" />
+                <ScalarProperty Name="BV1" ColumnName="BV1" />
+                <ScalarProperty Name="BV2" ColumnName="BV2" />
+                <ScalarProperty Name="BV3" ColumnName="BV3" />
+                <ScalarProperty Name="BV4" ColumnName="BV4" />
+                <ScalarProperty Name="BV5" ColumnName="BV5" />
+                <ScalarProperty Name="BV6" ColumnName="BV6" />
+                <ScalarProperty Name="BV7" ColumnName="BV7" />
+                <ScalarProperty Name="BV8" ColumnName="BV8" />
+                <ScalarProperty Name="BV9" ColumnName="BV9" />
+                <ScalarProperty Name="BV10" ColumnName="BV10" />
+                <ScalarProperty Name="hp" ColumnName="hp" />
+                <ScalarProperty Name="lp" ColumnName="lp" />
+                <ScalarProperty Name="HighLimit" ColumnName="HighLimit" />
+                <ScalarProperty Name="LowLimit" ColumnName="LowLimit" />
+                <ScalarProperty Name="ts" ColumnName="ts" />
+                <ScalarProperty Name="tt" ColumnName="tt" />
+                <ScalarProperty Name="OPNPRC" ColumnName="OPNPRC" />
+                <ScalarProperty Name="PRECLOSE" ColumnName="PRECLOSE" />
+                <ScalarProperty Name="Settle" ColumnName="Settle" />
+                <ScalarProperty Name="PrevSettle" ColumnName="PrevSettle" />
+                <ScalarProperty Name="CurrDelta" ColumnName="CurrDelta" />
+                <ScalarProperty Name="PreDelta" ColumnName="PreDelta" />
+                <ScalarProperty Name="OpenInterest" ColumnName="OpenInterest" />
+                <ScalarProperty Name="PreOpenInterest" ColumnName="PreOpenInterest" />
+                <ScalarProperty Name="LocalRecTime" ColumnName="LocalRecTime" />
+                <ScalarProperty Name="TradeStatus" ColumnName="TradeStatus" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

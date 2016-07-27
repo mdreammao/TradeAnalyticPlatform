@@ -11,7 +11,7 @@ using BackTestingPlatform.Strategies.Sample;
 
 namespace BackTestingPlatform
 {
-    class Program
+    class PlatformBooter
     {
         static void Main(string[] args)
         {

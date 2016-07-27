@@ -10,8 +10,9 @@ namespace BackTestingPlatform.Test
         {
             Platforms.Initialize();
             //WindApiTest.testTDay()
-            WindApiTest.testKLine();
 
+            //ToolKits.SaveAllTradeDays(2016, 2016);
+            ToolKits.readFile();
             Console.ReadKey();
         }
     }

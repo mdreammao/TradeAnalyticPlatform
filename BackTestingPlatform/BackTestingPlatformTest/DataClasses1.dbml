@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="TradeMarket201605" Class="DataClasses1DataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=YSP-SERVER;Initial Catalog=TradeMarket201605;Integrated Security=True" SettingsObjectName="BackTestingPlatformTest.Properties.Settings" SettingsPropertyName="TradeMarket201605ConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.MarketData_A1605_DCE" Member="MarketData_A1605_DCE">
+    <Type Name="MarketData_A1605_DCE">
+      <Column Name="marketdataid" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="id" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="stkcd" Type="System.String" DbType="Char(11) NOT NULL" CanBeNull="false" />
+      <Column Name="tdate" Type="System.String" DbType="Char(8) NOT NULL" CanBeNull="false" />
+      <Column Name="ndate" Type="System.String" DbType="Char(8) NOT NULL" CanBeNull="false" />
+      <Column Name="ttime" Type="System.String" DbType="Char(9) NOT NULL" CanBeNull="false" />
+      <Column Name="cp" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S1" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S2" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S3" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S4" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S5" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S6" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S7" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S8" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S9" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="S10" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B1" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B2" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B3" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B4" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B5" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B6" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B7" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B8" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B9" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="B10" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="SV1" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV2" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV3" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV4" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV5" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV6" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV7" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV8" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV9" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="SV10" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV1" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV2" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV3" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV4" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV5" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV6" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV7" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV8" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV9" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="BV10" Type="System.Decimal" DbType="Decimal(10,0)" CanBeNull="true" />
+      <Column Name="hp" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="lp" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="HighLimit" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="LowLimit" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="ts" Type="System.Decimal" DbType="Decimal(20,0)" CanBeNull="true" />
+      <Column Name="tt" Type="System.Decimal" DbType="Decimal(20,3)" CanBeNull="true" />
+      <Column Name="OPNPRC" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="PRECLOSE" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="Settle" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="PrevSettle" Type="System.Decimal" DbType="Decimal(12,3)" CanBeNull="true" />
+      <Column Name="CurrDelta" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PreDelta" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="OpenInterest" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PreOpenInterest" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LocalRecTime" Type="System.String" DbType="Char(9)" CanBeNull="true" />
+      <Column Name="TradeStatus" Type="System.String" DbType="Char(3)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>
