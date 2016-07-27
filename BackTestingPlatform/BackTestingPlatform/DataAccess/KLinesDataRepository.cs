@@ -1,4 +1,5 @@
-﻿using BackTestingPlatform.Model;
+﻿using BackTestingPlatform.Core;
+using BackTestingPlatform.Model;
 using System;
 using System.Collections.Generic;
 using WAPIWrapperCSharp;
@@ -7,7 +8,16 @@ namespace BackTestingPlatform.DataAccess
 {
     public interface KLinesDataRepository
     {
-        List<KLinesData> fetch(string stockCode, DateTime startTime, DateTime endTime);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stockCode">股票代码</param>
+        /// <param name="startTime">起始时间</param>
+        /// <param name="endTime">结束时间</param>
+        /// <param name="period">周期(分钟)</param>
+        /// <param name="fields">获取字段</param>
+        /// <returns></returns>
+        List<KLinesData> fetch(string stockCode, DateTime startTime, DateTime endTime, int period = 1, string fields = "open,high,low,close,volume,amt");
 
     }
     /// <summary>
@@ -15,20 +25,19 @@ namespace BackTestingPlatform.DataAccess
     /// </summary>
     public class KLinesDataRepositoryFromWind : KLinesDataRepository
     {
-        public List<KLinesData> fetch(string stockCode, DateTime startTime, DateTime endTime)
-        {
 
-            var fields = "open, high, low, close, volume, amt";
-            var options = "BarSize=1";
-            //WindAPI api = MyPlatform.currentContext().getWindAPI();
-            WindAPI api = new WindAPI();
-            api.start();
+
+        public List<KLinesData> fetch(string stockCode, DateTime startTime, DateTime endTime, int period = 1, string fields = "open,high,low,close,volume,amt")
+        {
+            var options = String.Format("barSize={0}", period);
 
             WindData d = api.wsi(stockCode, fields, startTime, endTime, options);
             int len = d.timeList.Length;//存放数据总长度
             int fieldLen = d.fieldList.Length;//存放获取指标个数
+            WindAPI wapi = Platforms.GetWindAPI();
+            WindData d = wapi.wsi(stockCode, fields, startTime, endTime, options);
+            int len = d.timeList.Length;
 
-            //build target data structrue
             List<KLinesData> items = new List<KLinesData>(len);
             double[] dm = (double[])d.data;
             DateTime[] ttime = d.timeList;
@@ -48,5 +57,7 @@ namespace BackTestingPlatform.DataAccess
 
             return items;
         }
+
+
     }
 }

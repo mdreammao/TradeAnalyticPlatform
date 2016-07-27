@@ -12,7 +12,7 @@ namespace BackTestingPlatform.Strategies.Sample
 {
     class TradeDaysDirectPrint : Strategy
     {
-
+        KLinesDataRepository repo;
         public void act()
         {
             KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
@@ -43,7 +43,7 @@ namespace BackTestingPlatform.Strategies.Sample
 
             /*
             for (int i = 0; i < StockData.Count; i++)
-            {
+            {              
                 Console.WriteLine("Time:{0,-18} -- O:{1,8:F3} H:{2,8:F3} L:{3,8:F3} C:{4,8:F3} V:{5,8:F0} A:{6,8:F0}",
                     StockData[i].time, StockData[i].high, StockData[i].open, StockData[i].low, StockData[i].close, 
                     StockData[i].volume,StockData[i].amount);

@@ -3,6 +3,7 @@ using BackTestingPlatform.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using WAPIWrapperCSharp;
@@ -64,6 +65,14 @@ namespace BackTestingPlatform.Core
             cb.RegisterInstance(new KLinesDataRepositoryFromWind()).As<KLinesDataRepository>();
 
             cb.RegisterInstance(new TradeDaysInfoRepositoryFromWind());
+
+            var asm = Assembly.GetExecutingAssembly();
+
+            //自动扫描注册
+            cb.RegisterAssemblyTypes(asm)
+                   .Where(t => t.Name.EndsWith("Repository"))
+                   .AsImplementedInterfaces();
+           
         }
     }
 

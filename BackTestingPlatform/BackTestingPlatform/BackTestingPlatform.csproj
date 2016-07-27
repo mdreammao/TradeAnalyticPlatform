@@ -59,12 +59,11 @@
     <Compile Include="Model\ImpvSurface.cs" />
     <Compile Include="Model\TradeDatas.cs" />
     <Compile Include="Model\TradeDaysInfo.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategies\Strategy.cs" />
     <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Sample\Samples.cs" />
-    <Compile Include="WsiDataDAO.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
