@@ -62,7 +62,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategies\Strategy.cs" />
-    <Compile Include="Strategies\MA\MA5.cs" />
     <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Sample\Samples.cs" />
     <Compile Include="WsiDataDAO.cs" />

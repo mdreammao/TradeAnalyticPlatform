@@ -22,7 +22,7 @@ namespace BackTestingPlatform.Model
     /// <summary>
     /// 股票K线价格的格式，开高低收量额
     /// </summary>
-    public class KLineData
+    public class KLinesData
     {
         public string stockCode { get; set; }
         public DateTime time;
