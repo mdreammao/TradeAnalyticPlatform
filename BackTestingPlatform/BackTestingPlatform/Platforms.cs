@@ -2,6 +2,7 @@
 using BackTestingPlatform.DataAccess;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -15,11 +16,15 @@ namespace BackTestingPlatform.Core
     /// </summary>
     public class Platforms
     {
+        //Autofac容器
         public static IContainer container;
+        //通用的变量字典
         public static IDictionary<string, object> parameters;
+        //重要变量：交易日
+        public static List<int> tradeDays;
 
         /// <summary>
-        /// 应用的全局初始化
+        /// 整个应用的全局初始化
         /// </summary>
         public static void Initialize()
         {
@@ -33,7 +38,21 @@ namespace BackTestingPlatform.Core
             //初始化parameters
             parameters = new Dictionary<string, object>();
 
-
+            //初始化交易日数据
+            readTradeDaysFromLocalFile();
+        }
+        /// <summary>
+        /// 整个应用的终止
+        /// </summary>
+        public static void ShutDown()
+        {
+            if (_windAPI != null)
+            {
+                if (_windAPI.isconnected())
+                {
+                    _windAPI.stop();
+                }
+            }
         }
 
 
@@ -73,6 +92,31 @@ namespace BackTestingPlatform.Core
                    .Where(t => t.Name.EndsWith("Repository"))
                    .AsImplementedInterfaces();
            
+        }
+
+        static void readTradeDaysFromLocalFile()
+        {
+            var path = System.Environment.CurrentDirectory;
+            if (path.EndsWith("bin\\Debug")) path = path.Substring(0, path.Length - 10);
+            path += @"\RESOURCES\trade_days_2010_2016.txt";
+            tradeDays=new List<int>(2000);
+            try
+            {
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        tradeDays.Add(Convert.ToInt32(line));                        
+                    }
+
+                    Platforms.parameters.Add("tradeDays", tradeDays);
+                }
+            }catch(FileNotFoundException e)
+            {
+                Console.WriteLine(e);
+            }
+            
         }
     }
 

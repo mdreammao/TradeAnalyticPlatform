@@ -6,22 +6,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using BackTestingPlatform.Strategies;
 using BackTestingPlatform.Strategies.Sample;
 
 namespace BackTestingPlatform
 {
-    class PlatformBooter
+    class LocalRunner
     {
-        static void Main(string[] args)
-        {          
-            
-            Platforms.Initialize(); //初始化
-            (new LocalRunner()).run();   
-           
-
-            Platforms.ShutDown();   //关闭
+        public void run()
+        {
+            Strategy stg = new TradeDaysDirectPrint();
+            stg.act();
         }
     }
 }

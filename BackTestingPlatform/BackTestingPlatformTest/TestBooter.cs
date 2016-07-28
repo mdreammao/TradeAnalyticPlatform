@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.Core;
 using BackTestingPlatform.Tests;
+
 using System;
 
 namespace BackTestingPlatform.Test
@@ -11,8 +12,9 @@ namespace BackTestingPlatform.Test
             Platforms.Initialize();
             //WindApiTest.testTDay()
 
-            //ToolKits.SaveAllTradeDays(2016, 2016);
-            ToolKits.readFile();
+            ToolKits.SaveAllTradeDays(2010, 2016);
+            //ToolKits.readFile();
+            //LinqSqlTest.testDataSet();
             Console.ReadKey();
         }
     }
