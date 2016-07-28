@@ -18,12 +18,13 @@ namespace BackTestingPlatform.Strategies
         /// <param name="MAParam">股票代码</param>
         /// 
         /**/
+        /*
         public double[] Jugde()
         { 
         
         
         }
-        
+        */
         
 
     }

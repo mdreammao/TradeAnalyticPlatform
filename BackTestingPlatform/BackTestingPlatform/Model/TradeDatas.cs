@@ -62,5 +62,4 @@ namespace BackTestingPlatform.Model
         public double dividend;//分红数额
         public double exRightRatio;//除权比例
     }
-
 }

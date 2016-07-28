@@ -17,8 +17,6 @@ namespace BackTestingPlatform.Strategies.Sample
         public void act()
         {
             KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
-
-
             //计算运行时间
             /*
             System.Diagnostics.Stopwatch stopwatch = new Stopwatch();
