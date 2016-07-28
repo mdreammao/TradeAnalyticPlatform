@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Strategies.Sample
 {
-    class TradeDaysDirectPrint : Strategy
+    class TradeDaysDirectPrint1 : Strategy
     {
-        KLinesDataRepository repo1;
+        KLinesDataRepository repo;
         public void act()
         {
            
-            var repo= Platforms.container.Resolve<KLinesDataRepository>();
+            repo= Platforms.container.Resolve<KLinesDataRepository>();
             
             var d = repo.fetch("510050.SH", new DateTime(2015, 6, 26), new DateTime(2016, 7, 26));
             for (int i = 0; i < d.Count; i++)

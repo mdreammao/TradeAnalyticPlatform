@@ -30,7 +30,7 @@ namespace BackTestingPlatform.DataAccess
         public List<KLinesData> fetch(string stockCode, DateTime startTime, DateTime endTime, int period = 1, string fields = "open,high,low,close,volume,amt")
         {
             var options = String.Format("barSize={0}", period);
-
+            
             WindAPI wapi = Platforms.GetWindAPI();
             WindData d = wapi.wsi(stockCode, fields, startTime, endTime, options);
             int len = d.timeList.Length;

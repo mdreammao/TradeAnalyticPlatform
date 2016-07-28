@@ -11,16 +11,12 @@ using BackTestingPlatform.Strategies.Sample;
 
 namespace BackTestingPlatform
 {
-    class PlatformBooter
+    class LocalRunner
     {
-        static void Main(string[] args)
+        public void run()
         {
-            
-            Platforms.Initialize(); //初始化
-            (new LocalRunner()).run();   
-           
-
-            Platforms.ShutDown();   //关闭
+            Strategy stg = new TradeDaysDirectPrint();
+            stg.act();
         }
     }
 }

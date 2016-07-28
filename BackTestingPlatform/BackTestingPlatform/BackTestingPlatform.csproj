@@ -39,6 +39,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -52,7 +53,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAccess\DatabaseHelper.cs" />
+    <Compile Include="LocalRunner.tmp.cs" />
+    <Compile Include="Utilities\SqlUtils.cs" />
     <Compile Include="DataAccess\TradeDaysInfoRepository.cs" />
     <Compile Include="DataAccess\KLinesDataRepository.cs" />
     <Compile Include="DataAccess\TickDataRepository.cs" />
@@ -61,8 +63,8 @@
     <Compile Include="Model\TradeDaysInfo.cs" />
     <Compile Include="PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Strategies\Sample\Samples1.cs" />
     <Compile Include="Strategies\Strategy.cs" />
-    <Compile Include="Strategies\MA\MA5.cs" />
     <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Sample\Samples.cs" />
   </ItemGroup>
@@ -70,8 +72,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <Folder Include="Strategies\MA\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RESOURCES\trade_days_2010_2016.txt" />
     <Content Include="Utilities\WAPIWrapperCSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
