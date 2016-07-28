@@ -15,7 +15,7 @@ namespace BackTestingPlatform
     {
         public void run()
         {
-            Strategy stg = new TradeDaysDirectPrint();
+            Strategy stg = new TradeDaysDirectPrint1();
             stg.act();
         }
     }

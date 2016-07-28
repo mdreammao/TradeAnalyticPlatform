@@ -59,7 +59,6 @@
     <Compile Include="DataAccess\KLinesDataRepository.cs" />
     <Compile Include="DataAccess\TickDataRepository.cs" />
     <Compile Include="Model\ImpvSurface.cs" />
-    <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Model\TradeDatas.cs" />
     <Compile Include="Model\TradeDaysInfo.cs" />
     <Compile Include="PlatformBooter.cs" />
@@ -74,7 +73,9 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\TALibrary\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="RESOURCES\trade_days_2010_2016.txt" />
     <Content Include="Utilities\WAPIWrapperCSharp.dll" />
