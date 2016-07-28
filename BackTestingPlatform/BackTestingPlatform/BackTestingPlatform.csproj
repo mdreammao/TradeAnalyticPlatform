@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LocalRunner.tmp.cs" />
+    <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
     <Compile Include="DataAccess\TradeDaysInfoRepository.cs" />
     <Compile Include="DataAccess\KLinesDataRepository.cs" />
@@ -73,9 +74,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\TALibrary\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="RESOURCES\trade_days_2010_2016.txt" />
     <Content Include="Utilities\WAPIWrapperCSharp.dll" />
