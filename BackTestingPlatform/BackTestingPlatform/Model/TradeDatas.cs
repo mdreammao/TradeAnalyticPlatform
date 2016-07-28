@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 namespace BackTestingPlatform.Model
 {
     /// <summary>
+    /// 定义部分可能使用的常量
+    /// </summary>
+    public class Constants
+    {
+        public static int INF = 99999, NINF = -99999, NONE = -88888;    
+    }
+    /// <summary>
     /// 股票Tick价格的格式，每笔成交的价量
     /// </summary>
     public class TickData
@@ -50,6 +57,8 @@ namespace BackTestingPlatform.Model
     {
         public DateTime timeToMarket;//上市时间
         public bool isST;//是否是Special Treament股
+        public double[] industry;//行业
+        public double[] sector;//板块
         public double dividend;//分红数额
         public double exRightRatio;//除权比例
     }

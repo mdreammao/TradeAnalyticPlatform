@@ -17,7 +17,7 @@ namespace BackTestingPlatform
         static void Main(string[] args)
         {          
             Platforms.Initialize();
-            Strategy stg = new TradeDaysDirectPrint();
+            Strategy stg = new SingleMA();
             stg.act();
         }
     }

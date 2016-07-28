@@ -31,16 +31,14 @@ namespace BackTestingPlatform.DataAccess
         {
             var options = String.Format("barSize={0}", period);
 
-            WindData d = api.wsi(stockCode, fields, startTime, endTime, options);
-            int len = d.timeList.Length;//存放数据总长度
-            int fieldLen = d.fieldList.Length;//存放获取指标个数
             WindAPI wapi = Platforms.GetWindAPI();
             WindData d = wapi.wsi(stockCode, fields, startTime, endTime, options);
             int len = d.timeList.Length;
-
+            int fieldLen = d.fieldList.Length;
             List<KLinesData> items = new List<KLinesData>(len);
             double[] dm = (double[])d.data;
             DateTime[] ttime = d.timeList;
+
             for (int k = 0; k < len; k += fieldLen)
             {
                 items.Add(new KLinesData
