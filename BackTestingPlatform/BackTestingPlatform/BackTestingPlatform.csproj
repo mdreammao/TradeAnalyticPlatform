@@ -73,7 +73,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Strategies\MA\" />
+    <Folder Include="Model\TALibrary\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="RESOURCES\trade_days_2010_2016.txt" />
