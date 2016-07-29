@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BackTestingPlatform.Strategies;
 using BackTestingPlatform.Strategies.SingleMA;
+using BackTestingPlatform.DataAccess.Option;
 
 namespace BackTestingPlatform
 {
@@ -15,9 +16,10 @@ namespace BackTestingPlatform
     {
         public void run()
         {
-            Strategy stg = new SingleMA();
-            stg.act();
-
+            //Strategy stg = new SingleMA();
+            //stg.act();
+            OptionInfoRepositoryFromWind myOption = new OptionInfoRepositoryFromWind();
+            myOption.fetchAll();
             //sfsdf/s/s/sd
         }
     }

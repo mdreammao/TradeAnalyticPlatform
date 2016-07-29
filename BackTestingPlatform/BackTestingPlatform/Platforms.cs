@@ -83,7 +83,7 @@ namespace BackTestingPlatform.Core
         {
             cb.RegisterInstance(new KLinesDataRepositoryFromWind()).As<KLinesDataRepository>();
 
-            cb.RegisterInstance(new ASharesInfoRepository()).As<ASharesInfoRepositoryy>();
+           // cb.RegisterInstance(new ASharesInfoRepository()).As<ASharesInfoRepositoryy>();
 
             cb.RegisterInstance(new TradeDaysInfoRepositoryFromWind());
 
