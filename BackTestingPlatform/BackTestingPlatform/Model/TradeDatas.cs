@@ -94,7 +94,7 @@ namespace BackTestingPlatform.Model
         public double freeCash;//可用资金
         public double totalProfitLossRate;//总盈亏比率
         public double totalProfitLossAmt;//总盈亏额
-     
+
         //尚应添加委托单信息
     }
 
