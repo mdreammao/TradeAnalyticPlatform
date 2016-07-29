@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using WAPIWrapperCSharp;
 
-namespace BackTestingPlatform.DataAccess
+namespace BackTestingPlatform.DataAccess.Option
 {
     public interface OptionInfoRepository
     {
