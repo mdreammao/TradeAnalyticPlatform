@@ -54,14 +54,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\ASharesInfoRepository.cs" />
+    <Compile Include="DataAccess\OptionInfoRepository.cs" />
     <Compile Include="LocalRunner1.tmp.cs" />
     <Compile Include="Model\ASharesInfo.cs" />
+    <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
     <Compile Include="DataAccess\TradeDaysInfoRepository.cs" />
     <Compile Include="DataAccess\KLinesDataRepository.cs" />
     <Compile Include="DataAccess\TickDataRepository.cs" />
-    <Compile Include="Model\ImpvSurface.cs" />
+    <Compile Include="Model\Option\ImpvSurface.cs" />
     <Compile Include="Model\TradeDatas.cs" />
     <Compile Include="Model\TradeDaysInfo.cs" />
     <Compile Include="PlatformBooter.cs" />

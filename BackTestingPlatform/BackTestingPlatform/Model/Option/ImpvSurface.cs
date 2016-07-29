@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Model
+namespace BackTestingPlatform.Model.Option
 {
-    class ImpvSurface
+    public class ImpvSurface
     {
-        double[] x;
+       
     }
 
 
 
-    class ImpvSurfaceHelper
+    public class ImpvSurfaceCalculator
     {
 
     }
