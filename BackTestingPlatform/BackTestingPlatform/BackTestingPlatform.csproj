@@ -67,7 +67,6 @@
     <Compile Include="PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategies\TansactedJudge.cs" />
-    <Compile Include="Strategies\Sample\Samples1.cs" />
     <Compile Include="Strategies\Strategy.cs" />
     <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Sample\SingleMA.cs" />

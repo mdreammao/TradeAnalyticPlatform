@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BackTestingPlatform.Strategies;
-using BackTestingPlatform.Strategies.Sample;
+using BackTestingPlatform.Strategies.SingleMA;
 
 namespace BackTestingPlatform
 {
@@ -15,7 +15,7 @@ namespace BackTestingPlatform
     {
         public void run()
         {
-            Strategy stg = new TradeDaysDirectPrint1();
+            Strategy stg = new SingleMA();
             stg.act();
 
             //sfsdf/s/s/sd

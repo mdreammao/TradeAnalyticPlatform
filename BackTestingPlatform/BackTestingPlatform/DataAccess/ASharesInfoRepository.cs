@@ -26,7 +26,7 @@ namespace BackTestingPlatform.DataAccess
             int fieldLen = wd.fieldList.Length;
             List<ASharesInfo> items = new List<ASharesInfo>(len);
 
-
+            return items;
         }
     }
 }

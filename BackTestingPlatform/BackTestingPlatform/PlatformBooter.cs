@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using BackTestingPlatform.Strategies;
-using BackTestingPlatform.Strategies.Sample;
+using BackTestingPlatform.Strategies.SingleMA;
 
 namespace BackTestingPlatform
 {

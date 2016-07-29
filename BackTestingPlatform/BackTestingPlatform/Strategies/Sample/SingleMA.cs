@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using BackTestingPlatform.Model.TALibrary;
 
-namespace BackTestingPlatform.Strategies.Sample
+namespace BackTestingPlatform.Strategies.SingleMA
 {
     class SingleMA : Strategy
     {
@@ -56,7 +56,6 @@ namespace BackTestingPlatform.Strategies.Sample
                 priceSeries[i] = StockData[i].close;
                 dateList[i] = StockData[i].time;
             }
-
             TA_MA myMA = new TA_MA(priceSeries);
             index = myMA.SMA(MAParam);
 
