@@ -57,6 +57,9 @@
     <Compile Include="DataAccess\OptionInfoRepository.cs" />
     <Compile Include="LocalRunner1.tmp.cs" />
     <Compile Include="Model\ASharesInfo.cs" />
+    <Compile Include="Model\Option\OptionData.cs" />
+    <Compile Include="Model\Option\OptionDataWithGreek.cs" />
+    <Compile Include="Model\Option\OptionDataWithUnderlying.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
