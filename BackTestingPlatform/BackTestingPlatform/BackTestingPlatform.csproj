@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\ASharesInfoRepository.cs" />
-    <Compile Include="DataAccess\OptionInfoRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
     <Compile Include="LocalRunner1.tmp.cs" />
     <Compile Include="Model\ASharesInfo.cs" />
     <Compile Include="Model\Option\OptionData.cs" />
@@ -77,7 +77,9 @@
     <Compile Include="Strategies\Sample\SingleMA.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
