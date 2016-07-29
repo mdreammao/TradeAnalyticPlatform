@@ -17,7 +17,19 @@ namespace BackTestingPlatform.DataAccess
         {
             WindAPI wapi = Platforms.GetWindAPI();
             WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=sse;windcode="+underlyingCode+";status=all");
+            int len = wd.timeList.Length;
+            int fieldLen = wd.fieldList.Length;
+            List<OptionInfo> items = new List<OptionInfo>(len);
+            object[] dm = (object[])wd.data;
+            DateTime[] ttime = wd.timeList;
+            for (int k = 0; k < len; k += fieldLen)
+            {
+                items.Add(new OptionInfo
+                {
+                });
+            }
 
+            return items;
 
         }
     }

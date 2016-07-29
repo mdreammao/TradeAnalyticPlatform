@@ -8,7 +8,7 @@ namespace BackTestingPlatform.Model.Option
 {
     public class OptionInfo
     {
-        public string optionCode { get; set; }
+        public string optionCode;
         public string optionName;
         public string executeType;
         public double strike;
