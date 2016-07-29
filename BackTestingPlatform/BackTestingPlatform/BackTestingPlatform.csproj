@@ -53,7 +53,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\ASharesInfoRepository.cs" />
     <Compile Include="LocalRunner1.tmp.cs" />
+    <Compile Include="Model\ASharesInfo.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
     <Compile Include="DataAccess\TradeDaysInfoRepository.cs" />
@@ -77,6 +79,9 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="RESOURCES\trade_days_2010_2016.txt" />
+    <Content Include="Task\HeFeiying.txt" />
+    <Content Include="Task\HuangZhenkun.txt" />
+    <Content Include="Task\MaoHeng.txt" />
     <Content Include="Utilities\WAPIWrapperCSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
