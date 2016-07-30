@@ -21,10 +21,10 @@ namespace BackTestingPlatform.DataAccess.Option
             int fieldLen = wd.fieldList.Length;
             List<OptionInfo> items = new List<OptionInfo>(len*fieldLen);
             object[] dm = (object[])wd.data;
-            string marketStr = ".SH";
+            string marketStr;
             if (market=="sse")
             {
-                
+                marketStr = ".SH";
             }
             for (int k = 0; k < len; k++)
             {
