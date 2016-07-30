@@ -9,7 +9,7 @@ namespace BackTestingPlatform.DataAccess
     public interface KLinesDataRepository
     {
         /// <summary>
-        /// 
+        ///  
         /// </summary>
         /// <param name="stockCode">股票代码</param>
         /// <param name="startTime">起始时间</param>
