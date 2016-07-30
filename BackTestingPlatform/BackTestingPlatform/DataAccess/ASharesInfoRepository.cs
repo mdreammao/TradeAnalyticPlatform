@@ -29,11 +29,8 @@ namespace BackTestingPlatform.DataAccess
 
             int codeLen = wd.codeList.Length;
             int fieldLen = wd.fieldList.Length;
-            object temp = wd.data;
+            object[] dataList = (object[])wd.data;
             
-            var dataList = (ArrayList)temp;
-      //      dataList = (ArrayList)temp;
-
             List<ASharesInfo> items = new List<ASharesInfo>();
             /**/
             for (int k = 0; k < codeLen; k += fieldLen)
