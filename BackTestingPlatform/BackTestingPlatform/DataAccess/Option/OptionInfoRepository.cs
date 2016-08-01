@@ -39,9 +39,7 @@ namespace BackTestingPlatform.DataAccess.Option
                     endDate=(DateTime)dm[k*fieldLen+10]
                 });
             }
-
             return items;
-
         }
     }
 }
