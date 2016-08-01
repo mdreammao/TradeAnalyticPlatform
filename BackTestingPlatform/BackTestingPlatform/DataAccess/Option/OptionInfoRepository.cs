@@ -9,14 +9,14 @@ namespace BackTestingPlatform.DataAccess.Option
 {
     public interface OptionInfoRepository
     {
-        List<OptionInfo> fetchAll(string underlyingCode="510050.SH");
+        List<OptionInfo> fetchAll(string underlyingCode="510050.SH",string market="sse");
     }
     class OptionInfoRepositoryFromWind : OptionInfoRepository
     {
-        public List<OptionInfo> fetchAll(string underlyingCode = "510050.SH")
+        public List<OptionInfo> fetchAll(string underlyingCode = "510050.SH",string market="sse")
         {
             WindAPI wapi = Platforms.GetWindAPI();
-            WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=sse;windcode="+underlyingCode+";status=all");
+            WindData wd = wapi.wset("optioncontractbasicinfo", "exchange="+market+"swindcode="+underlyingCode+";status=all");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
             List<OptionInfo> items = new List<OptionInfo>(len);
