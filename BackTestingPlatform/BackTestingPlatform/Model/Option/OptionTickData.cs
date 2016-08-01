@@ -7,7 +7,7 @@ using BackTestingPlatform.Model.Futures;
 
 namespace BackTestingPlatform.Model.Option
 {
-    class OptionTickData
+    public class OptionTickData
     {
         public string optionCode;
         public DateTime time;
@@ -19,7 +19,7 @@ namespace BackTestingPlatform.Model.Option
         public OptionInfo baseInfo;
     }
 
-    class OptionGreek
+    public class OptionGreek
     {
         public double sigma, delta, gamma, vega, theta;
     }

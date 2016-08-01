@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="DataAccess\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionTickDataRepository.cs" />
     <Compile Include="LocalRunner1.tmp.cs" />
     <Compile Include="Model\ASharesInfo.cs" />
     <Compile Include="Model\Futures\FuturesInfo.cs" />
@@ -82,7 +83,9 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\Parameters\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="RESOURCES\trade_days_2010_2016.txt" />
     <Content Include="Task\HeFeiying.txt" />

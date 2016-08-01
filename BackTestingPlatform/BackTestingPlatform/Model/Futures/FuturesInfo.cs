@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Futures
 {
-    class FuturesInfo
+    public class FuturesInfo
     {
         public string futuresCode;
         public DateTime endDate;

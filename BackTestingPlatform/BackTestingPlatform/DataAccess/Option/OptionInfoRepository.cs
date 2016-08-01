@@ -4,6 +4,8 @@ using BackTestingPlatform.Model.Option;
 using System;
 using System.Collections.Generic;
 using WAPIWrapperCSharp;
+using System.IO;
+using System.Linq;
 
 namespace BackTestingPlatform.DataAccess.Option
 {
@@ -39,7 +41,48 @@ namespace BackTestingPlatform.DataAccess.Option
                     endDate=(DateTime)dm[k*fieldLen+10]
                 });
             }
+            if (Platforms.parameters.ContainsKey("optionInfo"))
+            {
+                Platforms.parameters["optionInfo"] = items;
+            }
+            else
+            {
+                Platforms.parameters.Add("optionInfo", items);
+            }
             return items;
         }
     }
+
+    class OptionInfoRepositoryFromLocalFile : OptionInfoRepository
+    {
+        public List<OptionInfo> fetchAll(string underlyingCode = "510050.SH", string market = "sse")
+        {
+            var path = System.Environment.CurrentDirectory;
+            if (path.EndsWith("bin\\Debug")) path = path.Substring(0, path.Length - 10);
+            path += @"\RESOURCES\optionInfo.csv";
+            List<OptionInfo> items = new List<OptionInfo>();
+            try
+            {
+                //希望能简单调用utility的函数来读写
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        
+                    }
+
+                    Platforms.parameters.Add("optionInfo", items);
+                }
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e);
+            }
+            return items;
+        }
+        
+    }
+    
+
 }
