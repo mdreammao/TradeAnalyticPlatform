@@ -17,6 +17,7 @@ namespace BackTestingPlatform.Strategies.SingleMA
         public void act()
         {
             KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
+            ASharesInfoRepository repo1 = Platforms.container.Resolve<ASharesInfoRepository>();
             //计算运行时间
             /*
             System.Diagnostics.Stopwatch stopwatch = new Stopwatch();
@@ -45,10 +46,12 @@ namespace BackTestingPlatform.Strategies.SingleMA
             }
              */
             var StockData = repo.fetch("510050.SH", new DateTime(2015, 6, 26), new DateTime(2016, 7, 26));
+            var StockSet = repo1.fetch(new DateTime(2016, 7, 29));
+
             double[] priceSeries = new double[StockData.Count];
             DateTime[] dateList = new DateTime[StockData.Count];
             double[] index = new double[StockData.Count];
-            int MAParam = 5;
+            int MAParam = 5;//五Bars均线，测试参数
 
             //取出收盘价
             for (int i = 0; i < StockData.Count; i++)

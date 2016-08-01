@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using BackTestingPlatform.Strategies;
 using BackTestingPlatform.Strategies.SingleMA;
 using BackTestingPlatform.DataAccess.Option;
+using WAPIWrapperCSharp;
 
 namespace BackTestingPlatform
 {
