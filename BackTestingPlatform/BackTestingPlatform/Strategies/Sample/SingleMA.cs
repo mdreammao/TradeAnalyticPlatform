@@ -74,7 +74,7 @@ namespace BackTestingPlatform.Strategies.MA
              */
             //生成交易信号
             int dataLen =priceSeries.Length;
-            if(priceSeries[dataLen]>)
+           // if(priceSeries[dataLen]>)
 
 
             return tradeSignal;

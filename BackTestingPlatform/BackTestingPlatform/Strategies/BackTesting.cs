@@ -7,6 +7,7 @@ using BackTestingPlatform.Core;
 using BackTestingPlatform.Strategies.MA;
 using System.IO;
 using BackTestingPlatform.Model.Stock;
+using BackTestingPlatform.Model;
 
 namespace BackTestingPlatform.Strategies
 {
@@ -37,6 +38,7 @@ namespace BackTestingPlatform.Strategies
                 timelist[i] = Convert.ToDateTime(lines[i]);
             }
             //初始化账户信息
+            AccountInfo account1 = new AccountInfo();
             
 
             DateTime startDate =new DateTime(2016,7,1);//策略起止时间

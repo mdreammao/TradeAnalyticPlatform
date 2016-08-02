@@ -64,6 +64,7 @@
     <Compile Include="Model\Stock\Stock.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Service\TradeDaysService.cs" />
+    <Compile Include="Strategies\BackTesting.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
     <Compile Include="Utilities\FileUtils.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
