@@ -6,12 +6,23 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Futures
 {
+    /// <summary>
+    /// 期货 基础信息
+    /// </summary>
+    public class Futures
+    {
+        public string code;
+        public DateTime endDate;
+
+        public List<FuturesTickData> ticks;
+    }
+
     public class FuturesTickData
     {
-        public string futuresCode;
+      
         public DateTime time;
         public double lastPrice;
         public PositionData[] ask, bid;
-        public FuturesInfo baseInfo;
+      
     }
 }
