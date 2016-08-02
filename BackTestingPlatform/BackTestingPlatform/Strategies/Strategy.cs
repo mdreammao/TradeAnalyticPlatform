@@ -8,6 +8,6 @@ namespace BackTestingPlatform.Strategies
 {
     public interface Strategy
     {
-        void act();
+        void act();      
     }
 }

@@ -9,22 +9,23 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using BackTestingPlatform.Model.TALibrary;
 
-namespace BackTestingPlatform.Strategies.SingleMA
+namespace BackTestingPlatform.Strategies.MA
 {
-    class SingleMA : Strategy
+
+    class SingleMA : BackTesting       
     {
-        KLinesDataRepository repo;
-        public void act()
+       // KLinesDataRepository repo;
+
+        public int stg(DateTime startDate, DateTime nowDate)
         {
             KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
             ASharesInfoRepository repo1 = Platforms.container.Resolve<ASharesInfoRepository>();
             //计算运行时间
             /*
             System.Diagnostics.Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start(); //  开始监视代码运行时间
+            stopwatch.Start(); //  开始监视代码运行时间 
 
-            
-
+        
             stopwatch.Stop(); //  停止监视 
             TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间
             double seconds = timespan.TotalSeconds;  //  总秒数
@@ -45,9 +46,8 @@ namespace BackTestingPlatform.Strategies.SingleMA
                 }
             }
              */
-            var StockData = repo.fetch("510050.SH", new DateTime(2015, 6, 26), new DateTime(2016, 7, 26));
-            var StockSet = repo1.fetch(new DateTime(2016, 7, 29));
-
+            var StockData = repo.fetch("510050.SH", startDate, nowDate);
+            int tradeSignal = 0;//交易信号，1为long，-1为short，无信号为0
             double[] priceSeries = new double[StockData.Count];
             DateTime[] dateList = new DateTime[StockData.Count];
             double[] index = new double[StockData.Count];
@@ -61,7 +61,7 @@ namespace BackTestingPlatform.Strategies.SingleMA
             }
             TA_MA myMA = new TA_MA(priceSeries);
             index = myMA.SMA(MAParam);
-
+            /*
             for (int j = 0; j < index.Length; j++)
             {
                 Console.WriteLine("Time:{0,-20} -- MA{1}:{2,8:F3}", dateList[j], MAParam, index[j]);
@@ -71,6 +71,13 @@ namespace BackTestingPlatform.Strategies.SingleMA
                     Console.ReadKey();
                 } 
             }
+             */
+            //生成交易信号
+            int dataLen =priceSeries.Length;
+            if(priceSeries[dataLen]>)
+
+
+            return tradeSignal;
         }
     }
 }

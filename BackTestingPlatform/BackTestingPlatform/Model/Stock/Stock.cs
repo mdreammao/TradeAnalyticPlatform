@@ -77,7 +77,6 @@ namespace BackTestingPlatform.Model
         public double freeze;//冻结仓位
         public double margin;//保证金
         public DateTime entryTime;
-
     }
 
     /// <summary>
@@ -86,6 +85,7 @@ namespace BackTestingPlatform.Model
     public class AccountInfo
     {
         public int AccountID;//账户ID
+        public int positionStatus;//账户状态，有持仓为1，空仓为0
         public List<StockHolding> myHolding = new List<StockHolding>();//存放持仓股票列表
         public double totalAsset;//总资产
         public double currentEquity;//当前总权益
@@ -93,6 +93,6 @@ namespace BackTestingPlatform.Model
         public double totalProfitLossRate;//总盈亏比率
         public double totalProfitLossAmt;//总盈亏额
 
-        //尚应添加委托单信息
+        //还应添加委托单信息
     }
 }

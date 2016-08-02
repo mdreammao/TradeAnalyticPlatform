@@ -62,6 +62,7 @@
     <Compile Include="Model\Stock\ASharesInfo.cs" />
     <Compile Include="Model\Stock\Stock.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
+    <Compile Include="Strategies\BackTesting.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
     <Compile Include="DataAccess\TradeDaysInfoRepository.cs" />
     <Compile Include="DataAccess\KLinesDataRepository.cs" />
