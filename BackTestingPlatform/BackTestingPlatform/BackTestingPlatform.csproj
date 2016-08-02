@@ -56,9 +56,6 @@
     <Compile Include="DataAccess\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
     <Compile Include="LocalRunner1.tmp.cs" />
-    <Compile Include="Model\Option\OptionData.cs" />
-    <Compile Include="Model\Option\OptionDataWithGreek.cs" />
-    <Compile Include="Model\Option\OptionDataWithUnderlying.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Stock\ASharesInfo.cs" />
     <Compile Include="Model\Stock\TradeDatas.cs" />
@@ -71,7 +68,7 @@
     <Compile Include="Model\TradeDaysInfo.cs" />
     <Compile Include="PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Strategies\TansactedJudge.cs" />
+    <Compile Include="Strategies\TansactionJudge.cs" />
     <Compile Include="Strategies\Strategy.cs" />
     <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Sample\SingleMA.cs" />

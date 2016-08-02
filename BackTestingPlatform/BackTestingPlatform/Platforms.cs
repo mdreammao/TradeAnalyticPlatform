@@ -90,6 +90,7 @@ namespace BackTestingPlatform.Core
             var asm = Assembly.GetExecutingAssembly();
 
             //自动扫描注册
+            /**/
             cb.RegisterAssemblyTypes(asm)
                    .Where(t => t.Name.EndsWith("Repository"))
                    .AsImplementedInterfaces();

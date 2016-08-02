@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Strategies
 {
-    class TransactedJudge
+    class TransactionJudge
     {
 
         //存放成交回报用于返回，[1]成交时间、[2]成交价、[3]成交量（考虑到追单到极限时间依然部分成交的情况）
