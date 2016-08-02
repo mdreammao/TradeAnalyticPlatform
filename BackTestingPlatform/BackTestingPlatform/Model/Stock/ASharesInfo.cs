@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Model
+namespace BackTestingPlatform.Model.Stock
 {
     /// <summary>
     /// 所有A股基本信息的数据结构

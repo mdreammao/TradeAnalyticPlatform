@@ -17,10 +17,12 @@ namespace BackTestingPlatform
     {
         public void run()
         {
-            //Strategy stg = new SingleMA();
-            //stg.act();
+            Strategy stg = new SingleMA();
+            stg.act();
+            /*
             OptionInfoRepositoryFromWind myOption = new OptionInfoRepositoryFromWind();
             myOption.fetchAll();
+             */
             //sfsdf/s/s/sd
         }
     }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Model
+namespace BackTestingPlatform.Model.Stock
 {
     /// <summary>
     /// 定义部分可能使用的常量

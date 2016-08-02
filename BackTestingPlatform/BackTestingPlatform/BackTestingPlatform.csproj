@@ -55,20 +55,19 @@
   <ItemGroup>
     <Compile Include="DataAccess\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
-    <Compile Include="DataAccess\Option\OptionTickDataRepository.cs" />
     <Compile Include="LocalRunner1.tmp.cs" />
-    <Compile Include="Model\ASharesInfo.cs" />
-    <Compile Include="Model\Futures\FuturesInfo.cs" />
-    <Compile Include="Model\Futures\FuturesTickData.cs" />
+    <Compile Include="Model\Option\OptionData.cs" />
+    <Compile Include="Model\Option\OptionDataWithGreek.cs" />
+    <Compile Include="Model\Option\OptionDataWithUnderlying.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
-    <Compile Include="Model\Option\OptionTickData.cs" />
+    <Compile Include="Model\Stock\ASharesInfo.cs" />
+    <Compile Include="Model\Stock\TradeDatas.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
     <Compile Include="DataAccess\TradeDaysInfoRepository.cs" />
     <Compile Include="DataAccess\KLinesDataRepository.cs" />
     <Compile Include="DataAccess\TickDataRepository.cs" />
     <Compile Include="Model\Option\ImpvSurface.cs" />
-    <Compile Include="Model\TradeDatas.cs" />
     <Compile Include="Model\TradeDaysInfo.cs" />
     <Compile Include="PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -83,9 +82,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\Parameters\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="RESOURCES\trade_days_2010_2016.txt" />
     <Content Include="Task\HeFeiying.txt" />

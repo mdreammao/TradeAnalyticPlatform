@@ -1,6 +1,6 @@
 ﻿using System;
 using BackTestingPlatform.Core;
-using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Stock;
 using System;
 using System.Collections.Generic;
 using WAPIWrapperCSharp;
