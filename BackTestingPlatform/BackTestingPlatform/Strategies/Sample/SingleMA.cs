@@ -46,7 +46,7 @@ namespace BackTestingPlatform.Strategies.SingleMA
             }
              */
             var StockData = repo.fetch("510050.SH", new DateTime(2015, 6, 26), new DateTime(2016, 7, 26));
-            var StockSet = repo1.fetch(new DateTime(2016, 7, 29));
+            var StockSet = repo1.fetchFromWind(new DateTime(2016, 7, 29));
 
             double[] priceSeries = new double[StockData.Count];
             DateTime[] dateList = new DateTime[StockData.Count];

@@ -32,8 +32,8 @@ namespace BackTestingPlatform.DataAccess.Option
             {
                 items.Add(new OptionInfo
                 {
-                    code = (string)dm[k * fieldLen + 0]+marketStr,
-                    name=(string)dm[k*fieldLen+1],
+                    optionCode = (string)dm[k * fieldLen + 0]+marketStr,
+                    optionName=(string)dm[k*fieldLen+1],
                     executeType=(string)dm[k*fieldLen+5],
                     strike=(double)dm[k * fieldLen + 6],
                     optionType=(string)dm[k * fieldLen + 4],

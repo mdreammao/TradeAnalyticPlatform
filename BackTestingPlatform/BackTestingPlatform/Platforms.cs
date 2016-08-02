@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BackTestingPlatform.DataAccess;
+using BackTestingPlatform.Service;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,7 @@ namespace BackTestingPlatform.Core
         public static IContainer container;
         //全局基础数据的变量字典
         public static IDictionary<string, object> basicInfo;
-   
+
 
         /// <summary>
         /// 整个应用的全局初始化
@@ -38,7 +39,9 @@ namespace BackTestingPlatform.Core
             basicInfo = new Dictionary<string, object>();
 
             //初始化交易日数据
-            readTradeDaysFromLocalFile();
+            TradeDaysService tradeDaysService = container.Resolve<TradeDaysService>();
+            tradeDaysService.readTradeDays();
+
         }
         /// <summary>
         /// 整个应用的终止
@@ -74,52 +77,29 @@ namespace BackTestingPlatform.Core
         }
 
         /// <summary>
-        /// 为container注册各种接口
+        /// 为container注册各种接口，实现依赖注入的核心功能
         /// 具体参见： https://autofac.org/
         /// </summary>
         /// <param name="builder"></param>
         private static void _RegisterComponents(ContainerBuilder cb)
         {
-            cb.RegisterInstance(new KLinesDataRepositoryFromWind()).As<KLinesDataRepository>();
+            //cb.RegisterInstance(new KLinesDataRepositoryFromWind()).As<KLinesDataRepository>();
 
-            cb.RegisterInstance(new ASharesInfoRepositoryFromWind()).As<ASharesInfoRepository>();//*****测试部分*****
+            //cb.RegisterInstance(new ASharesInfoRepositoryFromWind()).As<ASharesInfoRepository>();
 
-            cb.RegisterInstance(new TradeDaysInfoRepositoryFromWind());
 
-            var asm = Assembly.GetExecutingAssembly();
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             //自动扫描注册
-            /**/
-            cb.RegisterAssemblyTypes(asm)
-                   .Where(t => t.Name.EndsWith("Repository"))
-                   .AsImplementedInterfaces();
-           
+            cb.RegisterAssemblyTypes(assemblies).Where(t => t.Name.EndsWith("Repository")).AsSelf();
+            cb.RegisterAssemblyTypes(assemblies)
+                   .Where(t => t.Name.EndsWith("Service"))
+                   .AsImplementedInterfaces().AsSelf();
+
+
         }
 
-        static void readTradeDaysFromLocalFile()
-        {
-            var path = System.Environment.CurrentDirectory;
-            if (path.EndsWith("bin\\Debug")) path = path.Substring(0, path.Length - 10);
-            path += @"\RESOURCES\trade_days_2010_2016.txt";
-            var tradeDays=new List<int>(2000);
-            try
-            {
-                using (StreamReader reader = new StreamReader(path))
-                {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        tradeDays.Add(Convert.ToInt32(line));                        
-                    }
-
-                    Platforms.basicInfo.Add("tradeDays", tradeDays);
-                }
-            }catch(FileNotFoundException e)
-            {
-                Console.WriteLine(e);
-            }
-            
-        }
     }
 
 

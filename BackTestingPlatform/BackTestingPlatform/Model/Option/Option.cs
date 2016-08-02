@@ -12,8 +12,8 @@ namespace BackTestingPlatform.Model.Option
     /// </summary>
     public class OptionInfo
     {
-        public string code;     //期权代码
-        public string name;     //期权名称
+        public string optionCode;
+        public string optionName;
         public string executeType;
         public double strike;
         public string optionType;

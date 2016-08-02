@@ -16,7 +16,7 @@ namespace BackTestingPlatform.Tests
            
             var sql = @"
 select * 
-from[TradeMarket201604].[dbo].[MarketData_A1605_DCE]
+from [TradeMarket201604].[dbo].[MarketData_A1605_DCE]
 where [tdate]>=20160422 and [tdate]<=20160422";
             string connStr = ConfigurationManager.ConnectionStrings["corp1"].ConnectionString;
             SqlConnection conn = new SqlConnection(connStr);
