@@ -53,7 +53,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataAccess\ASharesInfoRepository.cs" />
+    <Compile Include="DataAccess\Stock\ASharesInfoRepository.cs" />
+    <Compile Include="DataAccess\Futures\FuturesRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
     <Compile Include="LocalRunner2.tmp.cs" />
     <Compile Include="Model\Contstants.cs" />
@@ -62,11 +63,13 @@
     <Compile Include="Model\Stock\ASharesInfo.cs" />
     <Compile Include="Model\Stock\Stock.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
-    <Compile Include="Strategies\BackTesting.cs" />
+    <Compile Include="Service\TradeDaysService.cs" />
+    <Compile Include="Utilities\CsvFileUtils.cs" />
+    <Compile Include="Utilities\FileUtils.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
-    <Compile Include="DataAccess\TradeDaysInfoRepository.cs" />
-    <Compile Include="DataAccess\KLinesDataRepository.cs" />
-    <Compile Include="DataAccess\TickDataRepository.cs" />
+    <Compile Include="DataAccess\TradeDaysRepository.cs" />
+    <Compile Include="DataAccess\Stock\KLinesDataRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockTickDataRepository.cs" />
     <Compile Include="Model\Option\ImpvSurface.cs" />
     <Compile Include="PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,6 +82,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="logs.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
@@ -87,6 +91,7 @@
     <Content Include="Task\HeFeiying.txt" />
     <Content Include="Task\HuangZhenkun.txt" />
     <Content Include="Task\MaoHeng.txt" />
+    <None Include="Task\TIPS.md" />
     <Content Include="Utilities\WAPIWrapperCSharp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

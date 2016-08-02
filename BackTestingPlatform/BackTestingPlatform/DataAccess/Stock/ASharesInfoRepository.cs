@@ -3,21 +3,17 @@ using BackTestingPlatform.Core;
 using BackTestingPlatform.Model.Stock;
 using System.Collections.Generic;
 using WAPIWrapperCSharp;
+using System.Data;
 
 namespace BackTestingPlatform.DataAccess
 {
-    public interface ASharesInfoRepository
-    {
-        /// <param name="startTime">起始时间</param>
-        List<ASharesInfo> fetch(DateTime startTime);
-    }
-
+  
     /// <summary>
     /// 从万德API获取A股股票信息。
     /// </summary>
-    public class ASharesInfoRepositoryFromWind : ASharesInfoRepository
+    public class ASharesInfoRepository
     {
-        List<ASharesInfo> ASharesInfoRepository.fetch(DateTime startTime)
+        public List<ASharesInfo> fetchFromWind(DateTime startTime)
         {
             WindAPI wapi = Platforms.GetWindAPI();
             Console.WriteLine(wapi.isconnected());
@@ -29,8 +25,7 @@ namespace BackTestingPlatform.DataAccess
             int fieldLen = wd.fieldList.Length;
             object[] dataList = (object[])wd.data;
             
-            List<ASharesInfo> items = new List<ASharesInfo>();
-            /**/
+            List<ASharesInfo> items = new List<ASharesInfo>();            
             for (int k = 0; k < codeLen; k += fieldLen)
             {
                 items.Add(new ASharesInfo
@@ -41,6 +36,16 @@ namespace BackTestingPlatform.DataAccess
                 });
             }
             return items;
+        }
+
+        public List<ASharesInfo> fetchFromDatabase(DateTime startTime, string connStr = "corp170")
+        {
+            var sql = @"
+            SELECT * FROM [WindFullMarket200701].[dbo].[MarketData_000002_SH]
+            ";
+            DataTable dt = SqlUtils.GetTable(connStr, sql);
+
+            return null;
         }
     }
 }

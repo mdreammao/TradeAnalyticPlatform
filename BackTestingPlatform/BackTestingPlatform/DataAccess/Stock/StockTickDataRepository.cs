@@ -14,7 +14,20 @@ namespace BackTestingPlatform.DataAccess
 
 
     }
-    class TickDataRepositoryFromWind : StockTickDataRepository
+    class StockTickDataRepositoryFromWind : StockTickDataRepository
+    {
+        public List<StockTickData> findAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<StockTickData> findByStockCode(string stockCode)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class StockTickDataRepositoryFromLocalDb : StockTickDataRepository
     {
         public List<StockTickData> findAll()
         {
