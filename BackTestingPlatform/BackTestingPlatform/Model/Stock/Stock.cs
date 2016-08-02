@@ -4,19 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Model.Stock
+namespace BackTestingPlatform.Model
 {
     /// <summary>
-    /// 定义部分可能使用的常量
+    /// 股票基础信息的格式，包括上市时间，权息信息等
     /// </summary>
-    public class Constants
+    public class Stock
     {
-        public static int INF = 99999, NINF = -99999, NONE = -88888;    
+        public DateTime timeToMarket;//上市时间
+        public bool isST;//是否是Special Treament股
+        public double[] industry;//行业
+        public double[] sector;//板块
+        public double dividend;//分红数额
+        public double exRightRatio;//除权比例
+        public List<StockTickData> ticks;
+        public List<KLinesData> kLines;
+        public List<PositionData> postions;
     }
+
     /// <summary>
     /// 股票Tick价格的格式，每笔成交的价量
     /// </summary>
-    public class TickData
+    public class StockTickData
     {
 
         public int code;
@@ -25,6 +34,7 @@ namespace BackTestingPlatform.Model.Stock
         public PositionData[] ask, bid;
         public double preClose;
     }
+
 
     /// <summary>
     /// 股票K线价格的格式，开高低收量额
@@ -50,25 +60,13 @@ namespace BackTestingPlatform.Model.Stock
         }
     }
 
-    /// <summary>
-    /// 股票基础信息的格式，包括上市时间，权息信息等
-    /// </summary>
-    public class BasicInfo
-    {
-        public DateTime timeToMarket;//上市时间
-        public bool isST;//是否是Special Treament股
-        public double[] industry;//行业
-        public double[] sector;//板块
-        public double dividend;//分红数额
-        public double exRightRatio;//除权比例
-    }
 
     /// <summary>
     /// 单只股票持仓数据结构，每只股票的持仓情况，定义每只的数据结构，用List型声明
     /// </summary>
     /// 
     public class StockHolding
-    { 
+    {
         public string stockCode { get; set; }
         public int volume;
         public double aveCost;
@@ -78,8 +76,8 @@ namespace BackTestingPlatform.Model.Stock
         public int positionDirection;//long(1) & short(-1)
         public double freeze;//冻结仓位
         public double margin;//保证金
-        public DateTime entryTime;   
-        
+        public DateTime entryTime;
+
     }
 
     /// <summary>
@@ -97,5 +95,4 @@ namespace BackTestingPlatform.Model.Stock
 
         //尚应添加委托单信息
     }
-
 }
