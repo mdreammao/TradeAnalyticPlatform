@@ -1,10 +1,8 @@
 ﻿using System;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.Model.Stock;
-using System;
 using System.Collections.Generic;
 using WAPIWrapperCSharp;
-using System.Collections;//Arraylist 格式需要
 
 namespace BackTestingPlatform.DataAccess
 {

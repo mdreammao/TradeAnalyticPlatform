@@ -9,7 +9,7 @@ namespace BackTestingPlatform.Model.Futures
     /// <summary>
     /// 期货 基础信息
     /// </summary>
-    public class Futures
+    public class FuturesInfo
     {
         public string code;
         public DateTime endDate;

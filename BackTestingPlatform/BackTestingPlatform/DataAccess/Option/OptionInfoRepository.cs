@@ -32,8 +32,8 @@ namespace BackTestingPlatform.DataAccess.Option
             {
                 items.Add(new OptionInfo
                 {
-                    optionCode = (string)dm[k * fieldLen + 0]+marketStr,
-                    optionName=(string)dm[k*fieldLen+1],
+                    code = (string)dm[k * fieldLen + 0]+marketStr,
+                    name=(string)dm[k*fieldLen+1],
                     executeType=(string)dm[k*fieldLen+5],
                     strike=(double)dm[k * fieldLen + 6],
                     optionType=(string)dm[k * fieldLen + 4],
@@ -41,13 +41,13 @@ namespace BackTestingPlatform.DataAccess.Option
                     endDate=(DateTime)dm[k*fieldLen+10]
                 });
             }
-            if (Platforms.parameters.ContainsKey("optionInfo"))
+            if (Platforms.basicInfo.ContainsKey("optionInfo"))
             {
-                Platforms.parameters["optionInfo"] = items;
+                Platforms.basicInfo["optionInfo"] = items;
             }
             else
             {
-                Platforms.parameters.Add("optionInfo", items);
+                Platforms.basicInfo.Add("optionInfo", items);
             }
             return items;
         }
@@ -72,7 +72,7 @@ namespace BackTestingPlatform.DataAccess.Option
                         
                     }
 
-                    Platforms.parameters.Add("optionInfo", items);
+                    Platforms.basicInfo.Add("optionInfo", items);
                 }
             }
             catch (FileNotFoundException e)

@@ -9,7 +9,7 @@ namespace BackTestingPlatform.Model
     /// <summary>
     /// 股票基础信息的格式，包括上市时间，权息信息等
     /// </summary>
-    public class Stock
+    public class StockInfo
     {
         public DateTime timeToMarket;//上市时间
         public bool isST;//是否是Special Treament股

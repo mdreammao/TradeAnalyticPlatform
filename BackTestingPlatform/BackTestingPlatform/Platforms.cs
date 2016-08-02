@@ -19,9 +19,8 @@ namespace BackTestingPlatform.Core
         //Autofac容器
         public static IContainer container;
         //全局基础数据的变量字典
-        public static IDictionary<string, object> BasicInfo;
-        //重要变量：交易日
-        public static List<int> tradeDays;
+        public static IDictionary<string, object> basicInfo;
+   
 
         /// <summary>
         /// 整个应用的全局初始化
@@ -36,7 +35,7 @@ namespace BackTestingPlatform.Core
             container = builder.Build();
 
             //初始化parameters
-            BasicInfo = new Dictionary<string, object>();
+            basicInfo = new Dictionary<string, object>();
 
             //初始化交易日数据
             readTradeDaysFromLocalFile();
@@ -102,7 +101,7 @@ namespace BackTestingPlatform.Core
             var path = System.Environment.CurrentDirectory;
             if (path.EndsWith("bin\\Debug")) path = path.Substring(0, path.Length - 10);
             path += @"\RESOURCES\trade_days_2010_2016.txt";
-            tradeDays=new List<int>(2000);
+            var tradeDays=new List<int>(2000);
             try
             {
                 using (StreamReader reader = new StreamReader(path))
@@ -113,7 +112,7 @@ namespace BackTestingPlatform.Core
                         tradeDays.Add(Convert.ToInt32(line));                        
                     }
 
-                    Platforms.BasicInfo.Add("tradeDays", tradeDays);
+                    Platforms.basicInfo.Add("tradeDays", tradeDays);
                 }
             }catch(FileNotFoundException e)
             {

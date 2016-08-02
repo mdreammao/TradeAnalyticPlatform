@@ -7,21 +7,21 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess
 {
-    interface TickDataRepository
+    interface StockTickDataRepository
     {
-        List<TickData> findAll();
-        List<TickData> findByStockCode(string stockCode);
+        List<StockTickData> findAll();
+        List<StockTickData> findByStockCode(string stockCode);
 
 
     }
-    class TickDataRepositoryFromWind : TickDataRepository
+    class TickDataRepositoryFromWind : StockTickDataRepository
     {
-        public List<TickData> findAll()
+        public List<StockTickData> findAll()
         {
             throw new NotImplementedException();
         }
 
-        public List<TickData> findByStockCode(string stockCode)
+        public List<StockTickData> findByStockCode(string stockCode)
         {
             throw new NotImplementedException();
         }

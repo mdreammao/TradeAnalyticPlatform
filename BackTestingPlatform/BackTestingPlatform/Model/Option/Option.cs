@@ -10,7 +10,7 @@ namespace BackTestingPlatform.Model.Option
     /// <summary>
     /// 期权 基础信息
     /// </summary>
-    public class Option
+    public class OptionInfo
     {
         public string code;     //期权代码
         public string name;     //期权名称
