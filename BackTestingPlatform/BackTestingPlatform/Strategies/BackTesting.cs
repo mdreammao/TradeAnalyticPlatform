@@ -12,7 +12,7 @@ using BackTestingPlatform.Model.Position;
 
 namespace BackTestingPlatform.Strategies
 {
-    class BackTesting : Strategy
+    public class BackTesting : Strategy
     {
         /// <summary>
         /// 1.该类将从回测startDate到endDate，按TradeDays循环向策略传递nowDate，以保证策略内可引用时间不会超过nowDate，
