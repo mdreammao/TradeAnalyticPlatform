@@ -9,6 +9,23 @@ namespace BackTestingPlatform.Utilities
 {
     class TradeDaysUtils
     {
+        private static List<DateTime> _tradeDays;
+        private static List<DateTime> getTradeDays()
+        {
+            if (_tradeDays == null)
+            {
+                _tradeDays = (List<DateTime>)Platforms.basicInfo["TradeDays"];
+            }
+            return _tradeDays;
+        }
+        private static DateTime? getTradeDay(int index)
+        {
+            if (index>=0 && index< getTradeDays().Count)
+            {
+                return getTradeDays()[index];
+            }
+                return null;
+        }
 
         /// <summary>
         /// 将DateTime格式的日期转化成为int类型的日期。
@@ -87,21 +104,25 @@ namespace BackTestingPlatform.Utilities
         }
 
         /// <summary>
-        /// 静态函数。给出下一交易日。
+        /// 给出前一交易日。
+        /// </summary>
+        /// <param name="today">当前交易日</param>
+        /// <returns>返回前一交易日</returns>
+        public static DateTime? PreviousTradeDay(DateTime today)
+        {
+            int index = getTradeDays().BinarySearch(today);
+            return getTradeDay(index - 1);
+        }
+
+        /// <summary>
+        /// 给出下一交易日。
         /// </summary>
         /// <param name="today">当前交易日</param>
         /// <returns>下一交易日</returns>
-        public static int GetNextTradeDay(int today)
+        public static DateTime? NextTradeDay(DateTime today)
         {
-            int nextIndex = Platforms.tradeDays.FindIndex(delegate (int i) { return i == today; }) + 1;
-            if (nextIndex >= Platforms.tradeDays.Count)
-            {
-                return 0;
-            }
-            else
-            {
-                return Platforms.tradeDays[nextIndex];
-            }
+            int index = getTradeDays().BinarySearch(today);            
+            return getTradeDay(index + 1);      
         }
 
         /// <summary>
@@ -109,86 +130,32 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前日期</param>
         /// <returns>交易日</returns>
-        public static int GetRecentTradeDay(int today)
+        public static DateTime? RecentTradeDay(DateTime today)
         {
-
-            for (int i = 0; i < Platforms.tradeDays.Count - 1; i++)
-            {
-                if (Platforms.tradeDays[i] == today)
-                {
-                    return today;
-                }
-                if (Platforms.tradeDays[i] < today && Platforms.tradeDays[i + 1] >= today)
-                {
-                    return Platforms.tradeDays[i + 1];
-                }
-            }
-            return 0;
-        }
-
-        /// <summary>
-        /// 静态函数。给出前一交易日。
-        /// </summary>
-        /// <param name="today">当前交易日</param>
-        /// <returns>返回前一交易日</returns>
-        public static int GetPreviousTradeDay(int today)
-        {
-            int preIndex = Platforms.tradeDays.FindIndex(delegate (int i) { return i == today; }) - 1;
-            if (preIndex < 0)
-            {
-                return 0;
-            }
-            else
-            {
-                return Platforms.tradeDays[preIndex];
-            }
+            int index = getTradeDays().BinarySearch(today);
+            return (index < 0) ? getTradeDay(-index) : today;
         }
 
 
         /// <summary>
-        /// 静态函数。获取交易日间隔天数。
+        ///获取间隔的交易日计数,计数包含day1,day2。
+        /// 例如，Jan-1,Jan-2,Jan-3不是交易日，Jan-4，Jan-5是交易日,则
+        /// GetSpanOfTradeDays(Jan-4,Jan-5)=2
+        /// GetSpanOfTradeDays(Jan-3,Jan-5)=2
+        /// GetSpanOfTradeDays(Jan-1,Jan-3)=0
         /// </summary>
-        /// <param name="firstday">开始日期</param>
-        /// <param name="lastday">结束日期</param>
-        /// <returns>间隔天数</returns>
-        public static int GetTimeSpan(int firstday, int lastday)
+        /// <param name="day1">开始日期</param>
+        /// <param name="day2">结束日期</param>
+        /// <returns>间隔的交易日天数</returns>
+        public static int GetSpanOfTradeDays(DateTime day1, DateTime day2)
         {
-            if (firstday >= Platforms.tradeDays[0] && lastday <= Platforms.tradeDays[Platforms.tradeDays.Count - 1] && lastday >= firstday)
-            {
-                int startIndex = -1, endIndex = -1;
-                for (int i = 0; i < Platforms.tradeDays.Count; i++)
-                {
-                    if (Platforms.tradeDays[i] == firstday)
-                    {
-                        startIndex = i;
-                    }
-                    if (Platforms.tradeDays[i] > firstday && Platforms.tradeDays[i - 1] < firstday)
-                    {
-                        startIndex = i;
-                    }
-                    if (Platforms.tradeDays[i] == lastday)
-                    {
-                        endIndex = i;
-                    }
-                    if (Platforms.tradeDays[i] > lastday && Platforms.tradeDays[i - 1] < lastday)
-                    {
-                        endIndex = i - 1;
-                    }
-                }
-                if (startIndex != -1 && endIndex != -1)
-                {
-                    return endIndex - startIndex + 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            else
-            {
-                return 0;
-            }
+            int x1 = getTradeDays().BinarySearch(day1);
+            int x2 = getTradeDays().BinarySearch(day2);
+            if (x1 < 0) x1 = -x1;
+            if (x2 < 0) x2 = -x2 - 1;
+            return x2 - x1 + 1;
         }
+     
 
 
         /// <summary>

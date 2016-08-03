@@ -16,6 +16,7 @@ namespace BackTestingPlatform.Strategies
         /// 当出现下单信号时，判断是否成交，返回成交价格、成交额、成交时间
         /// </summary>
         /// 
+        /*
         public double[] Jugde()
         { 
 

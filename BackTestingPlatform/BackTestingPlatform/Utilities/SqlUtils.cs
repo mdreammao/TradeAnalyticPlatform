@@ -22,11 +22,14 @@ namespace BackTestingPlatform.DataAccess
     {
         /// <summary>
         /// 获取app.config里配置的ConnectionString
+        /// 如果以“server=”开头，则原样返回
         /// </summary>
         /// <param name="connectionName"></param>
         /// <returns></returns>
         public static string GetConnectionString(string connectionName)
         {
+            if (connectionName.StartsWith("server="))
+                return connectionName;
             return ConfigurationManager.ConnectionStrings[connectionName].ToString();
         }
         /// <summary>
@@ -40,7 +43,7 @@ namespace BackTestingPlatform.DataAccess
             return new SqlConnection(connStr);
         }
 
-       
+
         #region 通过一次性的连接，执行查询，返回DataTable对象-----------------------
 
 
@@ -97,19 +100,19 @@ namespace BackTestingPlatform.DataAccess
 
 
         #region 给定已可用的connection,执行查询-------------------------
-      
-        public static DataTable GetTable(SqlConnection conn, string sql, SqlParameter[] paramArr=null, CommandType commandType=CommandType.Text)
+
+        public static DataTable GetTable(SqlConnection conn, string sql, SqlParameter[] paramArr = null, CommandType commandType = CommandType.Text)
         {
             DataTable dt = new DataTable();
-            
-                SqlDataAdapter da = new SqlDataAdapter(sql, conn);
-                da.SelectCommand.CommandType = commandType;
-                if (paramArr != null)
-                {
-                    da.SelectCommand.Parameters.AddRange(paramArr);
-                }
-                da.Fill(dt);
-           
+
+            SqlDataAdapter da = new SqlDataAdapter(sql, conn);
+            da.SelectCommand.CommandType = commandType;
+            if (paramArr != null)
+            {
+                da.SelectCommand.Parameters.AddRange(paramArr);
+            }
+            da.Fill(dt);
+
             return dt;
         }
 

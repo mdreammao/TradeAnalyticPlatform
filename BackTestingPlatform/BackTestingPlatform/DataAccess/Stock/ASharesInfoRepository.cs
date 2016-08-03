@@ -40,11 +40,7 @@ namespace BackTestingPlatform.DataAccess
 
         public List<ASharesInfo> fetchFromDatabase(DateTime startTime, string connStr = "corp170")
         {
-            var sql = @"
-            SELECT * FROM [WindFullMarket200701].[dbo].[MarketData_000002_SH]
-            ";
-            DataTable dt = SqlUtils.GetTable(connStr, sql);
-
+          
             return null;
         }
     }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using BackTestingPlatform.Model.TALibrary;
 using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Position;
 
 namespace BackTestingPlatform.Strategies.MA
 {
@@ -24,7 +25,7 @@ namespace BackTestingPlatform.Strategies.MA
         /// <param name="account"></param>当前账户信息
         /// <returns></returns>
 
-        public double[] stg(DateTime startDate, DateTime nowDate, AccountInfo account)
+        public int stg(DateTime startDate, DateTime nowDate, AccountInfo account)
         {
             KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
         //    ASharesInfoRepository repo1 = Platforms.container.Resolve<ASharesInfoRepository>();
@@ -54,7 +55,8 @@ namespace BackTestingPlatform.Strategies.MA
                 }
             }
              */
-            var StockData = repo.fetch("510050.SH", startDate, nowDate);
+           
+            var StockData = repo.fetchFromWind("510050.SH", startDate, nowDate);
             int tradeSignal = 0;//交易信号，1为long，-1为short，无信号为0
             double[] priceSeries = new double[StockData.Count];
             DateTime[] dateList = new DateTime[StockData.Count];

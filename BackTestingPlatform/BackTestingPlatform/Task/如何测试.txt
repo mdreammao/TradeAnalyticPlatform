@@ -1,0 +1,34 @@
+﻿在本解决方案中新增一个名为LocalTester的新项目，
+在主程序Program.cs里替换为如下代码：
+
+
+using BackTestingPlatform.Core;
+using BackTestingPlatform.Strategies;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Tester
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+
+            Platforms.Initialize(); //初始化
+            (new LocalRunner()).run();
+            Platforms.ShutDown();   //关闭
+        }
+    }
+
+    class LocalRunner
+    {
+        public void run()
+        {
+            Strategy backTesting = new BackTesting();
+            backTesting.act();
+        }
+    }
+}
