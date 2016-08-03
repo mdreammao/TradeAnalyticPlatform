@@ -60,9 +60,11 @@
     <Compile Include="Model\Contstants.cs" />
     <Compile Include="Model\Futures\Futures.cs" />
     <Compile Include="Model\Option\Option.cs" />
+    <Compile Include="Model\Position\AccountInfo.cs" />
     <Compile Include="Model\Stock\ASharesInfo.cs" />
     <Compile Include="Model\Stock\Stock.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
+    <Compile Include="Service\StockService.cs" />
     <Compile Include="Service\TradeDaysService.cs" />
     <Compile Include="Strategies\BackTesting.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
@@ -78,6 +80,7 @@
     <Compile Include="Strategies\Strategy.cs" />
     <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Sample\SingleMA.cs" />
+    <Compile Include="Utilities\TradeDaysUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -88,7 +91,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <None Include="RESOURCES\trade_days_2010_2016.txt" />
     <Content Include="Task\HeFeiying.txt" />
     <Content Include="Task\HuangZhenkun.txt" />
     <Content Include="Task\MaoHeng.txt" />

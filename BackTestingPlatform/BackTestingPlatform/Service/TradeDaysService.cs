@@ -26,19 +26,23 @@ namespace BackTestingPlatform.Service
             {
                 days = tradeDaysRepository.fetchFromWind(
                  Constants.TRADE_DAY_START, Constants.TRADE_DAY_END);
-            }
-            if (days == null)
-            {
-                Console.WriteLine("[ERROR] fetch TradeDays failure!");
 
+                if (days == null)
+                {
+                    Console.WriteLine("[ERROR] fetch TradeDays failure!");
+                }
+
+                tradeDaysRepository.saveToLocalFile(days); //写入csv
+                Console.WriteLine("[INFO] TradeDays saved to local file.");
             }
+           
             //ExeConfigurationFileMap configMap = new ExeConfigurationFileMap();
             //configMap.ExeConfigFilename = @"logs.config";
             //Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configMap, ConfigurationUserLevel.None);
             //config.AppSettings.Settings["TradeDays.UpdateTime"].Value = "2016";
             //config.Save();
-            tradeDaysRepository.saveToLocalFile(days); //写入csv
-            Console.WriteLine("[INFO] TradeDays saved to local file.");
+           
+           
             Platforms.basicInfo["TradeDays"] = days;
         }
     }

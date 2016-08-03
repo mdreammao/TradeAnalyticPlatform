@@ -6,16 +6,15 @@ using System.Collections.Generic;
 using WAPIWrapperCSharp;
 using System.IO;
 using System.Linq;
+using BackTestingPlatform.Utilities;
+using System.Configuration;
 
 namespace BackTestingPlatform.DataAccess.Option
 {
-    public interface OptionInfoRepository
+  
+    public class OptionInfoRepository
     {
-        List<OptionInfo> fetchAll(string underlyingCode="510050.SH",string market="sse");
-    }
-    class OptionInfoRepositoryFromWind : OptionInfoRepository
-    {
-        public List<OptionInfo> fetchAll(string underlyingCode = "510050.SH",string market="sse")
+        public List<OptionInfo> fetchFromWind(string underlyingCode = "510050.SH",string market="sse")
         {
             WindAPI wapi = Platforms.GetWindAPI();
             WindData wd = wapi.wset("optioncontractbasicinfo", "exchange="+market+";windcode="+underlyingCode+";status=all");
@@ -41,45 +40,24 @@ namespace BackTestingPlatform.DataAccess.Option
                     endDate=(DateTime)dm[k*fieldLen+10]
                 });
             }
-            if (Platforms.basicInfo.ContainsKey("optionInfo"))
-            {
-                Platforms.basicInfo["optionInfo"] = items;
-            }
-            else
-            {
-                Platforms.basicInfo.Add("optionInfo", items);
-            }
             return items;
         }
-    }
 
-    class OptionInfoRepositoryFromLocalFile : OptionInfoRepository
-    {
-        public List<OptionInfo> fetchAll(string underlyingCode = "510050.SH", string market = "sse")
+        public List<OptionInfo> fetchAllFromLocalFile(string underlyingCode = "510050.SH", string market = "sse")
         {
-            var path = System.Environment.CurrentDirectory;
-            if (path.EndsWith("bin\\Debug")) path = path.Substring(0, path.Length - 10);
-            path += @"\RESOURCES\optionInfo.csv";
-            List<OptionInfo> items = new List<OptionInfo>();
-            try
-            {
-                //希望能简单调用utility的函数来读写
-                using (StreamReader reader = new StreamReader(path))
-                {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        
-                    }
 
-                    Platforms.basicInfo.Add("optionInfo", items);
-                }
-            }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine(e);
-            }
-            return items;
+            var path = FileUtils.GetAppRootPath()
+               + ConfigurationManager.AppSettings["LocalFilePath.OptionInfo"];
+
+            if (!File.Exists(path)) return null;
+
+            string[] lines = File.ReadAllLines(path);
+            return lines.Select(
+              s => new OptionInfo
+              {
+                  //todo s转换成OptionInfo
+              }
+            ).ToList();
         }
         
     }

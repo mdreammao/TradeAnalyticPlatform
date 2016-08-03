@@ -46,7 +46,8 @@ namespace BackTestingPlatform.Strategies.MA
                 }
             }
              */
-            var StockData = repo.fetch("510050.SH", startDate, nowDate);
+           
+            var StockData = repo.fetchFromWind("510050.SH", startDate, nowDate);
             int tradeSignal = 0;//交易信号，1为long，-1为short，无信号为0
             double[] priceSeries = new double[StockData.Count];
             DateTime[] dateList = new DateTime[StockData.Count];

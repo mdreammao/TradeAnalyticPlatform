@@ -41,7 +41,7 @@ namespace BackTestingPlatform.Model
     /// </summary>
     public class KLinesData
     {
-        public string stockCode { get; set; }
+        //public string stockCode { get; set; }
         public DateTime time;
         public double open, high, low, close, volume, amount;//开高低收量额
 
@@ -61,38 +61,17 @@ namespace BackTestingPlatform.Model
     }
 
 
-    /// <summary>
-    /// 单只股票持仓数据结构，每只股票的持仓情况，定义每只的数据结构，用List型声明
-    /// </summary>
-    /// 
-    public class StockHolding
-    {
-        public string stockCode { get; set; }
-        public int volume;
-        public double aveCost;
-        public double nowPrice;
-        public double profitLossRate;
-        public double profitLossAmt;
-        public int positionDirection;//long(1) & short(-1)
-        public double freeze;//冻结仓位
-        public double margin;//保证金
-        public DateTime entryTime;
-    }
+
 
     /// <summary>
-    /// 单只股票持仓数据结构，每只股票的持仓情况，定义每只的数据结构，用List型声明
+    /// 实时行情，对应WindApi中的wsq函数，本地数据库WindFullMarket中的marketData表结构
     /// </summary>
-    public class AccountInfo
+    public class RealTimeQuotes
     {
-        public int AccountID;//账户ID
-        public int positionStatus;//账户状态，有持仓为1，空仓为0
-        public List<StockHolding> myHolding = new List<StockHolding>();//存放持仓股票列表
-        public double totalAsset;//总资产
-        public double currentEquity;//当前总权益
-        public double freeCash;//可用资金
-        public double totalProfitLossRate;//总盈亏比率
-        public double totalProfitLossAmt;//总盈亏额
-
-        //还应添加委托单信息
+        public double open, high, low, close, volume, amount;//开高低收量额
+        public DateTime time;
+        public double cp;
+        public double s1, s2, s3, s4, s5;
+        
     }
 }

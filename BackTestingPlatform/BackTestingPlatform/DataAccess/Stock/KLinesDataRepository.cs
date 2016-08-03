@@ -6,8 +6,10 @@ using WAPIWrapperCSharp;
 
 namespace BackTestingPlatform.DataAccess
 {
-    public interface KLinesDataRepository
+
+    public class KLinesDataRepository
     {
+
         /// <summary>
         ///  
         /// </summary>
@@ -17,17 +19,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="period">周期(分钟)</param>
         /// <param name="fields">获取字段</param>
         /// <returns></returns>
-        List<KLinesData> fetch(string stockCode, DateTime startTime, DateTime endTime, int period = 1, string fields = "open,high,low,close,volume,amt");
-
-    }
-    /// <summary>
-    /// 从万德API获取数据的实现
-    /// </summary>
-    public class KLinesDataRepositoryFromWind : KLinesDataRepository
-    {
-
-
-        public List<KLinesData> fetch(string stockCode, DateTime startTime, DateTime endTime, int period = 1, string fields = "open,high,low,close,volume,amt")
+        public List<KLinesData> fetchFromWind(string stockCode, DateTime startTime, DateTime endTime, int period = 1, string fields = "open,high,low,close,volume,amt")
         {
             var options = String.Format("barSize={0}", period);
 
@@ -56,6 +48,6 @@ namespace BackTestingPlatform.DataAccess
             return items;
         }
 
-
+        
     }
 }
