@@ -8,18 +8,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using BackTestingPlatform.Model.TALibrary;
+using BackTestingPlatform.Model;
 
 namespace BackTestingPlatform.Strategies.MA
 {
 
     class SingleMA : BackTesting       
     {
-       // KLinesDataRepository repo;
+       
+        /// <summary>
+        /// 策略回测，返回[1]成交信号、[2]、[3]
+        /// </summary>
+        /// <param name="startDate"></param>回测开始时间
+        /// <param name="nowDate"></param>现在时间
+        /// <param name="account"></param>当前账户信息
+        /// <returns></returns>
 
-        public int stg(DateTime startDate, DateTime nowDate)
+        public double[] stg(DateTime startDate, DateTime nowDate, AccountInfo account)
         {
             KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
-            ASharesInfoRepository repo1 = Platforms.container.Resolve<ASharesInfoRepository>();
+        //    ASharesInfoRepository repo1 = Platforms.container.Resolve<ASharesInfoRepository>();
             //计算运行时间
             /*
             System.Diagnostics.Stopwatch stopwatch = new Stopwatch();
@@ -73,9 +81,13 @@ namespace BackTestingPlatform.Strategies.MA
             }
              */
             //生成交易信号
-            int dataLen =priceSeries.Length;
-           // if(priceSeries[dataLen]>)
-
+            int dataLen =priceSeries.Length - 1;//最后一个数据的索引
+            if (priceSeries[dataLen] > index[dataLen] && priceSeries[dataLen - 1] < index[dataLen - 1] && account.positionStatus == 0)
+                tradeSignal = 1;//金叉且空仓开多
+            else if (priceSeries[dataLen] < index[dataLen] && priceSeries[dataLen - 1] > index[dataLen - 1] && account.positionStatus == 1)
+                tradeSignal = -1;//死叉且持仓平多
+            else
+                tradeSignal = 0;
 
             return tradeSignal;
         }

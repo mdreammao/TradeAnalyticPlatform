@@ -92,7 +92,19 @@ namespace BackTestingPlatform.Model
         public double freeCash;//可用资金
         public double totalProfitLossRate;//总盈亏比率
         public double totalProfitLossAmt;//总盈亏额
-
+        
         //还应添加委托单信息
+    }
+
+    /// <summary>
+    /// 存放历史的交易信息，与AccountInfo用AccountID关联
+    /// </summary>
+    public class AccountHistory
+    {
+        public int AccountID;//账户ID
+        DateTime tradeTime;//交易时间
+        public List<StockHolding> myHolding = new List<StockHolding>();//存放持仓股票列表
+        public double totalAsset;//总资产
+        public double currentEquity;//当前总权益    
     }
 }
