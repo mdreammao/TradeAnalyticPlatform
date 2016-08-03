@@ -13,6 +13,7 @@ namespace BackTestingPlatform
         public void run()
         {
             Strategy backTesting = new BackTesting();
+
             backTesting.act();
         }
     }
