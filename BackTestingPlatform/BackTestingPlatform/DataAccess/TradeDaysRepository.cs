@@ -36,21 +36,18 @@ namespace BackTestingPlatform.DataAccess
         /// <returns></returns>
         public List<DateTime> fetchFromLocalFile(DateTime startTime, DateTime endTime)
         {
-            var path = FileUtils.GetAppRootPath()
-                + ConfigurationManager.AppSettings["LocalFilePath.TradeDays"];
+            var path = FileUtils.GetCacheDataFilePath("CacheData.Path.TradeDays", DateTime.Now);
             if (!File.Exists(path)) return null;
 
             string[] lines = File.ReadAllLines(path);
             return lines.Select(
               s => DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture)
             ).ToList();
-
         }
 
         public void saveToLocalFile(List<DateTime> tradeDays)
         {
-            var path = FileUtils.GetAppRootPath()
-               + ConfigurationManager.AppSettings["LocalFilePath.TradeDays"];
+            var path = FileUtils.GetCacheDataFilePath("CacheData.Path.TradeDays", DateTime.Now);
             File.WriteAllLines(path, tradeDays.Select(x => x.ToString("yyyyMMdd")));
         }
 

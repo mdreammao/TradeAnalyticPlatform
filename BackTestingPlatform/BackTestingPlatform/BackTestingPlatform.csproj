@@ -56,7 +56,6 @@
     <Compile Include="DataAccess\Stock\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
-    <Compile Include="LocalRunner2.tmp.cs" />
     <Compile Include="Model\Contstants.cs" />
     <Compile Include="Model\Futures\Futures.cs" />
     <Compile Include="Model\Option\Option.cs" />
@@ -64,6 +63,7 @@
     <Compile Include="Model\Stock\ASharesInfo.cs" />
     <Compile Include="Model\Stock\Stock.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
+    <Compile Include="Service\OptionService.cs" />
     <Compile Include="Service\StockService.cs" />
     <Compile Include="Service\TradeDaysService.cs" />
     <Compile Include="Strategies\BackTesting.cs" />
@@ -86,7 +86,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="logs.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

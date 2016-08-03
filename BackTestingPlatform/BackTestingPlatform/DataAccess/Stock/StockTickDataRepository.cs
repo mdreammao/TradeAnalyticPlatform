@@ -63,6 +63,9 @@ namespace BackTestingPlatform.DataAccess
             return new DateTime(ymd / 10000, (ymd % 10000) / 100, ymd % 100, 
                 hms / 10000, (hms % 10000) / 100, hms % 100);
         }
+
+
+     
     }
 
 
