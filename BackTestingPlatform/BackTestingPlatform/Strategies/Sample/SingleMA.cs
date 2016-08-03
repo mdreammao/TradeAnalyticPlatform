@@ -18,17 +18,17 @@ namespace BackTestingPlatform.Strategies.MA
     {
        
         /// <summary>
-        /// 策略回测，返回[1]成交信号、[2]、[3]
+        /// 策略回测，返回[1]成交信号、[2]交易价格、[3]交易量
         /// </summary>
         /// <param name="startDate"></param>回测开始时间
         /// <param name="nowDate"></param>现在时间
         /// <param name="account"></param>当前账户信息
         /// <returns></returns>
 
-        public int stg(DateTime startDate, DateTime nowDate, AccountInfo account)
+        public double[] stg(DateTime startDate, DateTime nowDate, AccountInfo account)
         {
             KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
-        //    ASharesInfoRepository repo1 = Platforms.container.Resolve<ASharesInfoRepository>();
+
             //计算运行时间
             /*
             System.Diagnostics.Stopwatch stopwatch = new Stopwatch();
@@ -58,6 +58,7 @@ namespace BackTestingPlatform.Strategies.MA
            
             var StockData = repo.fetchFromWind("510050.SH", startDate, nowDate);
             int tradeSignal = 0;//交易信号，1为long，-1为short，无信号为0
+            double[] tradeInfo = new double[3];//存放交易信号信息，用于返回
             double[] priceSeries = new double[StockData.Count];
             DateTime[] dateList = new DateTime[StockData.Count];
             double[] index = new double[StockData.Count];
@@ -71,17 +72,7 @@ namespace BackTestingPlatform.Strategies.MA
             }
             TA_MA myMA = new TA_MA(priceSeries);
             index = myMA.SMA(MAParam);
-            /*
-            for (int j = 0; j < index.Length; j++)
-            {
-                Console.WriteLine("Time:{0,-20} -- MA{1}:{2,8:F3}", dateList[j], MAParam, index[j]);
-                if (j % 50 == 49)
-                {
-                    Console.WriteLine("--Press any key--");
-                    Console.ReadKey();
-                } 
-            }
-             */
+
             //生成交易信号
             int dataLen =priceSeries.Length - 1;//最后一个数据的索引
             if (priceSeries[dataLen] > index[dataLen] && priceSeries[dataLen - 1] < index[dataLen - 1] && account.positionStatus == 0)
@@ -91,7 +82,11 @@ namespace BackTestingPlatform.Strategies.MA
             else
                 tradeSignal = 0;
 
-            return tradeSignal;
+            tradeInfo[1] = tradeSignal;
+            tradeInfo[2] = priceSeries[dataLen] * 1.005;//当前价+0.5%的冲击成本
+            tradeInfo[3] = 1;//初始以1手为基本交易量
+
+            return tradeInfo;
         }
     }
 }

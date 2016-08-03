@@ -10,6 +10,7 @@ using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Model;
 using BackTestingPlatform.Model.Position;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Strategies;
 
 
 namespace BackTestingPlatform.Strategies
@@ -32,7 +33,7 @@ namespace BackTestingPlatform.Strategies
         public void stgBooter()
         {
             List<DateTime> timelist = (List<DateTime>)Platforms.basicInfo["TradeDays"];
-            int[] signalArray = new int[timelist.Count];//记录交易信号，暂时存放在一维数组
+           
          
             DateTime startDate = new DateTime(2016, 7, 1);//策略起止时间
             DateTime endDate = new DateTime(2016, 8, 1); ;
@@ -50,15 +51,24 @@ namespace BackTestingPlatform.Strategies
             account1.positionStatus = 0;//初始持仓状态为0
             account1.AccountID = 1;//账户ID
 
+            double[,] signalArray = new double[timelist.Count,3];//记录交易信号，暂时存放在二维数组
+
             SingleMA sma = new SingleMA();
             DealJudge myDeal = new DealJudge();
         //    int canDeal;//成交判断
-            double[] TransReturn;//成交回报
+            double[] transReturn;//成交回报
             for (int tic = 0; tic < timelist.Count; tic++)
             {
                 nowDate = timelist[tic];
-                signalArray[tic] = sma.stg(startDate, nowDate, account1);
-             //   TransReturn = myDeal.TransactionReturn(nowDate,);
+                double[] tempArray =  sma.stg(startDate, nowDate, account1);
+                signalArray[tic, 1] = tempArray[1];//是否成交，0/1
+                signalArray[tic, 2] = tempArray[2];//交易价格
+                signalArray[tic, 3] = tempArray[3];//交易量，单位：手
+                if (signalArray[tic, 1] != 0)
+                    transReturn = myDeal.Judge(nowDate, tempArray);
+                
+                Console.WriteLine("Time:{0}  Signal:{1}", nowDate,tempArray[1]);
+             //   
                 
             }                                    
         }

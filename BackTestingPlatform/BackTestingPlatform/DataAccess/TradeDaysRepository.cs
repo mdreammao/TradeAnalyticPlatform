@@ -45,9 +45,6 @@ namespace BackTestingPlatform.DataAccess
               s => DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture)
             ).ToList();
 
-
-
-
         }
 
         public void saveToLocalFile(List<DateTime> tradeDays)
