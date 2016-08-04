@@ -21,7 +21,7 @@ namespace BackTestingPlatform.Strategies
 
         KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
         /// <summary>
-        /// 当出现下单信号时，判断是否成交，返回成交时间、成交价格、成交额
+        /// 当出现下单信号时，判断是否成交，返回成交时间(当前bar几根之后成交,double型,默认为1)、成交价格、成交额
         /// </summary>
         ///     
         public double[] Judge(DateTime nowDate, double[] signalArray )
@@ -29,11 +29,12 @@ namespace BackTestingPlatform.Strategies
 
             double[] transReturn = new double[4];//存放成交回报数据
             //MarketData存放nowDate的行情数据,格式为时间、O、H、L、C、Volume、Amt
-            var MarketData = repo.fetchFromWind("510050.SH", nowDate.AddMinutes(1), nowDate.AddMinutes(2));//取得下一根bar的行情数据
+          //  var MarketData = repo.fetchFromWind("510050.SH", nowDate.AddMinutes(1), nowDate.AddMinutes(2));//取得下一根bar的行情数据
 
             //按VWAP成交
+            transReturn[0] = 1;
             transReturn[1] = 1;
-            transReturn[2] = MarketData[1].amount / MarketData[1].volume;
+            transReturn[2] = signalArray[1];
             transReturn[3] = 1;
 
             return transReturn;
