@@ -18,13 +18,13 @@ namespace BackTestingPlatform.Utilities
             }
             return _tradeDays;
         }
-        private static DateTime? getTradeDay(int index)
+        private static DateTime getTradeDay(int index)
         {
-            if (index>=0 && index< getTradeDays().Count)
+            if (index >= 0 && index < getTradeDays().Count)
             {
                 return getTradeDays()[index];
             }
-                return null;
+            return DateTime.MinValue; ;
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前交易日</param>
         /// <returns>返回前一交易日</returns>
-        public static DateTime? PreviousTradeDay(DateTime today)
+        public static DateTime PreviousTradeDay(DateTime today)
         {
             int index = getTradeDays().BinarySearch(today);
             return getTradeDay(index - 1);
@@ -119,10 +119,10 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前交易日</param>
         /// <returns>下一交易日</returns>
-        public static DateTime? NextTradeDay(DateTime today)
+        public static DateTime NextTradeDay(DateTime today)
         {
-            int index = getTradeDays().BinarySearch(today);            
-            return getTradeDay(index + 1);      
+            int index = getTradeDays().BinarySearch(today);
+            return getTradeDay(index + 1);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前日期</param>
         /// <returns>交易日</returns>
-        public static DateTime? RecentTradeDay(DateTime today)
+        public static DateTime RecentTradeDay(DateTime today)
         {
             int index = getTradeDays().BinarySearch(today);
             return (index < 0) ? getTradeDay(-index) : today;
@@ -155,7 +155,7 @@ namespace BackTestingPlatform.Utilities
             if (x2 < 0) x2 = -x2 - 1;
             return x2 - x1 + 1;
         }
-     
+
 
 
         /// <summary>

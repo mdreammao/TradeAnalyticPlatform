@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,11 +33,8 @@ namespace BackTestingPlatform.Utilities
         /// <returns>例如TradeDays_20160803.txt</returns>
         public static string GetCacheDataFilePath(string key, DateTime timestamp)
         {
-            var fn = ConfigurationManager.AppSettings[key];
-            int fnl = fn.Length;
-            return
-                ConfigurationManager.AppSettings["CacheData.RootPath"]
-               + fn.Substring(0,fnl-4) + timestamp.ToString("_yyyyMMdd")+fn.Substring(fnl-4,4);
+            return ConfigurationManager.AppSettings["CacheData.RootPath"]
+                + ConfigurationManager.AppSettings[key].Replace("{0}", timestamp.ToString("yyyyMMdd"));
         }
 
         public static string GetCacheDataFilePath(string key)
@@ -45,6 +43,53 @@ namespace BackTestingPlatform.Utilities
                 ConfigurationManager.AppSettings["CacheData.RootPath"]
                + ConfigurationManager.AppSettings[key];
         }
+        /// <summary>
+        /// 根据key获取路径配置，列出所有匹配的文件，按文件名倒序排列
+        /// </summary>
+        /// <param name="key">app.config中的key</param>
+        /// <returns></returns>
+        public static List<string> GetCacheDataFiles(string key)
+        {
+            var path = FileUtils.GetCacheDataFilePath(key);
+            var dirPath = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            return Directory.EnumerateFiles(dirPath, fileName.Replace("{0}", "*"))
+                .OrderByDescending(fn => fn).ToList();
+        }
+
+        public static string GetCacheDataFileThatLatest(string key)
+        {
+            var list = GetCacheDataFiles(key);
+            return (list != null && list.Count > 0) ? list[0] : null;
+        }
+
+        public static DateTime GetCacheDataFileTimestamp(string filePath)
+        {
+            int x1 = filePath.LastIndexOf('_');
+            int x2 = filePath.LastIndexOf('.');
+            string timeStr = filePath.Substring(x1 + 1, x2 - x1 - 1);
+            return DateTime.ParseExact(timeStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+        }
+
+
+        /// <summary>
+        /// 计算出CacheDataFile中的指定文件的时间戳和今天所差的天数，
+        /// 返回值=今天-该文件的时间戳，如果没有找到文件则返回36500（100年）
+        /// </summary>      
+        /// <returns></returns>
+        public static int GetCacheFileDaysPastTillToday(string filePath)
+        {
+            if (filePath != null)
+            {
+                var timestamp = FileUtils.GetCacheDataFileTimestamp(filePath);
+                return (DateTime.Now - timestamp).Days;
+            }
+            else
+            {
+                return 36500;
+            }
+        }
+
     }
 
 
