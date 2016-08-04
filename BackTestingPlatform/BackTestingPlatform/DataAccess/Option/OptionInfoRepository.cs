@@ -49,12 +49,13 @@ namespace BackTestingPlatform.DataAccess.Option
         {
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
-            //return DataTableUtils.ToList<OptionInfo>(dt);
+            //return DataTableUtils.ToList<OptionInfo>(dt); //generic transform
             return dt.AsEnumerable().Select(row => new OptionInfo
             {
                 optionCode= (string)row["optionCode"],
                 optionName= (string)row["optionName"],
-                optionType= (string)row["optionType"]
+                optionType= (string)row["optionType"],
+                startDate=Kit.toDateTime((string)row["startDate"])
             }).ToList();
         }
 

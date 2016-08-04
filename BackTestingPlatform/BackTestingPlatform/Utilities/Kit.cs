@@ -23,11 +23,15 @@ namespace BackTestingPlatform.Utilities
         /// <returns></returns>
         public static DateTime toDateTime(int tdate, int ttime, bool considerMillis = true)
         {
-            if (tdate < 0) return DateTime.MinValue;
+            int y = tdate / 10000, m = (tdate % 10000) / 100, d = tdate % 100;
+            if (y < 0 || m == 0 || d == 0)
+                return DateTime.MinValue;
             if (considerMillis && ttime > 240000)
                 ttime = ttime / 1000;   //ttime可能包含了毫秒值
-            if (ttime < 0 || ttime > 240000) return DateTime.MinValue;
-            return new DateTime(tdate / 10000, (tdate % 10000) / 100, tdate % 100,
+            if (ttime < 0 || ttime > 240000)
+                return DateTime.MinValue;
+            
+            return new DateTime(y,m,d,
                  ttime / 10000, (ttime % 10000) / 100, ttime % 100);
         }
         public static DateTime toDateTime(string tdate, string ttime)
