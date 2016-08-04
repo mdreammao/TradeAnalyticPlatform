@@ -1,4 +1,5 @@
-﻿using BackTestingPlatform.Model.Futures;
+﻿using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Futures;
 using System;
 using System.Collections.Generic;
 using System.Linq;

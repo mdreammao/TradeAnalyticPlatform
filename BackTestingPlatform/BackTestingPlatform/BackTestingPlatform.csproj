@@ -53,9 +53,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\Option\OptionTickDataRepository.cs" />
     <Compile Include="DataAccess\Stock\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
+    <Compile Include="Model\Common\Position.cs" />
+    <Compile Include="Model\Common\Tick.cs" />
     <Compile Include="Model\Contstants.cs" />
     <Compile Include="Model\Futures\Futures.cs" />
     <Compile Include="Model\Option\Option.cs" />
