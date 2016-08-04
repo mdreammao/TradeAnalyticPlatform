@@ -35,14 +35,7 @@ namespace BackTestingPlatform.Service
                 tradeDaysRepository.saveToLocalFile(days); //写入csv
                 Console.WriteLine("[INFO] TradeDays saved to local file.");
             }
-           
-            //ExeConfigurationFileMap configMap = new ExeConfigurationFileMap();
-            //configMap.ExeConfigFilename = @"logs.config";
-            //Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configMap, ConfigurationUserLevel.None);
-            //config.AppSettings.Settings["TradeDays.UpdateTime"].Value = "2016";
-            //config.Save();
-           
-           
+
             Platforms.basicInfo["TradeDays"] = days;
         }
     }

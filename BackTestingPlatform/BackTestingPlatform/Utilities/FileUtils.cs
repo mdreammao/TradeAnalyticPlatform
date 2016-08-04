@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -23,5 +24,28 @@ namespace BackTestingPlatform.Utilities
             return _appRootPath;
         }
         private static string _appRootPath = null;
+
+        /// <summary>
+        /// 根据给定的key和app.config生成CacheData文件路径,包含当前日期后缀
+        /// </summary>
+        /// <param name="key">例如"CacheData.Path.OptionInfo"</param>
+        /// <returns>例如TradeDays_20160803.txt</returns>
+        public static string GetCacheDataFilePath(string key, DateTime timestamp)
+        {
+            var fn = ConfigurationManager.AppSettings[key];
+            int fnl = fn.Length;
+            return
+                ConfigurationManager.AppSettings["CacheData.RootPath"]
+               + fn.Substring(0,fnl-4) + timestamp.ToString("_yyyyMMdd")+fn.Substring(fnl-4,4);
+        }
+
+        public static string GetCacheDataFilePath(string key)
+        {
+            return
+                ConfigurationManager.AppSettings["CacheData.RootPath"]
+               + ConfigurationManager.AppSettings[key];
+        }
     }
+
+
 }

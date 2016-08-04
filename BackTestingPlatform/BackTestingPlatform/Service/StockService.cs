@@ -16,9 +16,12 @@ namespace BackTestingPlatform.Service
         StockTickDataRepository stockTickDataRepository = Platforms.container.Resolve<StockTickDataRepository>();
 
 
-        public List<RealTimeQuotes> readRealTimeQuotes(string stockCode,DateTime time)
+        public void readRealTimeQuotes(string stockCode,DateTime time)
         {
-            return stockTickDataRepository.fetchRealTimeQuotesFromDatabase(stockCode,time);
+
+            var list= stockTickDataRepository.fetchRealTimeQuotesFromDatabase(stockCode,time);
+            
+           
         }
 
     }

@@ -3,6 +3,7 @@ using BackTestingPlatform.DataAccess;
 using BackTestingPlatform.Service;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -37,6 +38,10 @@ namespace BackTestingPlatform.Core
 
             //初始化parameters
             basicInfo = new Dictionary<string, object>();
+
+            //初始化CacheData文件夹
+            var cdPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
+            if (!Directory.Exists(cdPath)) Directory.CreateDirectory(cdPath);
 
             //初始化交易日数据
             TradeDaysService tradeDaysService = container.Resolve<TradeDaysService>();

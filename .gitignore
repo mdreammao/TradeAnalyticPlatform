@@ -214,5 +214,5 @@ ModelManifest.xml
 # ---- User Defined ----
 *.tmp.cs
 CacheData/
-Tester/
-LocalTester/
+Tester*/
+LocalTester*/
