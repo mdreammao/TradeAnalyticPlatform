@@ -13,6 +13,8 @@ namespace BackTestingPlatform.Model.Position
     {
         public int AccountID;//账户ID
         public int positionStatus;
+        public double lastBuyPrice;
+        public double netWorth = 1;//账户净值
         public List<StockHolding> myHolding = new List<StockHolding>();//存放持仓股票列表
         public double totalAsset;//总资产
         public double currentEquity;//当前总权益

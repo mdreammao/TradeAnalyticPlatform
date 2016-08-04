@@ -14,9 +14,9 @@ using BackTestingPlatform.Model.Position;
 namespace BackTestingPlatform.Strategies.MA
 {
 
-    class SingleMA : BackTesting       
+    class SingleMA : BackTesting
     {
-       
+
         /// <summary>
         /// 策略回测，返回[1]成交信号、[2]交易价格、[3]交易量
         /// </summary>
@@ -55,14 +55,23 @@ namespace BackTestingPlatform.Strategies.MA
                 }
             }
              */
-           
+
             var StockData = repo.fetchFromWind("510050.SH", startDate, nowDate);
+         
             int tradeSignal = 0;//交易信号，1为long，-1为short，无信号为0
+            int None = Constants.NONE;//空值
             double[] tradeInfo = new double[3];//存放交易信号信息，用于返回
             double[] priceSeries = new double[StockData.Count];
             DateTime[] dateList = new DateTime[StockData.Count];
             double[] index = new double[StockData.Count];
-            int MAParam = 5;//五Bars均线，测试参数
+            int MAParam = 55;//五Bars均线，测试参数
+            int obsAtLeast = MAParam;//最少所需样本数，若少于该数，直接返回
+
+
+            //tradeInfo初始化
+            tradeInfo[0] = tradeSignal;
+            tradeInfo[1] = None;
+            tradeInfo[2] = None;
 
             //取出收盘价
             for (int i = 0; i < StockData.Count; i++)
@@ -70,11 +79,21 @@ namespace BackTestingPlatform.Strategies.MA
                 priceSeries[i] = StockData[i].close;
                 dateList[i] = StockData[i].time;
             }
+
+            //若样本数少于最少所需数量，直接返回
+            if (priceSeries.Length < obsAtLeast)
+                return tradeInfo;
+
+            //均线指标计算
             TA_MA myMA = new TA_MA(priceSeries);
             index = myMA.SMA(MAParam);
 
+            
             //生成交易信号
-            int dataLen =priceSeries.Length - 1;//最后一个数据的索引
+            int dataLen = priceSeries.Length - 1;//最后一个数据的索引
+
+            Console.WriteLine("Time:{0},CP:{1,5:F3},Index:{2,5:F3}", dateList[dataLen], priceSeries[dataLen], index[dataLen]);
+
             if (priceSeries[dataLen] > index[dataLen] && priceSeries[dataLen - 1] < index[dataLen - 1] && account.positionStatus == 0)
                 tradeSignal = 1;//金叉且空仓开多
             else if (priceSeries[dataLen] < index[dataLen] && priceSeries[dataLen - 1] > index[dataLen - 1] && account.positionStatus == 1)
@@ -82,9 +101,15 @@ namespace BackTestingPlatform.Strategies.MA
             else
                 tradeSignal = 0;
 
-            tradeInfo[1] = tradeSignal;
-            tradeInfo[2] = priceSeries[dataLen] * 1.005;//当前价+0.5%的冲击成本
-            tradeInfo[3] = 1;//初始以1手为基本交易量
+            tradeInfo[0] = tradeSignal;
+            if (tradeSignal == 1)
+                tradeInfo[1] = priceSeries[dataLen] * (1 + 0.002);//当前价+0.2%的冲击成本
+            else if (tradeSignal == -1)
+                tradeInfo[1] = priceSeries[dataLen] * (1 - 0.002);//当前价+0.2%的冲击成本
+            else
+                tradeInfo[1] = priceSeries[dataLen];//无信号时返回实时行情
+            
+            tradeInfo[2] = 1;//初始以1手为基本交易量
 
             return tradeInfo;
         }

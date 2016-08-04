@@ -18,7 +18,8 @@ namespace BackTestingPlatform
         {          
             
             Platforms.Initialize(); //初始化
-           
+          
+
 
             Platforms.ShutDown();   //关闭
         }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using WAPIWrapperCSharp;
 
+
 namespace BackTestingPlatform.DataAccess
 {
 
@@ -25,17 +26,19 @@ namespace BackTestingPlatform.DataAccess
 
             WindAPI wapi = Platforms.GetWindAPI();
             WindData d = wapi.wsi(stockCode, fields, startTime, endTime, options);
+
             int len = d.timeList.Length;
             int fieldLen = d.fieldList.Length;
             List<KLinesData> items = new List<KLinesData>(len);
             double[] dm = (double[])d.data;
+            int dataLen = dm.Length;
             DateTime[] ttime = d.timeList;
 
-            for (int k = 0; k < len; k += fieldLen)
+            for (int j = 0, k = 0; j < len; j++, k += fieldLen)
             {
                 items.Add(new KLinesData
                 {
-                    time = ttime[k],
+                    time = ttime[j],
                     open = dm[k],
                     high = dm[k + 1],
                     low = dm[k + 2],
@@ -48,6 +51,6 @@ namespace BackTestingPlatform.DataAccess
             return items;
         }
 
-        
+
     }
 }
