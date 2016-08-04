@@ -18,7 +18,7 @@ namespace BackTestingPlatform.Service
         /// <summary>
         /// 获取tradeDays到内存，先后尝试从本地文件，万德获取
         /// </summary>
-        public void readTradeDays()
+        public void loadTradeDays()
         {
             var days = tradeDaysRepository.fetchFromLocalFile(
                 Constants.TRADE_DAY_START, Constants.TRADE_DAY_END);

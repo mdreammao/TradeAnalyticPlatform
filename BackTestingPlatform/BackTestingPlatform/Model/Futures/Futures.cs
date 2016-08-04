@@ -11,18 +11,18 @@ namespace BackTestingPlatform.Model.Futures
     /// </summary>
     public class FuturesInfo
     {
-        public string code;
-        public DateTime endDate;
+        public string code { get; set; }
+        public DateTime endDate { get; set; }
 
         public List<FuturesTickData> ticks;
     }
 
     public class FuturesTickData
     {
-      
+
         public DateTime time;
         public double lastPrice;
         public PositionData[] ask, bid;
-      
+
     }
 }

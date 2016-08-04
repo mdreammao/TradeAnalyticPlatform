@@ -8,12 +8,14 @@ using System.IO;
 using System.Linq;
 using BackTestingPlatform.Utilities;
 using System.Configuration;
+using System.Data;
 
 namespace BackTestingPlatform.DataAccess.Option
 {
 
     public class OptionInfoRepository
     {
+        public const string PATH_KEY = "CacheData.Path.OptionInfo";
         public List<OptionInfo> fetchFromWind(string underlyingCode = "510050.SH", string market = "sse")
         {
             WindAPI wapi = Platforms.GetWindAPI();
@@ -43,38 +45,29 @@ namespace BackTestingPlatform.DataAccess.Option
             return items;
         }
 
-        public List<OptionInfo> fetchAllFromLocalFile(string underlyingCode = "510050.SH", string market = "sse")
+        public List<OptionInfo> fetchAllFromLocalFile(string filePath,string underlyingCode = "510050.SH", string market = "sse")
         {
-
-            var path = Path.Combine(
-                ConfigurationManager.AppSettings["CacheData.RootPath"]
-               , ConfigurationManager.AppSettings["CacheData.Path.OptionInfo"]);
-
-            if (!File.Exists(path)) return null;
-
-            string[] lines = File.ReadAllLines(path);
-            return lines.Select(
-              s => new OptionInfo
-              {
-                  //todo s转换成OptionInfo
-              }
-            ).ToList();
+            if (!File.Exists(filePath)) return null;
+            DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
+            return dt.AsEnumerable().Select(row => new OptionInfo
+            {
+                optionCode= (string)row["optionCode"],
+                optionName= (string)row["optionName"],
+                optionType= (string)row["optionType"]
+            }).ToList();
         }
+
+        
 
         public void saveToLocalFile(List<OptionInfo> optionInfoList)
         {
-            var path = FileUtils.GetCacheDataFilePath("CacheData.Path.OptionInfo", DateTime.Now);
-            File.WriteAllLines(path, optionInfoList.Select(
-                    x => String.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\"",
-                    new string[] {
-                        x.optionCode,
-                        x.optionName,
-                        x.optionType,
-                        x.startDate.ToShortDateString()
-                    })
-                ).ToArray()
-            );
+            var path = FileUtils.GetCacheDataFilePath(PATH_KEY, DateTime.Now);
+            var dt=DataTableUtils.ToDataTable(optionInfoList);
+            CsvFileUtils.WriteToCsvFile(path, dt);
+            Console.WriteLine("saved!");
+            
         }
+       
     }
 
 

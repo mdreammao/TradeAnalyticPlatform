@@ -11,11 +11,11 @@ namespace BackTestingPlatform.Utilities
     public static class CsvFileUtils
     {
         /// <summary>
-        /// 如果目标csv文件已存在，会覆盖
+        ///  DataTable -> CSV 如果目标csv文件已存在，会覆盖
         /// </summary>
         /// <param name="dt"></param>
         /// <param name="filePath"></param>
-        public static void WriteToCsvFile(DataTable dt, string filePath)
+        public static void WriteToCsvFile(string filePath,DataTable dt)
         {
             StringBuilder sb = new StringBuilder();
             IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
@@ -33,12 +33,12 @@ namespace BackTestingPlatform.Utilities
 
         /// <summary>
         /// http://stackoverflow.com/a/27705485
-        /// 简单的csv读取处理，不支持含逗号的内容。
+        /// CSV -> DataTable 简单的csv读取处理，不支持含逗号的内容。
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="firstRowAsHeader">csv文件第一行是否作为header</param>
         /// <returns></returns>
-        public static DataTable ReadfromCsvFile(string filePath,bool firstRowAsHeader=true)
+        public static DataTable ReadFromCsvFile(string filePath,bool firstRowAsHeader=true)
         {
             DataTable dt = new DataTable();
             using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
@@ -62,6 +62,26 @@ namespace BackTestingPlatform.Utilities
                 }
             }
             return dt;
+        }
+        /// <summary>
+        /// 将values转换为csv文件的一行，包含一些默认的类型转换，例如：
+        /// toCsvFileLine("a",2.1,DateTime1)=="\"a\",\"2.1\",\"20160804093200\"";
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static string toCsvFileLine(params object[] values)
+        {
+            if (values == null) return "";
+            var res = new StringBuilder();
+            foreach (var val in values)
+            {
+                var s = "";
+                if (val is DateTime)                
+                    s = ((DateTime)val).ToString("yyyyMMddhhmmss");
+                s = val.ToString();
+                res.Append(s);
+            }
+            return res.ToString();
         }
     }
 
