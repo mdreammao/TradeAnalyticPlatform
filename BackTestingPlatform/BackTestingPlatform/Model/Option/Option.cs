@@ -13,12 +13,13 @@ namespace BackTestingPlatform.Model.Option
     /// </summary>
     public class OptionInfo
     {
-        public string optionCode;
-        public string optionName;
-        public string executeType;
-        public double strike;
-        public string optionType;
-        public DateTime startDate, endDate;
+        public string optionCode { get; set; }
+        public string optionName { get; set; }
+        public string executeType { get; set; }
+        public double strike { get; set; }
+        public string optionType { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
 
         public Dictionary<DateTime, string> IHcodes;
         public List<OptionTickData> ticks;
@@ -26,14 +27,14 @@ namespace BackTestingPlatform.Model.Option
 
     public class OptionTickData
     {
-        
+
         public DateTime time;
         public double lastPrice;
         public PositionData[] ask, bid;
         public OptionGreek greek;
         public StockTickData underlyingStock;
         public FuturesTickData underlyingFutures;
-        
+
     }
 
     public struct OptionGreek

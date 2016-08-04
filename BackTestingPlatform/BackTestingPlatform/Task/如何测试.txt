@@ -27,8 +27,7 @@ namespace Tester
     {
         public void run()
         {
-            Strategy backTesting = new BackTesting();
-            backTesting.act();
+            //你要测试的代码
         }
     }
 }

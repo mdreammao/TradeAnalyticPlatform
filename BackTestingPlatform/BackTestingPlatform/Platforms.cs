@@ -45,7 +45,7 @@ namespace BackTestingPlatform.Core
 
             //初始化交易日数据
             TradeDaysService tradeDaysService = container.Resolve<TradeDaysService>();
-            tradeDaysService.readTradeDays();
+            tradeDaysService.loadTradeDays();
 
         }
         /// <summary>
