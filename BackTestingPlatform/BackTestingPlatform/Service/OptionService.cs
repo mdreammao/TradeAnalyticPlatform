@@ -19,7 +19,7 @@ namespace BackTestingPlatform.Service
         OptionInfoRepository optionInfoRepository = Platforms.container.Resolve<OptionInfoRepository>();
 
         /// <summary>
-        /// 加载OptionInfo,先后尝试从本地csv，wind获取
+        /// 加载OptionInfo到内存,先后尝试从本地csv，wind获取
         /// </summary>
         /// <param name="underlyingCode"></param>
         /// <param name="market"></param>
