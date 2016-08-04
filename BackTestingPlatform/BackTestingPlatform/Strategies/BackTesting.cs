@@ -32,7 +32,7 @@ namespace BackTestingPlatform.Strategies
         //执行日期循环动作，从startDate到endDate，按TradeDays循环向策略传递nowDate
         public void stgBooter()
         {
-            List<DateTime> timelist = (List<DateTime>)Platforms.basicInfo["TradeDays"];
+            List<DateTime> timelist = (List<DateTime>)Platforms.BasicInfo["TradeDays"];
            
          
             DateTime startDate = new DateTime(2016, 7, 1);//策略起止时间

@@ -65,13 +65,7 @@ namespace BackTestingPlatform.DataAccess
                  ttime / 10000, (ttime % 10000) / 100, ttime % 100);
         }
 
-        private static DateTime _parseTime(DataRow row)
-        {
-            var ymd = Convert.ToInt32(row["tdate"]);
-            var hms = Convert.ToInt32(row["ttime"])/1000;
-            return new DateTime(ymd / 10000, (ymd % 10000) / 100, ymd % 100, 
-                hms / 10000, (hms % 10000) / 100, hms % 100);
-        }
+        
     }
 
 
