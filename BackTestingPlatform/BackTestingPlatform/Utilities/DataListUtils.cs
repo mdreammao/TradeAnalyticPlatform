@@ -37,9 +37,9 @@ namespace BackTestingPlatform.Utilities
             for (int i = 1; i < 14402; i++)
             {
                 TickFromMssql thisTick = arr[i];
-                if (thisTick.time==0)
+                if (thisTick==null)
                 {
-                    thisTick = arr[i - 1];
+                    arr[i] = arr[i - 1];
                 }
             }
             return arr.ToList();
