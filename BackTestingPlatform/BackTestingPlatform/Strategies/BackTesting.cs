@@ -83,7 +83,7 @@ namespace BackTestingPlatform.Strategies
 
 
             //回测循环
-            for (int tic = 1; tic < barsList.Count + 1; tic++)
+            for (int tic = 1; tic < barsList.Count; tic++)
             {
                 nowDate = barsList[tic];
                 double[] tempArray = sma.stg(startDate, nowDate, account1);
