@@ -44,16 +44,18 @@ namespace BackTestingPlatform.DataAccess.Option
             }
             return items;
         }
-
+        
         public List<OptionInfo> fetchAllFromLocalFile(string filePath,string underlyingCode = "510050.SH", string market = "sse")
         {
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
+            //return DataTableUtils.ToList<OptionInfo>(dt); //generic transform
             return dt.AsEnumerable().Select(row => new OptionInfo
             {
                 optionCode= (string)row["optionCode"],
                 optionName= (string)row["optionName"],
-                optionType= (string)row["optionType"]
+                optionType= (string)row["optionType"],
+                startDate=Kit.toDateTime((string)row["startDate"])
             }).ToList();
         }
 
@@ -64,8 +66,8 @@ namespace BackTestingPlatform.DataAccess.Option
             var path = FileUtils.GetCacheDataFilePath(PATH_KEY, DateTime.Now);
             var dt=DataTableUtils.ToDataTable(optionInfoList);
             CsvFileUtils.WriteToCsvFile(path, dt);
-            Console.WriteLine("saved!");
-            
+            Console.WriteLine("{0} saved!", path);
+
         }
        
     }

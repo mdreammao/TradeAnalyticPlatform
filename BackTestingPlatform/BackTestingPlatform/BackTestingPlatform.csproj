@@ -73,6 +73,7 @@
     <Compile Include="Strategies\Utilities\OptionUtilities.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
     <Compile Include="Utilities\DataTableUtils.cs" />
+    <Compile Include="Utilities\Kit.cs" />
     <Compile Include="Utilities\FileUtils.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
     <Compile Include="DataAccess\TradeDaysRepository.cs" />

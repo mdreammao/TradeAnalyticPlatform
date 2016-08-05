@@ -14,7 +14,7 @@ namespace BackTestingPlatform.Utilities
         {
             if (_tradeDays == null)
             {
-                _tradeDays = (List<DateTime>)Platforms.basicInfo["TradeDays"];
+                _tradeDays = (List<DateTime>)Platforms.BasicInfo["TradeDays"];
             }
             return _tradeDays;
         }

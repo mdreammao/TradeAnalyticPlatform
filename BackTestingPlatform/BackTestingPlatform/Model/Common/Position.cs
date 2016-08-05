@@ -9,7 +9,7 @@ namespace BackTestingPlatform.Model.Common
     /// <summary>
     /// 股票盘口价格的格式，不定长度的N挡盘口价量
     /// </summary>
-    public class PositionData
+    public struct PositionData
     {
         public double price, volume;
         public PositionData(double price, double volume)

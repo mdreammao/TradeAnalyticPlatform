@@ -23,13 +23,29 @@ namespace BackTestingPlatform.Utilities
 
             foreach (DataRow row in dt.Rows)
             {
-                IEnumerable<string> fields = row.ItemArray.Select(field =>
-  string.Concat("\"", field.ToString().Replace("\"", "\"\""), "\""));
+                IEnumerable<string> fields = row.ItemArray
+                    .Select(toReadableString).Select(toDoubleQuotedString);
                 sb.AppendLine(string.Join(",", fields));
             }
 
             File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
         }
+
+        static string toReadableString(object cell)
+        {
+            if (cell is DateTime)
+            {
+                return ((DateTime)cell).ToString("yyyyMMddhhmmss");
+            }
+            return cell.ToString();
+        }
+
+        static string toDoubleQuotedString(string src)
+        {
+            return string.Concat("\"", src.Replace("\"", "\"\""), "\"");          
+        }
+
+
 
         /// <summary>
         /// http://stackoverflow.com/a/27705485
