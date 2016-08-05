@@ -15,17 +15,24 @@ namespace BackTestingPlatform.Utilities
     /// </summary>
     public static class DataListUtils
     {
-        private List<TickFromMssql> newDataList;
+        //  private List<TickFromMssql> newDataList;
 
-        public List<TickFromMssql> CopyFromList(List<TickFromMssql> originalList, int startDate, int endDate)
+        public static List<TickFromMssql> CopyFromList(List<TickFromMssql> originalList, int startDate, int endDate)
         {
             int startIndex = originalList.FindIndex(s => s.date == startDate);
             int endIndex = originalList.FindIndex(s => s.date == endDate);
 
-            List<TickFromMssql> newList = originalList.GetRange(startIndex, endIndex - startIndex +1 );
+            Console.WriteLine("index1:{0} index2:{1}", startIndex, endIndex);
 
-            return newList;
-
+            if (startIndex == -1 | endIndex == -1)
+                return null;
+            else
+            {
+                List<TickFromMssql> newList = originalList.GetRange(startIndex, endIndex - startIndex + 1);
+                return newList;
+          
+            }                
+   
         }
 
     }
