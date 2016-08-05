@@ -34,7 +34,14 @@ namespace BackTestingPlatform.Strategies
             //按VWAP成交
             transReturn[0] = 1;
             transReturn[1] = 1;
-            transReturn[2] = signalArray[1];
+
+            if (signalArray[0] == 1)
+                transReturn[2] = signalArray[1] * (1 + 0.002);//当前价+0.2%的冲击成本
+            else if (signalArray[0] == -1)
+                transReturn[2] = signalArray[1] * (1 - 0.002);//当前价+0.2%的冲击成本
+            else
+                transReturn[2] = signalArray[1];//无信号时返回实时行情
+
             transReturn[3] = 1;
 
             return transReturn;

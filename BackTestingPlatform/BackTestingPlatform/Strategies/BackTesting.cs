@@ -39,8 +39,8 @@ namespace BackTestingPlatform.Strategies
             List<DateTime> timeList = (List<DateTime>)Platforms.BasicInfo["TradeDays"];
             int None = Constants.NONE;//空值
 
-            DateTime startDate = new DateTime(2016, 7, 1);//策略起止时间
-            DateTime endDate = new DateTime(2016, 8, 1); ;
+            DateTime startDate = new DateTime(2016, 6, 1);//策略起止时间
+            DateTime endDate = new DateTime(2016, 7, 1); ;
             DateTime nowDate;//当前时间，每次循环传入策略，返回开仓或平仓信息
 
             DateTime d1 = (DateTime)TradeDaysUtils.RecentTradeDay(startDate);
@@ -67,9 +67,10 @@ namespace BackTestingPlatform.Strategies
             account1.positionStatus = 0;//初始持仓状态为0
             account1.AccountID = 1;//账户ID
 
+
             //   Console.WriteLine("Here!");
 
-            double[,] signalArray = new double[timeList.Count, 3];//记录交易信号，暂时存放在二维数组
+            double[,] signalArray = new double[barsList.Count, 3];//记录交易信号，暂时存放在二维数组
 
             SingleMA sma = new SingleMA();
             DealJudge myDeal = new DealJudge();
@@ -79,6 +80,8 @@ namespace BackTestingPlatform.Strategies
             transReturn[1] = 1;
             transReturn[2] = None;
             transReturn[3] = 1;
+
+            
 
             //回测循环
             for (int tic = 1; tic < barsList.Count + 1; tic++)
@@ -93,20 +96,35 @@ namespace BackTestingPlatform.Strategies
                     transReturn = myDeal.Judge(nowDate, tempArray);
 
                 //更新账户信息
-                if (transReturn[0] == 1 & signalArray[tic, 0] == 1)//信号开多且可成交
+                if (signalArray[tic, 0] == 1 & transReturn[0] == 1)//信号开多且可成交
                 {
                     account1.positionStatus = 1;
                     account1.lastBuyPrice = account1.lastBuyPrice = transReturn[2];//记录买入价          
                 }
 
-                else if (transReturn[0] == 1 & signalArray[tic, 0] == -1)//信号平多且可成交
+                else if (signalArray[tic, 0] == -1 & transReturn[0] == 1)//信号平多且可成交
                 {
                     account1.positionStatus = 0;
                     account1.netWorth = account1.netWorth * (1 + (transReturn[2] - account1.lastBuyPrice) / account1.lastBuyPrice);//净值累积
                     account1.lastBuyPrice = 0;
                 }
-                else if (account1.positionStatus == 1)//有仓位时随行情变化
+                else if (signalArray[tic, 0] == 0 & account1.positionStatus == 1 )//无信号有仓位时净值随行情变化
                     account1.netWorth = account1.netWorth * (1 + (tempArray[1] - account1.lastBuyPrice) / account1.lastBuyPrice);//净值累积
+
+                //
+                for (int j = 0, k = 0; j < len; j++, k += fieldLen)
+                {
+                    items.Add(new KLinesData
+                    {
+                        time = ttime[j],
+                        open = dm[k],
+                        high = dm[k + 1],
+                        low = dm[k + 2],
+                        close = dm[k + 3],
+                        volume = dm[k + 4],
+                        amount = dm[k + 5]
+                    });
+                }
 
                 Console.WriteLine("Time:{0}  Signal:{1}  Price:{2}  Position:{3} NetWorth:{4,8:F3}\n",
                     nowDate, tempArray[0], tempArray[1], account1.positionStatus, account1.netWorth);

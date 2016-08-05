@@ -64,7 +64,7 @@ namespace BackTestingPlatform.Strategies.MA
             double[] priceSeries = new double[StockData.Count];
             DateTime[] dateList = new DateTime[StockData.Count];
             double[] index = new double[StockData.Count];
-            int MAParam = 55;//五Bars均线，测试参数
+            int MAParam = 120;//五Bars均线，测试参数
             int obsAtLeast = MAParam;//最少所需样本数，若少于该数，直接返回
 
 
@@ -101,14 +101,8 @@ namespace BackTestingPlatform.Strategies.MA
             else
                 tradeSignal = 0;
 
-            tradeInfo[0] = tradeSignal;
-            if (tradeSignal == 1)
-                tradeInfo[1] = priceSeries[dataLen] * (1 + 0.002);//当前价+0.2%的冲击成本
-            else if (tradeSignal == -1)
-                tradeInfo[1] = priceSeries[dataLen] * (1 - 0.002);//当前价+0.2%的冲击成本
-            else
-                tradeInfo[1] = priceSeries[dataLen];//无信号时返回实时行情
-            
+            tradeInfo[0] = tradeSignal;//交易信号
+            tradeInfo[1] = priceSeries[dataLen];//返回实时行情           
             tradeInfo[2] = 1;//初始以1手为基本交易量
 
             return tradeInfo;
