@@ -23,6 +23,7 @@ namespace BackTestingPlatform.DataAccess.Option
             return dt.AsEnumerable().Select(
                 row => new TickFromMssql
                 {
+                   // date = (Convert.IsDBNull(row["tdate"]) | Convert.ToInt32(row["tdate"])<0) ? 0 :  Convert.ToInt32(row["tdate"]),
                     date = Convert.ToInt32(row["tdate"]),
                     time = Convert.ToInt32(row["ttime"]),
                     lastPrice = Convert.ToDouble(row["cp"]),

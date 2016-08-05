@@ -36,7 +36,7 @@ namespace BackTestingPlatform.Strategies
         public void stgBooter()
         {
 
-            List<DateTime> timeList = (List<DateTime>)Platforms.basicInfo["TradeDays"];
+            List<DateTime> timeList = (List<DateTime>)Platforms.BasicInfo["TradeDays"];
             int None = Constants.NONE;//空值
 
             DateTime startDate = new DateTime(2016, 6, 1);//策略起止时间
@@ -81,7 +81,6 @@ namespace BackTestingPlatform.Strategies
             transReturn[2] = None;
             transReturn[3] = 1;
 
-            
 
             //回测循环
             for (int tic = 1; tic < barsList.Count + 1; tic++)
@@ -108,30 +107,31 @@ namespace BackTestingPlatform.Strategies
                     account1.netWorth = account1.netWorth * (1 + (transReturn[2] - account1.lastBuyPrice) / account1.lastBuyPrice);//净值累积
                     account1.lastBuyPrice = 0;
                 }
-                else if (signalArray[tic, 0] == 0 & account1.positionStatus == 1 )//无信号有仓位时净值随行情变化
+                else if (signalArray[tic, 0] == 0 & account1.positionStatus == 1)//无信号有仓位时净值随行情变化
                     account1.netWorth = account1.netWorth * (1 + (tempArray[1] - account1.lastBuyPrice) / account1.lastBuyPrice);//净值累积
 
-                //
-                for (int j = 0, k = 0; j < len; j++, k += fieldLen)
+                //记录历史交易
+                account1List.Add(new AccountHistory
                 {
-                    items.Add(new KLinesData
-                    {
-                        time = ttime[j],
-                        open = dm[k],
-                        high = dm[k + 1],
-                        low = dm[k + 2],
-                        close = dm[k + 3],
-                        volume = dm[k + 4],
-                        amount = dm[k + 5]
-                    });
-                }
+                    tradeTime = nowDate,
+                    netWorth = account1.netWorth
+                });
 
                 Console.WriteLine("Time:{0}  Signal:{1}  Price:{2}  Position:{3} NetWorth:{4,8:F3}\n",
                     nowDate, tempArray[0], tempArray[1], account1.positionStatus, account1.netWorth);
                 Console.WriteLine("-------------------------------");
-                //   
-
             }
+
+            for (int temp = 0; temp < account1List.Count; temp++)
+            {
+                Console.WriteLine("-----------Histroy NetWorth--------------------");
+                Console.WriteLine("Time:{0,-12}  NetWorth:{1}",account1List[temp].tradeTime,account1List[temp].netWorth);
+                if (temp % 49 == 0)
+                    Console.ReadKey();
+                  
+            }
+
         }
     }
 }
+

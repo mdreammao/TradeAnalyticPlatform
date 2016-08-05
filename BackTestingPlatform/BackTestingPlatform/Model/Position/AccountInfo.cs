@@ -50,7 +50,7 @@ namespace BackTestingPlatform.Model.Position
     public class AccountHistory
     {
         public int AccountID;//账户ID
-        DateTime tradeTime;//交易时间
+        public DateTime tradeTime;//交易时间
         public double netWorth;//净值
         public List<StockHolding> myHolding = new List<StockHolding>();//存放持仓股票列表
         public double totalAsset;//总资产
