@@ -21,11 +21,13 @@ namespace BackTestingPlatform.Model.Option
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
 
-        public Dictionary<DateTime, string> IHcodes;
-        public List<OptionTickData> ticks;
+        //public Dictionary<DateTime, string> IHcodes;
+ 
     }
 
-    public class OptionTickData
+
+
+    public class OptionTickData 
     {
 
         public DateTime time;

@@ -19,7 +19,7 @@ namespace BackTestingPlatform.Service
         OptionInfoRepository optionInfoRepository = Platforms.container.Resolve<OptionInfoRepository>();
 
         /// <summary>
-        /// 加载OptionInfo,先后尝试从本地csv，wind获取
+        /// 加载OptionInfo到内存,先后尝试从本地csv，wind获取
         /// </summary>
         /// <param name="underlyingCode"></param>
         /// <param name="market"></param>
@@ -33,15 +33,16 @@ namespace BackTestingPlatform.Service
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
                 optionInfos = optionInfoRepository.fetchFromWind(underlyingCode, market);
                 optionInfoRepository.saveToLocalFile(optionInfos);
+               
             }
             else
             {   //CacheData不是太旧，直接读取
                 optionInfos = optionInfoRepository.fetchAllFromLocalFile(filePath, underlyingCode, market);
             }
 
-
+            Platforms.BasicInfo["OptionInfos"] = optionInfos;
             Console.WriteLine(optionInfos);
-
+            
 
         }
 

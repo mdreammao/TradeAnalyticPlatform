@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.Core;
 using BackTestingPlatform.Model;
+using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -44,7 +45,7 @@ namespace BackTestingPlatform.DataAccess
             return dt.AsEnumerable().Select(
                 row => new RealTimeQuotes
                 {
-                    time = _parseTime(row),
+                    time = Kit.toDateTime((string)row["tdate"],(string)row["ttime"]),
                     cp = Convert.ToDouble(row["cp"]),
                     high = Convert.ToDouble(row["hp"]),
                     low = Convert.ToDouble(row["lp"]),
@@ -55,13 +56,6 @@ namespace BackTestingPlatform.DataAccess
                 }).ToList();
         }
 
-        private static DateTime _parseTime(DataRow row)
-        {
-            var ymd = Convert.ToInt32(row["tdate"]);
-            var hms = Convert.ToInt32(row["ttime"])/1000;
-            return new DateTime(ymd / 10000, (ymd % 10000) / 100, ymd % 100, 
-                hms / 10000, (hms % 10000) / 100, hms % 100);
-        }
     }
 
 

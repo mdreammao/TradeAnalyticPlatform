@@ -21,7 +21,7 @@ namespace BackTestingPlatform.Core
         //Autofac容器
         public static IContainer container;
         //全局基础数据的变量字典
-        public static IDictionary<string, object> basicInfo;
+        public static IDictionary<string, object> BasicInfo;
 
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace BackTestingPlatform.Core
             container = builder.Build();
 
             //初始化parameters
-            basicInfo = new Dictionary<string, object>();
+            BasicInfo = new Dictionary<string, object>();
 
             //初始化CacheData文件夹
             var cdPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
