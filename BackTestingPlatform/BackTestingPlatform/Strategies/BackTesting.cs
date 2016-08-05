@@ -36,7 +36,7 @@ namespace BackTestingPlatform.Strategies
         public void stgBooter()
         {
 
-            List<DateTime> timeList = (List<DateTime>)Platforms.basicInfo["TradeDays"];
+            List<DateTime> timeList = (List<DateTime>)Platforms.BasicInfo["TradeDays"];
             int None = Constants.NONE;//空值
 
             DateTime startDate = new DateTime(2016, 7, 1);//策略起止时间

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform", "Back
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform.Test", "BackTestingPlatformTest\BackTestingPlatform.Test.csproj", "{236EF379-B062-4C69-A12C-841344889E0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalTester", "Tester\LocalTester.csproj", "{99D097BC-50C2-4F00-952D-87201D46F65A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalTester", "LocalTester\LocalTester.csproj", "{42CDD9A9-28C7-4AA1-A84C-A7447AA64BC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{236EF379-B062-4C69-A12C-841344889E0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{236EF379-B062-4C69-A12C-841344889E0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{236EF379-B062-4C69-A12C-841344889E0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99D097BC-50C2-4F00-952D-87201D46F65A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99D097BC-50C2-4F00-952D-87201D46F65A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99D097BC-50C2-4F00-952D-87201D46F65A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99D097BC-50C2-4F00-952D-87201D46F65A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42CDD9A9-28C7-4AA1-A84C-A7447AA64BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42CDD9A9-28C7-4AA1-A84C-A7447AA64BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42CDD9A9-28C7-4AA1-A84C-A7447AA64BC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42CDD9A9-28C7-4AA1-A84C-A7447AA64BC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
