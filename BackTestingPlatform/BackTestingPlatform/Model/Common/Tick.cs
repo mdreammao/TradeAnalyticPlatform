@@ -22,7 +22,6 @@ namespace BackTestingPlatform.Model.Common
         public double lastPrice;
         public PositionData[] ask, bid;
         public double highPrice, lowPrice, volume, turnoverVolume;
-        public double highLimit, lowLimit;
-        public double preClose;
+        public double preClose,preSettle;
     }
 }

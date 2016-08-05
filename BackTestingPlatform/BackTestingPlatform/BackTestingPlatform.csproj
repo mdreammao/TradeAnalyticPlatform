@@ -72,6 +72,7 @@
     <Compile Include="Strategies\BackTesting.cs" />
     <Compile Include="Strategies\Utilities\OptionUtilities.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
+    <Compile Include="Utilities\DataListUtils.cs" />
     <Compile Include="Utilities\DataTableUtils.cs" />
     <Compile Include="Utilities\Kit.cs" />
     <Compile Include="Utilities\FileUtils.cs" />
