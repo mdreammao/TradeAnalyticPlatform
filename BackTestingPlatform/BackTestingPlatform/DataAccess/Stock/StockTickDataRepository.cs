@@ -53,7 +53,6 @@ namespace BackTestingPlatform.DataAccess
                     volume = Convert.ToDouble(row["ts"]),
                     amount = Convert.ToDouble(row["tt"])
                 }).ToList();
-
         }
 
         private static DateTime _parseTime(DataRow row)
