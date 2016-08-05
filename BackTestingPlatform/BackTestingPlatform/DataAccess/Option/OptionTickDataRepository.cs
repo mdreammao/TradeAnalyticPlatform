@@ -22,6 +22,7 @@ namespace BackTestingPlatform.DataAccess.Option
             return dt.AsEnumerable().Select(
                 row => new RealTimeQuotes
                 {
+                    
                     time = _parseTime(row),
                     cp = Convert.ToDouble(row["cp"]),
                     high = Convert.ToDouble(row["hp"]),
