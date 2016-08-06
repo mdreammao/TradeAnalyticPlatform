@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\Option\OptionMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Option\OptionTickDataRepository.cs" />
     <Compile Include="DataAccess\Stock\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesRepository.cs" />
@@ -70,7 +71,8 @@
     <Compile Include="Service\StockService.cs" />
     <Compile Include="Service\TradeDaysService.cs" />
     <Compile Include="Strategies\BackTesting.cs" />
-    <Compile Include="Strategies\Utilities\OptionUtilities.cs" />
+    <Compile Include="Strategies\Option\OptionSample.cs" />
+    <Compile Include="Utilities\Option\OptionUtilities.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
     <Compile Include="Utilities\DataListUtils.cs" />
     <Compile Include="Utilities\DataTableUtils.cs" />

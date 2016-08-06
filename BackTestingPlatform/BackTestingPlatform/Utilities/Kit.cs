@@ -115,6 +115,10 @@ namespace BackTestingPlatform.Utilities
             return t.ToString("yyyyMMdd");
         }
 
+        public static int toDateInt(DateTime t)
+        {
+            return Convert.ToInt32(t.ToString("yyyyMMdd"));
+        }
 
     }
 }

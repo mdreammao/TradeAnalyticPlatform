@@ -44,4 +44,9 @@ namespace BackTestingPlatform.Model.Option
         public double sigma, delta, gamma, vega, theta;
     }
 
+    public struct OptionMinuteData
+    {
+
+    }
+
 }

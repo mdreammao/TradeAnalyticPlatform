@@ -49,18 +49,26 @@ namespace BackTestingPlatform.DataAccess.Option
         {
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
+            var r = dt.Rows[0];
+            string s = _toString(r["strike"]);
             //return DataTableUtils.ToList<OptionInfo>(dt); //generic transform
             return dt.AsEnumerable().Select(row => new OptionInfo
             {
-                optionCode= (string)row["optionCode"],
-                optionName= (string)row["optionName"],
-                optionType= (string)row["optionType"],
-                startDate=Kit.toDateTime((string)row["startDate"])
+                optionCode= _toString(row["optionCode"]),
+                optionName= _toString(row["optionName"]),
+                optionType= _toString(row["optionType"]),
+                executeType= _toString(row["executeType"]),
+                strike= Convert.ToDouble(_toString(row["strike"])),
+                startDate =Convert.ToDateTime(_toString(row["startDate"])),
+                endDate= Convert.ToDateTime(_toString(row["endDate"]))
             }).ToList();
         }
 
         
-
+        private string _toString(object item)
+        {
+            return Convert.ToString(item).Substring(1, Convert.ToString(item).Length - 2);
+        }
         public void saveToLocalFile(List<OptionInfo> optionInfoList)
         {
             var path = FileUtils.GetCacheDataFilePath(PATH_KEY, DateTime.Now);
