@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BackTestingPlatform.Core;
+using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Model.Option;
 using BackTestingPlatform.Service;
 using BackTestingPlatform.Utilities;
@@ -24,8 +25,17 @@ namespace BackTestingPlatform.Strategies.Option
             days = TradeDaysUtils.getTradeDays(start, end);
             foreach (var item in (List<DateTime>)days)
             {
-                
+                OptionMinuteDataRepository re = Platforms.container.Resolve<OptionMinuteDataRepository>();
+                var etf = re.fetchMinuteDataFromWind("510050.SH", item);
                 var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)option, Kit.toDateInt(item));
+                foreach (var options in optionToday)
+                {
+                    if (Utilities.TradeDaysUtils.GetSpanOfTradeDays(item,options.endDate)<=7)
+                    {
+                        var optionData = re.fetchMinuteDataFromWind(options.optionCode, item);
+                    }
+                }
+
             }
         }
     }

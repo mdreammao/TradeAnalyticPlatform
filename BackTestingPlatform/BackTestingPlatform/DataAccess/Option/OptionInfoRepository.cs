@@ -18,17 +18,17 @@ namespace BackTestingPlatform.DataAccess.Option
         public const string PATH_KEY = "CacheData.Path.OptionInfo";
         public List<OptionInfo> fetchFromWind(string underlyingCode = "510050.SH", string market = "sse")
         {
+            string marketStr = "";
+            if (market == "sse")
+            {
+                marketStr = ".SH";
+            }
             WindAPI wapi = Platforms.GetWindAPI();
             WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=" + market + ";windcode=" + underlyingCode + ";status=all");
             int len = wd.codeList.Length;
             int fieldLen = wd.fieldList.Length;
             List<OptionInfo> items = new List<OptionInfo>(len * fieldLen);
             object[] dm = (object[])wd.data;
-            string marketStr = "";
-            if (market == "sse")
-            {
-                marketStr = ".SH";
-            }
             for (int k = 0; k < len; k++)
             {
                 items.Add(new OptionInfo
@@ -49,9 +49,6 @@ namespace BackTestingPlatform.DataAccess.Option
         {
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
-            var r = dt.Rows[0];
-            string s = _toString(r["strike"]);
-            //return DataTableUtils.ToList<OptionInfo>(dt); //generic transform
             return dt.AsEnumerable().Select(row => new OptionInfo
             {
                 optionCode= _toString(row["optionCode"]),

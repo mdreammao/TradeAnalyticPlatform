@@ -46,7 +46,8 @@ namespace BackTestingPlatform.Model.Option
 
     public struct OptionMinuteData
     {
-
+        public DateTime time;
+        public double open, high, low, close, volume, amount;
     }
 
 }
