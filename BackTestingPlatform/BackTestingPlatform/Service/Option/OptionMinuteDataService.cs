@@ -21,7 +21,7 @@ namespace BackTestingPlatform.Service.Option
             List<OptionMinuteData> optionData;
             var filePath= FileUtils.GetCacheDataFileByCodeAndDate(OptionMinuteDataRepository.PATH_KEY,optionCode,date);
             //若本地文件存在，则从本地读取否者先从万德或者数据库中读取
-            if (Directory.Exists(filePath))
+            if (File.Exists(filePath))
             {
                 optionData = optionMinuteDataRepository.fetchAllFromLocalFile(filePath);   
             }

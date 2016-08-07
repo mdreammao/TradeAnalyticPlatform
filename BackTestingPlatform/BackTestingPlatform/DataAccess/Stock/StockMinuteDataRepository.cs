@@ -55,16 +55,32 @@ namespace BackTestingPlatform.DataAccess.Stock
 
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
-            return dt.AsEnumerable().Select(row => new StockMinuteData
+            List<StockMinuteData> items = new List<StockMinuteData>();
+            for (int i = 0; i < dt.Rows.Count; i++)
             {
-                time = Convert.ToDateTime(_toString("time")),
-                open = Convert.ToDouble(_toString("open")),
-                high = Convert.ToDouble(_toString("high")),
-                low = Convert.ToDouble(_toString("low")),
-                close = Convert.ToDouble(_toString("close")),
-                volume = Convert.ToDouble(_toString("volume")),
-                amount = Convert.ToDouble(_toString("amount")),
-            }).ToList();
+                var r = dt.Rows[i];
+                
+                items.Add(new StockMinuteData {
+                    time = Convert.ToDateTime(_toString(r["time"])),
+                 open = Convert.ToDouble(_toString(r["open"])),
+                 high = Convert.ToDouble(_toString(r["high"])),
+                 low = Convert.ToDouble(_toString(r["low"])),
+                 close = Convert.ToDouble(_toString(r["close"])),
+                 volume = Convert.ToDouble(_toString(r["volume"])),
+                 amount = Convert.ToDouble(_toString(r["amount"]))
+                });
+            }
+            return items;
+            //return dt.AsEnumerable().Select(row => new StockMinuteData
+            //{
+            //    time = Convert.ToDateTime(_toString("time")),
+            //    open = Convert.ToDouble(_toString("open")),
+            //    high = Convert.ToDouble(_toString("high")),
+            //    low = Convert.ToDouble(_toString("low")),
+            //    close = Convert.ToDouble(_toString("close")),
+            //    volume = Convert.ToDouble(_toString("volume")),
+            //    amount = Convert.ToDouble(_toString("amount")),
+            //}).ToList();
         }
 
         private string _toString(object item)

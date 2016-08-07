@@ -21,7 +21,7 @@ namespace BackTestingPlatform.Service.Stock
             List<StockMinuteData> stockData;
             var filePath = FileUtils.GetCacheDataFileByCodeAndDate(StockMinuteDataRepository.PATH_KEY, stockCode, date);
             //若本地文件存在，则从本地读取否者先从万德或者数据库中读取
-            if (Directory.Exists(filePath))
+            if (File.Exists(filePath))
             {
                 stockData = stockMinuteDataRepository.fetchAllFromLocalFile(filePath);
             }
