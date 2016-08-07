@@ -11,9 +11,9 @@ using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Model.Option;
 
-namespace BackTestingPlatform.Service
+namespace BackTestingPlatform.Service.Option
 {
-    public class OptionService
+    public class OptionInfoService
     {
 
         OptionInfoRepository optionInfoRepository = Platforms.container.Resolve<OptionInfoRepository>();

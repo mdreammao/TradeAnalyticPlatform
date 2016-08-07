@@ -1,5 +1,5 @@
 ﻿using BackTestingPlatform.Core;
-using BackTestingPlatform.Model.Option;
+using BackTestingPlatform.Model;
 using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
@@ -10,26 +10,26 @@ using System.Text;
 using System.Threading.Tasks;
 using WAPIWrapperCSharp;
 
-namespace BackTestingPlatform.DataAccess.Option
+namespace BackTestingPlatform.DataAccess.Stock
 {
-    public class OptionMinuteDataRepository
+    class StockMinuteDataRepository
     {
-        public const string PATH_KEY = "CacheData.Path.OptionMinuteData";
-        public List<OptionMinuteData> fetchMinuteDataFromWind(string stockCode, DateTime time)
+        public const string PATH_KEY = "CacheData.Path.StockMinuteData";
+        public List<StockMinuteData> fetchMinuteDataFromWind(string stockCode, DateTime time)
         {
             WindAPI w = Platforms.GetWindAPI();
             var timeStr = time.ToString("yyyyMM");
             string start = time.ToString("yyyy-MM-dd 00:00:00");
             string end = time.ToString("yyyy-MM-dd 23:59:59");
-            WindData wd = w.wsi(stockCode.ToUpper(), "open,high,low,close,volume,amt", start,end, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
+            WindData wd = w.wsi(stockCode.ToUpper(), "open,high,low,close,volume,amt", start, end, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
-            List<OptionMinuteData> items = new List<OptionMinuteData>(len * fieldLen);
+            List<StockMinuteData> items = new List<StockMinuteData>(len * fieldLen);
             double[] dataList = (double[])wd.data;
             DateTime[] timeList = wd.timeList;
             for (int k = 0; k < len; k++)
             {
-                items.Add(new OptionMinuteData
+                items.Add(new StockMinuteData
                 {
                     time = timeList[k],
                     open = (double)dataList[k * fieldLen + 0],
@@ -43,24 +43,24 @@ namespace BackTestingPlatform.DataAccess.Option
             return items;
         }
 
-        public void saveToLocalFile(List<OptionMinuteData> optionMinuteData,string path)
+        public void saveToLocalFile(List<StockMinuteData> optionMinuteData, string path)
         {
             var dt = DataTableUtils.ToDataTable(optionMinuteData);
             CsvFileUtils.WriteToCsvFile(path, dt);
             Console.WriteLine("{0} saved!", path);
         }
 
-        public List<OptionMinuteData> fetchAllFromLocalFile(string filePath)
+        public List<StockMinuteData> fetchAllFromLocalFile(string filePath)
         {
 
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
-            return dt.AsEnumerable().Select(row => new OptionMinuteData
+            return dt.AsEnumerable().Select(row => new StockMinuteData
             {
-                time=Convert.ToDateTime(_toString("time")),
-                open=Convert.ToDouble(_toString("open")),
+                time = Convert.ToDateTime(_toString("time")),
+                open = Convert.ToDouble(_toString("open")),
                 high = Convert.ToDouble(_toString("high")),
-                low  = Convert.ToDouble(_toString("low")),
+                low = Convert.ToDouble(_toString("low")),
                 close = Convert.ToDouble(_toString("close")),
                 volume = Convert.ToDouble(_toString("volume")),
                 amount = Convert.ToDouble(_toString("amount")),
@@ -73,3 +73,4 @@ namespace BackTestingPlatform.DataAccess.Option
         }
     }
 }
+

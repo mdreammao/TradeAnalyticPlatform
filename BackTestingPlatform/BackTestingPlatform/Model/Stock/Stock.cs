@@ -36,6 +36,16 @@ namespace BackTestingPlatform.Model
         public double preClose;
     }
 
+    public class StockMinuteData
+    {
+        public DateTime time { get; set; }
+        public double open { get; set; }
+        public double high { get; set; }
+        public double low { get; set; }
+        public double close { get; set; }
+        public double volume { get; set; }
+        public double amount { get; set; }
+    }
 
     /// <summary>
     /// 股票K线价格的格式，开高低收量额

@@ -27,7 +27,13 @@ namespace BackTestingPlatform.Utilities
                     .Select(toReadableString).Select(toDoubleQuotedString);
                 sb.AppendLine(string.Join(",", fields));
             }
-
+            var dirPath = Path.GetDirectoryName(filePath);
+            var fileName = Path.GetFileName(filePath);
+            //若文件路径不存在则生成该文件夹
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
             File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
         }
 

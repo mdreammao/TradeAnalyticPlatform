@@ -44,10 +44,15 @@ namespace BackTestingPlatform.Model.Option
         public double sigma, delta, gamma, vega, theta;
     }
 
-    public struct OptionMinuteData
+    public class OptionMinuteData
     {
-        public DateTime time;
-        public double open, high, low, close, volume, amount;
+        public DateTime time { get; set; }
+        public double open { get; set; }
+        public double high { get; set; }
+        public double low { get; set; }
+        public double close { get; set; }
+        public double volume { get; set; }
+        public double amount  { get; set; }
     }
 
 }
