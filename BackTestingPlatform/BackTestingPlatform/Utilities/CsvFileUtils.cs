@@ -30,7 +30,7 @@ namespace BackTestingPlatform.Utilities
             var dirPath = Path.GetDirectoryName(filePath);
             var fileName = Path.GetFileName(filePath);
             //若文件路径不存在则生成该文件夹
-            if (!Directory.Exists(dirPath))
+            if (dirPath!="" && !Directory.Exists(dirPath))
             {
                 Directory.CreateDirectory(dirPath);
             }
