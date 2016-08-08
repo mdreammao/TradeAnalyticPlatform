@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Utilities
 {
-    class TradeDaysUtils
+    public class TradeDaysUtils
     {
         private static List<DateTime> _tradeDays;
         private static List<DateTime> getTradeDays()
@@ -26,6 +26,25 @@ namespace BackTestingPlatform.Utilities
             }
             return DateTime.MinValue; ;
         }
+
+        public static List<DateTime> getTradeDays(int firstDate,int lastDate)
+        {
+            List<DateTime> list=(List<DateTime>)Platforms.BasicInfo["TradeDays"];
+            return list.FindAll(delegate (DateTime item)
+            {
+                if (Kit.toDateInt(item)>=firstDate && Kit.toDateInt(item)<=lastDate)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+             );
+        }
+
+         
 
         /// <summary>
         /// 将DateTime格式的日期转化成为int类型的日期。

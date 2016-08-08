@@ -53,10 +53,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\Option\OptionMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Option\OptionTickDataRepository.cs" />
     <Compile Include="DataAccess\Stock\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockMinuteDataRepository.cs" />
     <Compile Include="Model\Common\Position.cs" />
     <Compile Include="Model\Common\Tick.cs" />
     <Compile Include="Model\Contstants.cs" />
@@ -66,11 +68,15 @@
     <Compile Include="Model\Stock\ASharesInfo.cs" />
     <Compile Include="Model\Stock\Stock.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
-    <Compile Include="Service\OptionService.cs" />
-    <Compile Include="Service\StockService.cs" />
+    <Compile Include="Service\Option\OptionMinuteDataService.cs" />
+    <Compile Include="Service\Option\OptionInfoService.cs" />
+    <Compile Include="Service\Stock\StockMinuteDataService.cs" />
+    <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\TradeDaysService.cs" />
     <Compile Include="Strategies\BackTesting.cs" />
-    <Compile Include="Strategies\Utilities\OptionUtilities.cs" />
+    <Compile Include="Strategies\Option\OptionSample.cs" />
+    <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
+    <Compile Include="Utilities\Option\OptionUtilities.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
     <Compile Include="Utilities\DataListUtils.cs" />
     <Compile Include="Utilities\DataTableUtils.cs" />

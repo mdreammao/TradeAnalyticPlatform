@@ -11,9 +11,9 @@ using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Model.Option;
 
-namespace BackTestingPlatform.Service
+namespace BackTestingPlatform.Service.Option
 {
-    public class OptionService
+    public class OptionInfoService
     {
 
         OptionInfoRepository optionInfoRepository = Platforms.container.Resolve<OptionInfoRepository>();
@@ -23,7 +23,7 @@ namespace BackTestingPlatform.Service
         /// </summary>
         /// <param name="underlyingCode"></param>
         /// <param name="market"></param>
-        public void loadOptionInfo(string underlyingCode, string market)
+        public void loadOptionInfo(string underlyingCode="510050.SH", string market="sse")
         {
             List<OptionInfo> optionInfos;
             int daysUpdateRound = 1;    //CacheData更新周期间隔

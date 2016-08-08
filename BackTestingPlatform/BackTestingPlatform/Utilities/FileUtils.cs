@@ -63,6 +63,16 @@ namespace BackTestingPlatform.Utilities
             return (list != null && list.Count > 0) ? list[0] : null;
         }
 
+
+
+        public static string GetCacheDataFileByCodeAndDate(string key,string code,DateTime date)
+        {
+            var path = FileUtils.GetCacheDataFilePath(key);
+            string[] str = code.Split('.');
+            string dateStr = date.ToString("yyyyMMdd");
+            return path.Replace("{0}", str[0]).Replace("{1}", str[1]).Replace("{2}", dateStr);
+
+        }
         public static DateTime GetCacheDataFileTimestamp(string filePath)
         {
             int x1 = filePath.LastIndexOf('_');

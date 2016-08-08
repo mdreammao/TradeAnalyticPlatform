@@ -44,4 +44,27 @@ namespace BackTestingPlatform.Model.Option
         public double sigma, delta, gamma, vega, theta;
     }
 
+    public class OptionMinuteData
+    {
+        public DateTime time { get; set; }
+        public double open { get; set; }
+        public double high { get; set; }
+        public double low { get; set; }
+        public double close { get; set; }
+        public double volume { get; set; }
+        public double amount  { get; set; }
+    }
+
+    public class OptionMinuteDataWithUnderlying : OptionMinuteData
+    {
+        public double underlyingPrice { get; set; }
+        public string optionCode { get; set; }
+        public string optionName { get; set; }
+        public string executeType { get; set; }
+        public double strike { get; set; }
+        public string optionType { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
+    }
+
 }

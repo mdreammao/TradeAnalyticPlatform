@@ -18,17 +18,17 @@ namespace BackTestingPlatform.DataAccess.Option
         public const string PATH_KEY = "CacheData.Path.OptionInfo";
         public List<OptionInfo> fetchFromWind(string underlyingCode = "510050.SH", string market = "sse")
         {
+            string marketStr = "";
+            if (market == "sse")
+            {
+                marketStr = ".SH";
+            }
             WindAPI wapi = Platforms.GetWindAPI();
             WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=" + market + ";windcode=" + underlyingCode + ";status=all");
             int len = wd.codeList.Length;
             int fieldLen = wd.fieldList.Length;
             List<OptionInfo> items = new List<OptionInfo>(len * fieldLen);
             object[] dm = (object[])wd.data;
-            string marketStr = "";
-            if (market == "sse")
-            {
-                marketStr = ".SH";
-            }
             for (int k = 0; k < len; k++)
             {
                 items.Add(new OptionInfo
@@ -49,18 +49,23 @@ namespace BackTestingPlatform.DataAccess.Option
         {
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
-            //return DataTableUtils.ToList<OptionInfo>(dt); //generic transform
             return dt.AsEnumerable().Select(row => new OptionInfo
             {
-                optionCode= (string)row["optionCode"],
-                optionName= (string)row["optionName"],
-                optionType= (string)row["optionType"],
-                startDate=Kit.toDateTime((string)row["startDate"])
+                optionCode= _toString(row["optionCode"]),
+                optionName= _toString(row["optionName"]),
+                optionType= _toString(row["optionType"]),
+                executeType= _toString(row["executeType"]),
+                strike= Convert.ToDouble(_toString(row["strike"])),
+                startDate =Convert.ToDateTime(_toString(row["startDate"])),
+                endDate= Convert.ToDateTime(_toString(row["endDate"]))
             }).ToList();
         }
 
         
-
+        private string _toString(object item)
+        {
+            return Convert.ToString(item).Substring(1, Convert.ToString(item).Length - 2);
+        }
         public void saveToLocalFile(List<OptionInfo> optionInfoList)
         {
             var path = FileUtils.GetCacheDataFilePath(PATH_KEY, DateTime.Now);

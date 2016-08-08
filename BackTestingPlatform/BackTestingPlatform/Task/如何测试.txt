@@ -1,5 +1,5 @@
-﻿在本解决方案中新增一个名为LocalTester的新项目，
-在主程序Program.cs里替换为如下代码：
+﻿1、在本解决方案中新增一个名为LocalTester的新项目，
+2、在主程序Program.cs里替换为如下代码：
 
 
 using BackTestingPlatform.Core;
@@ -31,3 +31,6 @@ namespace Tester
         }
     }
 }
+
+3、在引用里面添加autofac以及backtestingplatform
+4、复制app.config到本地，和btp内的保持一致

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Autofac;
 using BackTestingPlatform.Model;
 
-namespace BackTestingPlatform.Service
+namespace BackTestingPlatform.Service.Stock
 {
     public class StockService
     {
