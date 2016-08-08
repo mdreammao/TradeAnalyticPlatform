@@ -15,25 +15,38 @@ namespace BackTestingPlatform.Utilities
     /// </summary>
     public static class DataListUtils
     {
-        //  private List<TickFromMssql> newDataList;
 
-        public static List<TickFromMssql> CopyFromList(List<TickFromMssql> originalList, int startDate, int endDate)
+        public static List<TickFromMssql> ModifyListByTime(List<TickFromMssql> originalList,int startTime,int endTime)
         {
-            int startIndex = originalList.FindIndex(s => s.date == startDate);
-            int endIndex = originalList.FindIndex(s => s.date == endDate);
-
-            Console.WriteLine("index1:{0} index2:{1}", startIndex, endIndex);
-
-            if (startIndex == -1 | endIndex == -1)
-                return null;
-            else
-            {
-                List<TickFromMssql> newList = originalList.GetRange(startIndex, endIndex - startIndex + 1);
-                return newList;
-          
-            }                
-   
+            int startIndex = originalList.FindIndex(s=>s.time>=startTime);
+            int endIndex = originalList.FindIndex(s => s.time >= endTime) - 1;
+            return originalList.GetRange(startIndex, endIndex - startIndex + 1);
         }
+
+        public static List<TickFromMssql> FillList(List<TickFromMssql> originalList)
+        {
+            TickFromMssql[] arr = new TickFromMssql[14402];
+            foreach (var item in originalList)
+            {
+                int index = TradeDaysUtils.TimeToIndex(item.time);
+                if (index>=0 && index<=14401)
+                {
+                    arr[index] = item;
+                }
+            }
+            for (int i = 1; i < 14402; i++)
+            {
+                TickFromMssql thisTick = arr[i];
+                if (thisTick==null)
+                {
+                    arr[i] = arr[i - 1];
+                }
+            }
+            return arr.ToList();
+        }
+
+
+    }
 
     }
 }
