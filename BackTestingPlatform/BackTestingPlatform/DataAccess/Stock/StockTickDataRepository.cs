@@ -46,7 +46,7 @@ namespace BackTestingPlatform.DataAccess
             return dt.AsEnumerable().Select(
                 row => new RealTimeQuotes
                 {
-                    time = Kit.toDateTime((string)row["tdate"],(string)row["ttime"]),
+                    time = Kit.ToDateTime((string)row["tdate"],(string)row["ttime"]),
                     cp = Convert.ToDouble(row["cp"]),
                     high = Convert.ToDouble(row["hp"]),
                     low = Convert.ToDouble(row["lp"]),

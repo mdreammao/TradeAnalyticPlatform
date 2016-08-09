@@ -1,6 +1,7 @@
 ﻿using BackTestingPlatform.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace BackTestingPlatform.Utilities
         {
             if (_tradeDays == null)
             {
-                _tradeDays = (List<DateTime>)Platforms.BasicInfo["TradeDays"];
+                _tradeDays = Caches.get<List<DateTime>>("TradeDays");
             }
             return _tradeDays;
         }
@@ -24,123 +25,61 @@ namespace BackTestingPlatform.Utilities
             {
                 return getTradeDays()[index];
             }
-            return DateTime.MinValue; ;
-        }
-
-        public static List<DateTime> getTradeDays(int firstDate,int lastDate)
-        {
-            List<DateTime> list=(List<DateTime>)Platforms.BasicInfo["TradeDays"];
-            return list.FindAll(delegate (DateTime item)
-            {
-                if (Kit.toDateInt(item)>=firstDate && Kit.toDateInt(item)<=lastDate)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-             );
-        }
-
-         
-
-        /// <summary>
-        /// 将DateTime格式的日期转化成为int类型的日期。
-        /// </summary>
-        /// <param name="time">DateTime类型的日期</param>
-        /// <returns>Int类型的日期</returns>
-        public static int DateTimeToInt(DateTime time)
-        {
-            return time.Year * 10000 + time.Month * 100 + time.Day;
+            return DateTime.MinValue;
         }
 
         /// <summary>
-        /// 将Int格式的日期转化为DateTime格式类型的日期。
+        /// get TradeDay List by a range [firstDate,lastDate]
         /// </summary>
-        /// <param name="day"></param>
+        /// <param name="firstDate"></param>
+        /// <param name="lastDate"></param>
         /// <returns></returns>
-        public static DateTime IntToDateTime(int day)
+        public static List<DateTime> getTradeDays(DateTime firstDate, DateTime lastDate)
         {
-            string dayString = DateTime.ParseExact(day.ToString(), "yyyyMMdd", null).ToString();
-            return Convert.ToDateTime(dayString);
+            int x1 = Math.Abs(getTradeDays().BinarySearch(firstDate));
+            int x2 = getTradeDays().BinarySearch(lastDate);
+            x2 = x2 < 0 ? -x2 - 1 : x2;
+            return getTradeDays().GetRange(x1, x2 - x1 + 1);
         }
 
-        /// <summary>
-        /// 静态函数。将数组下标转化为具体时刻。
-        /// </summary>
-        /// <param name="Index">下标</param>
-        /// <returns>时刻</returns>
-        public static int IndexToTime(int index)
+        public static List<DateTime> getTradeDays(int firstDate, int lastDate)
         {
-            int time0 = index * 500;
-            int hour = time0 / 3600000;
-            time0 = time0 % 3600000;
-            int minute = time0 / 60000;
-            time0 = time0 % 60000;
-            int second = time0;
-            if (hour < 2)
-            {
-                hour += 9;
-                minute += 30;
-                if (minute >= 60)
-                {
-                    minute -= 60;
-                    hour += 1;
-                }
-            }
-            else
-            {
-                hour += 11;
-            }
-            return hour * 10000000 + minute * 100000 + second;
+            return getTradeDays(
+                Kit.ToDateTime(firstDate, 0), 
+                Kit.ToDateTime(lastDate, 235959));
         }
 
 
-        /// <summary>
-        /// 静态函数。将时间转化为数组下标。
-        /// </summary>
-        /// <param name="time">时间</param>
-        /// <returns>数组下标</returns>
-        public static int TimeToIndex(int time)
-        {
-            int hour = time / 10000000;
-            time = time % 10000000;
-            int minute = time / 100000;
-            time = time % 100000;
-            int tick = time / 500;
-            int index;
-            if (hour >= 13)
-            {
-                index = 14401 + (hour - 13) * 7200 + minute * 120 + tick;
-            }
-            else
-            {
-                index = (int)(((double)hour - 9.5) * 7200) + minute * 120 + tick;
-            }
-            return index;
-        }
 
         /// <summary>
-        /// 给出前一交易日。
+        /// 判断当前日期是否为交易日
         /// </summary>
-        /// <param name="today">当前交易日</param>
+        /// <param name="today">当前日</param>
+        /// <returns></returns>
+        public static bool isTradeDay(DateTime today)
+        {
+            return getTradeDays().BinarySearch(today) >= 0;
+        }
+        /// <summary>
+        /// 给出上一交易日,即比当前天早的交易日中最晚的一个
+        /// </summary>
+        /// <param name="today">当前日</param>
         /// <returns>返回前一交易日</returns>
-        public static DateTime PreviousTradeDay(DateTime today)
+        public static DateTime Previous(DateTime today)
         {
             int index = getTradeDays().BinarySearch(today);
-            return getTradeDay(index - 1);
+            return getTradeDay(Math.Abs(index) - 1);
         }
 
         /// <summary>
-        /// 给出下一交易日。
+        /// 给出下一交易日,即比当前天晚的交易日中最早的一个
         /// </summary>
-        /// <param name="today">当前交易日</param>
+        /// <param name="today">当前日</param>
         /// <returns>下一交易日</returns>
-        public static DateTime NextTradeDay(DateTime today)
+        public static DateTime Next(DateTime today)
         {
             int index = getTradeDays().BinarySearch(today);
+            if (index < 0) index = -index - 1;
             return getTradeDay(index + 1);
         }
 
@@ -149,10 +88,10 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前日期</param>
         /// <returns>交易日</returns>
-        public static DateTime RecentTradeDay(DateTime today)
+        public static DateTime NextOrCurrent(DateTime today)
         {
-            int index = getTradeDays().BinarySearch(today);
-            return (index < 0) ? getTradeDay(-index) : today;
+            int index = getTradeDays().BinarySearch(today);            
+            return getTradeDay(Math.Abs(index));
         }
 
         /// <summary>
@@ -181,17 +120,11 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="day">日期</param>
         /// <returns>第几周</returns>
-        public static int WeekOfMonth(int day)
-        {
-            DateTime today = IntToDateTime(day);
-            int daysOfWeek = 7;
-            if (today.AddDays(0 - daysOfWeek).Month != today.Month) return 1;
-            if (today.AddDays(0 - 2 * daysOfWeek).Month != today.Month) return 2;
-            if (today.AddDays(0 - 3 * daysOfWeek).Month != today.Month) return 3;
-            if (today.AddDays(0 - 4 * daysOfWeek).Month != today.Month) return 4;
-            return 5;
+        public int getWeekOfMonth(DateTime dt)
+        {           
+            int weekNum = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dt, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            return weekNum;
         }
-
 
     }
 }

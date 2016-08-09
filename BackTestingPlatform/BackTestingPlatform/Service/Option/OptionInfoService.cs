@@ -23,7 +23,7 @@ namespace BackTestingPlatform.Service.Option
         /// </summary>
         /// <param name="underlyingCode"></param>
         /// <param name="market"></param>
-        public void loadOptionInfo(string underlyingCode="510050.SH", string market="sse")
+        public void loadOptionInfo(string underlyingCode, string market)
         {
             List<OptionInfo> optionInfos;
             int daysUpdateRound = 1;    //CacheData更新周期间隔
@@ -40,7 +40,8 @@ namespace BackTestingPlatform.Service.Option
                 optionInfos = optionInfoRepository.fetchAllFromLocalFile(filePath, underlyingCode, market);
             }
 
-            Platforms.BasicInfo["OptionInfos"] = optionInfos;
+            //加载到BasicInfo
+            Caches.put("OptionInfos", optionInfos);
             Console.WriteLine(optionInfos);
             
 
