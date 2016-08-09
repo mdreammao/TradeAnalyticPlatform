@@ -51,6 +51,14 @@ namespace BackTestingPlatform.Utilities
             return string.Concat("\"", src.Replace("\"", "\"\""), "\"");          
         }
 
+        static string toNonDoubleQuotedString(string src)
+        {
+            int len = src.Length;
+            if (src[0] == '\"' && src[len - 1] == '\"')
+                return src.Substring(1, len - 2);
+            else
+                return src;            
+        }
 
 
         /// <summary>
@@ -63,25 +71,32 @@ namespace BackTestingPlatform.Utilities
         public static DataTable ReadFromCsvFile(string filePath,bool firstRowAsHeader=true)
         {
             DataTable dt = new DataTable();
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
+                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    if (!sr.EndOfStream && firstRowAsHeader)
+                    using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                     {
-                        string[] headers = sr.ReadLine().Split(',');
-                        foreach (string header in headers)
+                        if (!sr.EndOfStream && firstRowAsHeader)
                         {
-                            dt.Columns.Add(header);
+                            string[] headers = sr.ReadLine().Split(',');
+                            foreach (string header in headers)
+                            {
+                                dt.Columns.Add(header);
+                            }
+                        }
+
+                        while (!sr.EndOfStream)
+                        {
+                            string[] rows = sr.ReadLine().Split(',').Select(toNonDoubleQuotedString).ToArray();
+                            dt.Rows.Add(rows);
                         }
                     }
-                   
-                    while (!sr.EndOfStream)
-                    {
-                        string[] rows = sr.ReadLine().Split(',');
-                        dt.Rows.Add(rows);
-                    }
                 }
+            }catch(Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
             }
             return dt;
         }

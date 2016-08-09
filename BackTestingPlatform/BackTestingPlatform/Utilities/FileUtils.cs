@@ -78,7 +78,7 @@ namespace BackTestingPlatform.Utilities
             int x1 = filePath.LastIndexOf('_');
             int x2 = filePath.LastIndexOf('.');
             string timeStr = filePath.Substring(x1 + 1, x2 - x1 - 1);
-            return DateTime.ParseExact(timeStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+            return Kit.ToDate(timeStr);
         }
 
 
@@ -87,7 +87,7 @@ namespace BackTestingPlatform.Utilities
         /// 返回值=今天-该文件的时间戳，如果没有找到文件则返回36500（100年）
         /// </summary>      
         /// <returns></returns>
-        public static int GetCacheFileDaysPastTillToday(string filePath)
+        public static int GetCacheDataFileDaysPastTillToday(string filePath)
         {
             if (filePath != null)
             {

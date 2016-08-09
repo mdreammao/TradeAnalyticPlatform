@@ -56,6 +56,7 @@ namespace BackTestingPlatform.Utilities
             if (arg < 100000000) arg = arg * 100000000; //可能未包含hhmmss
             return ToDateTime((int)(arg / 1000000), (int)(arg % 1000000));
         }
+
         /// <summary>
         /// 转换到DateTime类型,用例：
         /// ToDateTime(20160805093000)
@@ -79,6 +80,24 @@ namespace BackTestingPlatform.Utilities
             long.TryParse(arg, out x);
             return ToDateTime(x);
         }
+        
+        public static DateTime ToDateTime(object arg)
+        {
+            if (arg == null)
+                return DateTime.MinValue;
+            if (arg.GetType() == typeof(string))                     
+                return ToDateTime((string)arg);             
+            
+            if (arg.GetType() == typeof(decimal))
+                return ToDateTime((long)arg);
+            if (arg.GetType() == typeof(int))
+                return ToDateTime((long)arg);           
+            if (arg.GetType() == typeof(long))
+                return ToDateTime((long)arg);
+
+            return DateTime.MinValue;
+        }
+
         /// <summary>
         /// 转换到DateTime类型,不含hhmmss,用例：
         /// ToDateTime(20160805),相当于ToDateTime(20160805000000)
@@ -88,6 +107,11 @@ namespace BackTestingPlatform.Utilities
         public static DateTime ToDate(int arg)
         {
             return ToDateTime(arg, 0);
+        }
+
+        public static DateTime ToDate(string arg)
+        {
+            return ToDateTime(arg, "0");
         }
         /// <summary>
         /// 返回值类似20160805093000

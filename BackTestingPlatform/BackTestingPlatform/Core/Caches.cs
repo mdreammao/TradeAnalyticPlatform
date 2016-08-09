@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +12,9 @@ namespace BackTestingPlatform.Core
     /// </summary>
     public class Caches
     {
-        static IDictionary<string, object> data=new Dictionary<string,object>();
+        static IDictionary<string, object> data = new Dictionary<string, object>();
 
-        public static void put(string key,object val)
+        public static void put(string key, object val)
         {
             data[key] = val;
         }
@@ -22,6 +23,19 @@ namespace BackTestingPlatform.Core
         {
             return (T)data[key];
         }
+
+        public static IDictionary<string, object> getAll()
+        {
+            return data;
+        }
+
+        
+        //------ 以下是一些常用的变量get函数 ---------
+        public static List<DateTime> getTradeDays()
+        {
+            return get<List<DateTime>>("TradeDays");
+        }
+
 
     }
 }

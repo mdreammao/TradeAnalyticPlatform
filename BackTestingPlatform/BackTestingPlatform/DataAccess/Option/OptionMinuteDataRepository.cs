@@ -55,38 +55,18 @@ namespace BackTestingPlatform.DataAccess.Option
 
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
-            List<OptionMinuteData> items = new List<OptionMinuteData>();
-            for (int i = 0; i < dt.Rows.Count; i++)
+            
+            return dt.AsEnumerable().Select(row => new OptionMinuteData
             {
-                var r = dt.Rows[i];
-
-                items.Add(new OptionMinuteData
-                {
-                    time = Convert.ToDateTime(_toString(r["time"])),
-                    open = Convert.ToDouble(_toString(r["open"])),
-                    high = Convert.ToDouble(_toString(r["high"])),
-                    low = Convert.ToDouble(_toString(r["low"])),
-                    close = Convert.ToDouble(_toString(r["close"])),
-                    volume = Convert.ToDouble(_toString(r["volume"])),
-                    amount = Convert.ToDouble(_toString(r["amount"]))
-                });
-            }
-            return items;
-            //return dt.AsEnumerable().Select(row => new OptionMinuteData
-            //{
-            //    time=Convert.ToDateTime(_toString("time")),
-            //    open=Convert.ToDouble(_toString("open")),
-            //    high = Convert.ToDouble(_toString("high")),
-            //    low  = Convert.ToDouble(_toString("low")),
-            //    close = Convert.ToDouble(_toString("close")),
-            //    volume = Convert.ToDouble(_toString("volume")),
-            //    amount = Convert.ToDouble(_toString("amount")),
-            //}).ToList();
+                time = Kit.ToDateTime(row["time"]),
+                open = Kit.ToDouble(row["open"]),
+                high = Kit.ToDouble(row["high"]),
+                low = Kit.ToDouble(row["low"]),
+                close = Kit.ToDouble(row["close"]),
+                volume = Kit.ToDouble(row["volume"]),
+                amount = Kit.ToDouble(row["amount"]),
+            }).ToList();
         }
-
-        private string _toString(object item)
-        {
-            return Convert.ToString(item).Substring(1, Convert.ToString(item).Length - 2);
-        }
+            
     }
 }

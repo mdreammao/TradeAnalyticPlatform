@@ -28,7 +28,7 @@ namespace BackTestingPlatform.Service.Option
             List<OptionInfo> optionInfos;
             int daysUpdateRound = 1;    //CacheData更新周期间隔
             var filePath = FileUtils.GetCacheDataFileThatLatest(OptionInfoRepository.PATH_KEY);
-            var daysdiff = FileUtils.GetCacheFileDaysPastTillToday(filePath);
+            var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(filePath);
             if (daysdiff > daysUpdateRound)
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
                 optionInfos = optionInfoRepository.fetchFromWind(underlyingCode, market);

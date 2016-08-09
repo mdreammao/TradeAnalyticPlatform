@@ -36,16 +36,17 @@ namespace BackTestingPlatform.Utilities
         /// <returns></returns>
         public static List<DateTime> getTradeDays(DateTime firstDate, DateTime lastDate)
         {
-            int x1 = Math.Abs(getTradeDays().BinarySearch(firstDate));
+            int x1 = getTradeDays().BinarySearch(firstDate);
             int x2 = getTradeDays().BinarySearch(lastDate);
-            x2 = x2 < 0 ? -x2 - 1 : x2;
+            x1 = x1 < 0 ? -x1 - 1 : x1;
+            x2 = x2 < 0 ? -x2 - 2 : x2;
             return getTradeDays().GetRange(x1, x2 - x1 + 1);
         }
 
         public static List<DateTime> getTradeDays(int firstDate, int lastDate)
         {
             return getTradeDays(
-                Kit.ToDateTime(firstDate, 0), 
+                Kit.ToDateTime(firstDate, 0),
                 Kit.ToDateTime(lastDate, 235959));
         }
 
@@ -60,6 +61,18 @@ namespace BackTestingPlatform.Utilities
         {
             return getTradeDays().BinarySearch(today) >= 0;
         }
+
+        static int IndexOfPrevious(DateTime today)
+        {
+            int x = getTradeDays().BinarySearch(today);
+            return x < 0 ? -x - 2 : x - 1;
+        }
+        static int IndexOfNext(DateTime today)
+        {
+            int x = getTradeDays().BinarySearch(today);
+            return x < 0 ? -x - 1 : x + 1;
+        }
+
         /// <summary>
         /// 给出上一交易日,即比当前天早的交易日中最晚的一个
         /// </summary>
@@ -67,8 +80,7 @@ namespace BackTestingPlatform.Utilities
         /// <returns>返回前一交易日</returns>
         public static DateTime Previous(DateTime today)
         {
-            int index = getTradeDays().BinarySearch(today);
-            return getTradeDay(Math.Abs(index) - 1);
+            return getTradeDay(IndexOfPrevious(today));
         }
 
         /// <summary>
@@ -78,20 +90,31 @@ namespace BackTestingPlatform.Utilities
         /// <returns>下一交易日</returns>
         public static DateTime Next(DateTime today)
         {
-            int index = getTradeDays().BinarySearch(today);
-            if (index < 0) index = -index - 1;
-            return getTradeDay(index + 1);
+            return getTradeDay(IndexOfNext(today));
         }
 
         /// <summary>
-        /// 给出当前日期最近的交易日。如果今日是交易日返回今日，否者返回下一个最近的交易日。
+        /// 给出离当前日期最近的交易日。如果今日是交易日返回今日，否者返回上一个最近的交易日。
+        /// </summary>
+        /// <param name="today"></param>
+        /// <returns></returns>
+        public static DateTime PreviousOrCurrent(DateTime today)
+        {
+            int x = getTradeDays().BinarySearch(today);
+            x = x < 0 ? -x - 2 : x;
+            return getTradeDay(x);
+        }
+
+        /// <summary>
+        /// 给出离当前日期最近的交易日。如果今日是交易日返回今日，否者返回下一个最近的交易日。
         /// </summary>
         /// <param name="today">当前日期</param>
         /// <returns>交易日</returns>
         public static DateTime NextOrCurrent(DateTime today)
         {
-            int index = getTradeDays().BinarySearch(today);            
-            return getTradeDay(Math.Abs(index));
+            int x = getTradeDays().BinarySearch(today);
+            x = x < 0 ? -x - 1 : x;
+            return getTradeDay(x);
         }
 
         /// <summary>
@@ -108,8 +131,9 @@ namespace BackTestingPlatform.Utilities
         {
             int x1 = getTradeDays().BinarySearch(day1);
             int x2 = getTradeDays().BinarySearch(day2);
-            if (x1 < 0) x1 = -x1;
-            if (x2 < 0) x2 = -x2 - 1;
+
+            x1 = x1 < 0 ? -x1 - 1 : x1;
+            x2 = x2 < 0 ? -x2 - 2 : x2;
             return x2 - x1 + 1;
         }
 
@@ -121,7 +145,7 @@ namespace BackTestingPlatform.Utilities
         /// <param name="day">日期</param>
         /// <returns>第几周</returns>
         public int getWeekOfMonth(DateTime dt)
-        {           
+        {
             int weekNum = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dt, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             return weekNum;
         }

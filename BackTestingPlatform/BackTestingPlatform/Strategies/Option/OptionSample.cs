@@ -21,7 +21,7 @@ namespace BackTestingPlatform.Strategies.Option
 
         public OptionSample(int start, int end)
         {
-            var days = Caches.get<List<DateTime>>("TradeDays");
+            var days = Caches.getTradeDays();
             OptionInfoService optionInfoService = Platforms.container.Resolve<OptionInfoService>();
             optionInfoService.loadOptionInfo("510050.SH", "sse");
             var optionInfo = Caches.get<List<OptionInfo>>("OptionInfos");

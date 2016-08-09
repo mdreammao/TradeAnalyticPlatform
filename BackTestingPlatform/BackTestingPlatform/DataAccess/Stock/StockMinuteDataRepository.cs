@@ -71,16 +71,6 @@ namespace BackTestingPlatform.DataAccess.Stock
                 });
             }
             return items;
-            //return dt.AsEnumerable().Select(row => new StockMinuteData
-            //{
-            //    time = Convert.ToDateTime(_toString("time")),
-            //    open = Convert.ToDouble(_toString("open")),
-            //    high = Convert.ToDouble(_toString("high")),
-            //    low = Convert.ToDouble(_toString("low")),
-            //    close = Convert.ToDouble(_toString("close")),
-            //    volume = Convert.ToDouble(_toString("volume")),
-            //    amount = Convert.ToDouble(_toString("amount")),
-            //}).ToList();
         }
 
         private string _toString(object item)
