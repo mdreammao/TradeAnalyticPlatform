@@ -61,7 +61,7 @@ namespace BackTestingPlatform.DataAccess.Stock
                 var r = dt.Rows[i];
                 
                 items.Add(new StockMinuteData {
-                    time = Convert.ToDateTime(_toString(r["time"])),
+                 time = Convert.ToDateTime(_toString(r["time"])),
                  open = Convert.ToDouble(_toString(r["open"])),
                  high = Convert.ToDouble(_toString(r["high"])),
                  low = Convert.ToDouble(_toString(r["low"])),

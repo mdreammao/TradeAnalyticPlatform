@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BackTestingPlatform.Model.Common;
-using System.Collections.Generic;
 using System.Collections;
 
 
@@ -16,11 +15,25 @@ namespace BackTestingPlatform.Utilities
     public static class DataListUtils
     {
 
-        public static List<TickFromMssql> ModifyListByTime(List<TickFromMssql> originalList,int startTime,int endTime)
+        public static List<TickFromMssql> ModifyListByDate(List<TickFromMssql> originalList, int startDate, int endDate)
         {
-            int startIndex = originalList.FindIndex(s=>s.time>=startTime);
-            int endIndex = originalList.FindIndex(s => s.time >= endTime) - 1;
-            return originalList.GetRange(startIndex, endIndex - startIndex + 1);
+            int startIndex = originalList.FindIndex(s => s.date >= startDate);
+            int endIndex = originalList.FindIndex(s => s.date >= endDate);
+            if (startIndex != -1 & endIndex != -1)
+                return originalList.GetRange(startIndex, endIndex - startIndex + 1);
+            else
+                return null;
+        }
+
+
+        public static List<TickFromMssql> ModifyListByTime(List<TickFromMssql> originalList, int startTime, int endTime)
+        {
+            int startIndex = originalList.FindIndex(s => s.time >= startTime);
+            int endIndex = originalList.FindIndex(s => s.time >= endTime);
+            if (startIndex != -1 & endIndex != -1)
+                return originalList.GetRange(startIndex, endIndex - startIndex + 1);
+            else
+                return null;
         }
 
         public static List<TickFromMssql> FillList(List<TickFromMssql> originalList)
@@ -29,7 +42,7 @@ namespace BackTestingPlatform.Utilities
             foreach (var item in originalList)
             {
                 int index = TradeDaysUtils.TimeToIndex(item.time);
-                if (index>=0 && index<=14401)
+                if (index >= 0 && index <= 14401)
                 {
                     arr[index] = item;
                 }
@@ -37,7 +50,7 @@ namespace BackTestingPlatform.Utilities
             for (int i = 1; i < 14402; i++)
             {
                 TickFromMssql thisTick = arr[i];
-                if (thisTick==null)
+                if (thisTick == null)
                 {
                     arr[i] = arr[i - 1];
                 }
@@ -48,5 +61,5 @@ namespace BackTestingPlatform.Utilities
 
     }
 
-    }
 }
+

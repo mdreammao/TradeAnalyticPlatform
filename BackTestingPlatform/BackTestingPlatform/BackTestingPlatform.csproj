@@ -70,11 +70,13 @@
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionMinuteDataService.cs" />
     <Compile Include="Service\Option\OptionInfoService.cs" />
+    <Compile Include="Service\Stock\StockInfoService.cs" />
     <Compile Include="Service\Stock\StockMinuteDataService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\TradeDaysService.cs" />
-    <Compile Include="Strategies\BackTesting.cs" />
+    <Compile Include="Strategies\BackTestingFunc\BackTesting.cs" />
     <Compile Include="Strategies\Option\OptionSample.cs" />
+    <Compile Include="Utilities\FreqTransferUtils.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
     <Compile Include="Utilities\Option\OptionUtilities.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
@@ -89,8 +91,8 @@
     <Compile Include="Model\Option\ImpvSurface.cs" />
     <Compile Include="PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Strategies\DealJudge.cs" />
-    <Compile Include="Strategies\Strategy.cs" />
+    <Compile Include="Strategies\BackTestingFunc\DealJudge.cs" />
+    <Compile Include="Strategies\BackTestingFunc\Strategy.cs" />
     <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Sample\SingleMA.cs" />
     <Compile Include="Utilities\TradeDaysUtils.cs" />

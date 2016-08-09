@@ -66,19 +66,20 @@ namespace BackTestingPlatform.DataAccess
             ", timeStr, codeStr);
             var connStr = SqlUtils.GetConnectionString(connName);
             DataTable dt = SqlUtils.GetTable(connStr, sql);
+           
             return dt.AsEnumerable().Select(
                 row => new TickFromMssql
-                {
+                {                  
                     code = Convert.ToString(row["stkcd"]),
                     date = Convert.ToInt32(row["tdate"]),
                     time = Convert.ToInt32(row["ttime"]),
                     lastPrice = Convert.ToDouble(row["cp"]),
-                    ask = _buildPositionAskData(row),
-                    bid = _buildPositionBidData(row),
+              //    ask = _buildPositionAskData(row),
+              //    bid = _buildPositionBidData(row),
                     highPrice = Convert.ToDouble(row["hp"]),
                     lowPrice = Convert.ToDouble(row["lp"]),
-                    preClose = Convert.ToDouble(row["PRECLOSE"]),
-                    preSettle = Convert.ToDouble(row["PrevSettle"]),
+              //    preClose = Convert.ToDouble(row["PRECLOSE"]),
+              //    preSettle = Convert.ToDouble(row["PrevSettle"]),
                     volume = Convert.ToDouble(row["ts"]),
                     turnoverVolume = Convert.ToDouble(row["tt"])
                 }).ToList();

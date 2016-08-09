@@ -155,7 +155,6 @@ namespace BackTestingPlatform.Utilities
             return (index < 0) ? getTradeDay(-index) : today;
         }
 
-
         /// <summary>
         ///获取间隔的交易日计数,计数包含day1,day2。
         /// 例如，Jan-1,Jan-2,Jan-3不是交易日，Jan-4，Jan-5是交易日,则
