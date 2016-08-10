@@ -114,6 +114,6 @@ namespace BackTestingPlatform.Utilities
             return index;
         }
 
-
+    }
 }
 

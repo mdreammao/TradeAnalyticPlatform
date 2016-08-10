@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Common
 {
-    public class Tick
+
+    public class Tick 
     {
         public string code { get; set; }
         public DateTime time { get; set; }

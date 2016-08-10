@@ -97,6 +97,7 @@
     <Compile Include="Strategies\BackTestingFunc\Strategy.cs" />
     <Compile Include="Core\Platforms.cs" />
     <Compile Include="Strategies\Sample\SingleMA.cs" />
+    <Compile Include="Utilities\TickUtils.cs" />
     <Compile Include="Utilities\TradeDaysUtils.cs" />
   </ItemGroup>
   <ItemGroup>

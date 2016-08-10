@@ -50,7 +50,7 @@ namespace BackTestingPlatform.DataAccess.Option
             Console.WriteLine("{0} saved!", path);
         }
 
-        public List<OptionMinuteData> fetchAllFromLocalFile(string filePath)
+        public List<OptionMinuteData> fetchAllFromLocalCsvFile(string filePath)
         {
 
             if (!File.Exists(filePath)) return null;

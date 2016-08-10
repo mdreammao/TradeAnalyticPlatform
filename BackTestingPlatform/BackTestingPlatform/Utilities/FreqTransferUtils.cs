@@ -105,7 +105,7 @@ namespace BackTestingPlatform.Utilities
                 int fullTime = nowDate * 1000000000 + nowTime;
                 newMinuteData.Add(new StockMinuteData
                     {
-                        time = Kit.toDateTime(nowDate, nowTime),
+                        time = Kit.ToDateTime(nowDate, nowTime),
                         open =nowOpen,
                         high = nowHigh,
                         low = nowLow,

@@ -7,7 +7,7 @@ using BackTestingPlatform.Model.Option;
 
 namespace BackTestingPlatform.Utilities.Option
 {
-    public static class OptionUtilities
+    static class OptionUtilities
     {
 
         public static List<OptionInfo> getOptionListByOptionType(List<OptionInfo> list, string type)

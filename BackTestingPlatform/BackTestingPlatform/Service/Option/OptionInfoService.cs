@@ -33,14 +33,16 @@ namespace BackTestingPlatform.Service.Option
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
                 optionInfos = optionInfoRepository.fetchFromWind(underlyingCode, market);
                 optionInfoRepository.saveToLocalFile(optionInfos);
-               
+           
+
+
             }
             else
             {   //CacheData不是太旧，直接读取
                 optionInfos = optionInfoRepository.fetchAllFromLocalFile(filePath, underlyingCode, market);
             }
 
-            //加载到BasicInfo
+            //加载到内存缓存
             Caches.put("OptionInfos", optionInfos);
             Console.WriteLine(optionInfos);
             
