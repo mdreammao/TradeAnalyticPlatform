@@ -35,18 +35,18 @@ namespace BackTestingPlatform.Strategies.Option
                 var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)optionInfo, Kit.toDateInt(item));
                 foreach (var options in optionToday)
                 {
-                    if (Utilities.TradeDaysUtils.GetSpanOfTradeDays(item,options.endDate)<=7 && options.optionType=="认购")
+                   // if (Utilities.TradeDaysUtils.GetSpanOfTradeDays(item,options.endDate)<=7 && options.optionType=="认购")
                     {
                         OptionMinuteDataService optionData = Platforms.container.Resolve<OptionMinuteDataService>();
                         var optionMinuteData = optionData.loadOptionMinuteData(options.optionCode, item);
-                        var optionWithEtf = AddEtfPrice(optionMinuteData, etfMinuteData,options);
-                        for (int i = 0; i < 240; i++)
-                        {
-                            if (options.strike+optionWithEtf[i].close<optionWithEtf[i].underlyingPrice-0.05*optionWithEtf[i].close && optionWithEtf[i].volume>5)
-                            {
-                                answer.Add(optionWithEtf[i]);
-                            }
-                        }
+                        //var optionWithEtf = AddEtfPrice(optionMinuteData, etfMinuteData,options);
+                        //for (int i = 0; i < 240; i++)
+                        //{
+                        //    if (options.strike+optionWithEtf[i].close<optionWithEtf[i].underlyingPrice-0.05*optionWithEtf[i].close && optionWithEtf[i].volume>5)
+                        //    {
+                        //        answer.Add(optionWithEtf[i]);
+                        //    }
+                        //}
                     }
                 }
             }
