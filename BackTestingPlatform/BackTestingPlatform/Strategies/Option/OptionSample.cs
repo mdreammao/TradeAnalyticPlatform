@@ -87,7 +87,7 @@ namespace BackTestingPlatform.Strategies.Option
                     amount=option[i].amount,
                     underlyingPrice=etf[i].close
                 });
-            }
+            } 
             return items;
         }
     }
