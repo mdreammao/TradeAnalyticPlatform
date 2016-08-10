@@ -77,6 +77,7 @@
     <Compile Include="Service\TradeDaysService.cs" />
     <Compile Include="Strategies\BackTestingFunc\BackTesting.cs" />
     <Compile Include="Strategies\Option\OptionSample.cs" />
+    <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Utilities\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
