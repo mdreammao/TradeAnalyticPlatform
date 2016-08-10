@@ -4,5 +4,10 @@
 2016/08/09
 1、多层次list结构转为为datatable
 
-
+2016/08/10
+1. 以append方式保存csv文件
+2. 自动删除过时的csv文件
+3. 加入Log4Net组件，记录日志用
+4. List<struct>类型的property的flatten和deflatten，便于datatable与List<Entity>互相转换
+5. 更为通用的CacheData读写流程
 

@@ -33,6 +33,8 @@ namespace BackTestingPlatform.Utilities
         /// <returns>例如TradeDays_20160803.txt</returns>
         public static string GetCacheDataFilePath(string key, DateTime timestamp)
         {
+            
+            
             return ConfigurationManager.AppSettings["CacheData.RootPath"]
                 + ConfigurationManager.AppSettings[key].Replace("{0}", timestamp.ToString("yyyyMMdd"));
         }
@@ -44,11 +46,11 @@ namespace BackTestingPlatform.Utilities
                + ConfigurationManager.AppSettings[key];
         }
         /// <summary>
-        /// 根据key获取路径配置，列出所有匹配的文件，按文件名倒序排列
+        /// 根据key获取路径配置，列出所有匹配的文件路径，按文件名倒序排列
         /// </summary>
         /// <param name="key">app.config中的key</param>
         /// <returns></returns>
-        public static List<string> GetCacheDataFiles(string key)
+        public static List<string> GetCacheDataFilePaths(string key)
         {
             var path = FileUtils.GetCacheDataFilePath(key);
             var dirPath = Path.GetDirectoryName(path);
@@ -59,7 +61,7 @@ namespace BackTestingPlatform.Utilities
 
         public static string GetCacheDataFileThatLatest(string key)
         {
-            var list = GetCacheDataFiles(key);
+            var list = GetCacheDataFilePaths(key);
             return (list != null && list.Count > 0) ? list[0] : null;
         }
 
@@ -78,7 +80,17 @@ namespace BackTestingPlatform.Utilities
             int x1 = filePath.LastIndexOf('_');
             int x2 = filePath.LastIndexOf('.');
             string timeStr = filePath.Substring(x1 + 1, x2 - x1 - 1);
-            return DateTime.ParseExact(timeStr, "yyyyMMdd", CultureInfo.InvariantCulture);
+            return Kit.ToDate(timeStr);
+        }
+
+        public static void DeleteOldCacheDataFile(string appKey)
+        {
+            var filePaths = FileUtils.GetCacheDataFilePaths(appKey);
+            foreach (var fpath in filePaths)
+            {
+                File.Delete(fpath);
+            }
+            
         }
 
 
@@ -87,7 +99,7 @@ namespace BackTestingPlatform.Utilities
         /// 返回值=今天-该文件的时间戳，如果没有找到文件则返回36500（100年）
         /// </summary>      
         /// <returns></returns>
-        public static int GetCacheFileDaysPastTillToday(string filePath)
+        public static int GetCacheDataFileDaysPastTillToday(string filePath)
         {
             if (filePath != null)
             {

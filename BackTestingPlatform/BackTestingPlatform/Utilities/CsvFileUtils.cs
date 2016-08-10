@@ -11,15 +11,17 @@ namespace BackTestingPlatform.Utilities
     public static class CsvFileUtils
     {
         /// <summary>
-        ///  DataTable -> CSV 如果目标csv文件已存在，会覆盖
+        ///  DataTable -> CSV.
+        ///  如果是appendMode，会覆盖旧文件全部内容，否则在旧文件尾部新增内容
         /// </summary>
         /// <param name="dt"></param>
         /// <param name="filePath"></param>
-        public static void WriteToCsvFile(string filePath,DataTable dt)
+        public static void WriteToCsvFile(string filePath,DataTable dt, bool appendMode=false)
         {
             StringBuilder sb = new StringBuilder();
             IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
-            sb.AppendLine(string.Join(",", columnNames));
+            if (!appendMode)    //如果是appendMode则不生成存储列名的首行
+                sb.AppendLine(string.Join(",", columnNames));
 
             foreach (DataRow row in dt.Rows)
             {
@@ -34,7 +36,10 @@ namespace BackTestingPlatform.Utilities
             {
                 Directory.CreateDirectory(dirPath);
             }
-            File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
+            if (appendMode)
+                File.AppendAllText(filePath, sb.ToString(), Encoding.UTF8);
+            else
+                File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
         }
 
         static string toReadableString(object cell)
@@ -45,12 +50,20 @@ namespace BackTestingPlatform.Utilities
             }
             return cell.ToString();
         }
-
+        
         static string toDoubleQuotedString(string src)
         {
             return string.Concat("\"", src.Replace("\"", "\"\""), "\"");          
         }
 
+        static string toNonDoubleQuotedString(string src)
+        {
+            int len = src.Length;
+            if (src[0] == '\"' && src[len - 1] == '\"')
+                return src.Substring(1, len - 2);
+            else
+                return src;            
+        }
 
 
         /// <summary>
@@ -63,34 +76,45 @@ namespace BackTestingPlatform.Utilities
         public static DataTable ReadFromCsvFile(string filePath,bool firstRowAsHeader=true)
         {
             DataTable dt = new DataTable();
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
+                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    if (!sr.EndOfStream && firstRowAsHeader)
+                    using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
                     {
-                        string[] headers = sr.ReadLine().Split(',');
-                        foreach (string header in headers)
+                        if (!sr.EndOfStream && firstRowAsHeader)
                         {
-                            dt.Columns.Add(header);
+                            string[] headers = sr.ReadLine().Split(',');
+                            foreach (string header in headers)
+                            {
+                                dt.Columns.Add(header);
+                            }
+                        }
+
+                        while (!sr.EndOfStream)
+                        {
+                            string[] rows = sr.ReadLine().Split(',').Select(toNonDoubleQuotedString).ToArray();
+                            dt.Rows.Add(rows);
                         }
                     }
-                   
-                    while (!sr.EndOfStream)
-                    {
-                        string[] rows = sr.ReadLine().Split(',');
-                        dt.Rows.Add(rows);
-                    }
                 }
+            }catch(Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
             }
             return dt;
         }
+
+
+
         /// <summary>
         /// 将values转换为csv文件的一行，包含一些默认的类型转换，例如：
         /// toCsvFileLine("a",2.1,DateTime1)=="\"a\",\"2.1\",\"20160804093200\"";
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
+        [Obsolete]
         public static string toCsvFileLine(params object[] values)
         {
             if (values == null) return "";

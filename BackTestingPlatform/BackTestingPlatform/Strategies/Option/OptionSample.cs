@@ -19,12 +19,12 @@ namespace BackTestingPlatform.Strategies.Option
     public class OptionSample
     {
 
-        public OptionSample(int start,int end)
+        public OptionSample(int start, int end)
         {
-            var days = Platforms.BasicInfo["TradeDays"];
+            var days = Caches.getTradeDays();
             OptionInfoService optionInfoService = Platforms.container.Resolve<OptionInfoService>();
             optionInfoService.loadOptionInfo("510050.SH", "sse");
-            var optionInfo = Platforms.BasicInfo["OptionInfos"];
+            var optionInfo = Caches.get<List<OptionInfo>>("OptionInfos");
             days = TradeDaysUtils.getTradeDays(start, end);
             List<OptionMinuteDataWithUnderlying> answer = new List<OptionMinuteDataWithUnderlying>();
             foreach (var item in (List<DateTime>)days)
@@ -32,21 +32,21 @@ namespace BackTestingPlatform.Strategies.Option
                 StockMinuteDataService etfData = Platforms.container.Resolve<StockMinuteDataService>();
                 var etfMinuteData = etfData.loadStockMinuteData("510050.SH", item);
 
-                var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)optionInfo, Kit.toDateInt(item));
+                var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)optionInfo, Kit.ToInt_yyyyMMdd(item));
                 foreach (var options in optionToday)
                 {
-                   // if (Utilities.TradeDaysUtils.GetSpanOfTradeDays(item,options.endDate)<=7 && options.optionType=="认购")
+                    if (Utilities.TradeDaysUtils.GetSpanOfTradeDays(item, options.endDate) <= 7 && options.optionType == "认购")
                     {
                         OptionMinuteDataService optionData = Platforms.container.Resolve<OptionMinuteDataService>();
                         var optionMinuteData = optionData.loadOptionMinuteData(options.optionCode, item);
-                        //var optionWithEtf = AddEtfPrice(optionMinuteData, etfMinuteData,options);
-                        //for (int i = 0; i < 240; i++)
-                        //{
-                        //    if (options.strike+optionWithEtf[i].close<optionWithEtf[i].underlyingPrice-0.05*optionWithEtf[i].close && optionWithEtf[i].volume>5)
-                        //    {
-                        //        answer.Add(optionWithEtf[i]);
-                        //    }
-                        //}
+                        var optionWithEtf = AddEtfPrice(optionMinuteData, etfMinuteData, options);
+                        for (int i = 0; i < 240; i++)
+                        {
+                            if (options.strike + optionWithEtf[i].close < optionWithEtf[i].underlyingPrice - 0.05 * optionWithEtf[i].close && optionWithEtf[i].volume > 5)
+                            {
+                                answer.Add(optionWithEtf[i]);
+                            }
+                        }
                     }
                 }
             }
@@ -60,32 +60,32 @@ namespace BackTestingPlatform.Strategies.Option
             Console.WriteLine("{0} saved!", path);
         }
 
-        public List<OptionMinuteDataWithUnderlying> AddEtfPrice(List<OptionMinuteData> option,List<StockMinuteData> etf,OptionInfo optionInfo)
+        public List<OptionMinuteDataWithUnderlying> AddEtfPrice(List<OptionMinuteData> option, List<StockMinuteData> etf, OptionInfo optionInfo)
         {
-            if (option.Count!=240 || etf.Count!=240)
+            if (option.Count != 240 || etf.Count != 240)
             {
                 return null;
             }
-            List<OptionMinuteDataWithUnderlying> items=new List<OptionMinuteDataWithUnderlying>();
+            List<OptionMinuteDataWithUnderlying> items = new List<OptionMinuteDataWithUnderlying>();
             for (int i = 0; i < 240; i++)
             {
                 items.Add(new OptionMinuteDataWithUnderlying
                 {
                     optionCode = optionInfo.optionCode,
-                    optionName=optionInfo.optionName,
-                    executeType=optionInfo.executeType,
-                    startDate=optionInfo.startDate,
-                    endDate=optionInfo.endDate,
-                    optionType=optionInfo.optionType,
-                    strike=optionInfo.strike,
-                    time =option[i].time,
+                    optionName = optionInfo.optionName,
+                    executeType = optionInfo.executeType,
+                    startDate = optionInfo.startDate,
+                    endDate = optionInfo.endDate,
+                    optionType = optionInfo.optionType,
+                    strike = optionInfo.strike,
+                    time = option[i].time,
                     open = option[i].open,
-                    high=option[i].high,
-                    low=option[i].low,
-                    close=option[i].close,
-                    volume=option[i].volume,
-                    amount=option[i].amount,
-                    underlyingPrice=etf[i].close
+                    high = option[i].high,
+                    low = option[i].low,
+                    close = option[i].close,
+                    volume = option[i].volume,
+                    amount = option[i].amount,
+                    underlyingPrice = etf[i].close
                 });
             }
             return items;
