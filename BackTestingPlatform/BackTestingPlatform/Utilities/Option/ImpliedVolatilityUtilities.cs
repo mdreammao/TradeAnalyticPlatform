@@ -9,27 +9,20 @@ namespace BackTestingPlatform.Utilities.Option
 {
     public class ImpliedVolatilityUtilities
     {
-        public static double ComputeOptionPrice()
+        public static double ComputeOptionPrice(string optionCode, double strike, double duration, double riskFreeRate, double StockRate, string optionType, double optionVolatility, double underlyingPrice)
         {
-            return 0;
+            double etfPirce = underlyingPrice * Math.Exp(-StockRate * duration);
+            return optionLastPrice(etfPirce, optionVolatility, strike, duration, riskFreeRate, optionType);
         }
         public static double ComputeImpliedVolatility(string optionCode,double strike,double duration,double riskFreeRate,double StockRate,string optionType,double optionPrice,double underlyingPrice)
         {
-            double sigma0 = 0;
-            if (optionType=="认购")
-            {
-
-            }
-            else
-            {
-
-            }
-            return 0.0;
+            double etfPirce = underlyingPrice * Math.Exp(-StockRate * duration);
+            return sigma(etfPirce, optionPrice, strike, duration, riskFreeRate, optionType);
         }
-        private double _StartPoint(double K, double T, double r, double call, double s)
+        public static double _StartPoint(double K, double T, double r, double call, double s)///K 是 执行价格 
         {
             double sigma = 0.0;
-            double x = K * Math.Exp(-r * T);
+            double x = K * Math.Exp(-r * T); ///x是折现值
             double radicand = Math.Pow(call - (s - x) / 2, 2) - Math.Pow(s - x, 2) / Math.PI * (1 + x / s) / 2;
             if (radicand>0)
             {
@@ -37,7 +30,6 @@ namespace BackTestingPlatform.Utilities.Option
             }
             return sigma;
         }
-
         /// <summary>
         /// 计算看涨期权隐含波动率。利用简单的牛顿法计算期权隐含波动率。在计算中，当sigma大于3，认为无解并返回0
         /// </summary>
@@ -47,14 +39,14 @@ namespace BackTestingPlatform.Utilities.Option
         /// <param name="duration">期权到期日</param>
         /// <param name="r">无风险利率</param>
         /// <returns>返回隐含波动率</returns>
-        private static double sigmaOfCall(double callPrice, double spotPrice, double strike, double duration, double r)
+        public static double sigmaOfCall(double callPrice, double spotPrice, double strike, double duration, double r)
         {
-            double sigma = 1, sigmaold = 1;
+            double sigma =_StartPoint(strike,duration,r,callPrice,spotPrice), sigmaold = sigma;
             if (callPrice < spotPrice - strike * Math.Exp(-r * duration))
             {
                 return 0;
             }
-            for (int num = 0; num < 10; num++)
+            for (int num = 0; num <= 2; num++)
             {
                 sigmaold = sigma;
                 double d1 = (Math.Log(spotPrice / strike) + (r + sigma * sigma / 2) * duration) / (sigma * Math.Sqrt(duration));
@@ -65,10 +57,6 @@ namespace BackTestingPlatform.Utilities.Option
                 if (Math.Abs(sigma - sigmaold) < 0.0001)
                 {
                     break;
-                }
-                if (Math.Abs(sigma) > 100 && duration < 1)
-                {
-                    return 0;
                 }
             }
             if (sigma > 3 || sigma < 0)
@@ -89,33 +77,7 @@ namespace BackTestingPlatform.Utilities.Option
         /// <returns>返回隐含波动率</returns>
         private static double sigmaOfPut(double putPrice, double spotPrice, double strike, double duration, double r)
         {
-            double sigma = 1, sigmaold = 1;
-            if (strike * Math.Exp(-r * duration) - spotPrice > putPrice)
-            {
-                return 0;
-            }
-            for (int num = 0; num < 10; num++)
-            {
-                sigmaold = sigma;
-                double d1 = (Math.Log(spotPrice / strike) + (r + sigma * sigma / 2) * duration) / (sigma * Math.Sqrt(duration));
-                double d2 = d1 - sigma * Math.Sqrt(duration);
-                double f_sigma = -normcdf(-d1) * spotPrice + normcdf(-d2) * strike * Math.Exp(-r * duration);
-                double df_sigma = spotPrice * Math.Sqrt(duration) * Math.Exp(-d1 * d1 / 2) / (Math.Sqrt(2 * Math.PI));
-                sigma = sigma + (putPrice - f_sigma) / df_sigma;
-                if (Math.Abs(sigma - sigmaold) < 0.0001)
-                {
-                    break;
-                }
-                if (Math.Abs(sigma) > 100 && duration < 1)
-                {
-                    return 0;
-                }
-            }
-            if (sigma > 3 || sigma < 0)
-            {
-                sigma = 0;
-            }
-            return sigma;
+            return sigmaOfCall(putPrice + spotPrice - strike * Math.Exp(-r * duration), spotPrice, strike, duration, r); 
         }
 
         /// <summary>
@@ -128,15 +90,15 @@ namespace BackTestingPlatform.Utilities.Option
         /// <param name="r">无风险利率</param>
         /// <param name="optionType">期权类型区分看涨还是看跌</param>
         /// <returns>返回隐含波动率</returns>
-        public static double sigma(double etfPrice, double optionLastPrice, double strike, int duration, double r, string optionType)
+        public static double sigma(double etfPrice, double optionLastPrice, double strike, double duration, double r, string optionType)
         {
             if (optionType.Equals("认购"))
             {
-                return sigmaOfCall(optionLastPrice, etfPrice, strike, ((double)duration) / 252.0, r);
+                return sigmaOfCall(optionLastPrice, etfPrice, strike, duration, r);
             }
             else if (optionType.Equals("认沽"))
             {
-                return sigmaOfPut(optionLastPrice, etfPrice, strike, ((double)duration) / 252.0, r);
+                return sigmaOfPut(optionLastPrice, etfPrice, strike, duration, r);
             }
             return 0;
         }
@@ -156,11 +118,11 @@ namespace BackTestingPlatform.Utilities.Option
         {
             if (optionType.Equals("认购"))
             {
-                return callPrice(etfPrice, strike, sigma, duration / 252.0, r);
+                return callPrice(etfPrice, strike, sigma, duration, r);
             }
             else if (optionType.Equals("认沽"))
             {
-                return putPrice(etfPrice, strike, sigma, duration / 252.0, r);
+                return putPrice(etfPrice, strike, sigma, duration, r);
             }
             return 0.0;
         }
