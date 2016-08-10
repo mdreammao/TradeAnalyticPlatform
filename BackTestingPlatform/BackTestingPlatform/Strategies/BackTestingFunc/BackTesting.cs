@@ -36,15 +36,15 @@ namespace BackTestingPlatform.Strategies
         public void stgBooter()
         {
 
-            List<DateTime> timeList = (List<DateTime>)Platforms.BasicInfo["TradeDays"];
+            List<DateTime> timeList = Caches.get<List<DateTime>>("TradeDays");
             int None = Constants.NONE;//空值
 
             DateTime startDate = new DateTime(2016, 6, 1);//策略起止时间
             DateTime endDate = new DateTime(2016, 7, 1); ;
             DateTime nowDate;//当前时间，每次循环传入策略，返回开仓或平仓信息
 
-            DateTime d1 = (DateTime)TradeDaysUtils.RecentTradeDay(startDate);
-            DateTime d2 = (DateTime)TradeDaysUtils.RecentTradeDay(endDate);
+            DateTime d1 = (DateTime)TradeDaysUtils.NextOrCurrent(startDate);
+            DateTime d2 = (DateTime)TradeDaysUtils.NextOrCurrent(endDate);
             int indexOfStart = timeList.BinarySearch(d1);
             int indexOfEnd = timeList.BinarySearch(d2);
 

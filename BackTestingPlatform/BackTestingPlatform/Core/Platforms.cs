@@ -20,13 +20,7 @@ namespace BackTestingPlatform.Core
     {
         //Autofac容器
         public static IContainer container;
-        //全局基础数据的变量字典
-        /// <summary>
-        /// List<DateTime> TradeDays
-        /// List<OptionInfo> OptionInfos
-        /// </summary>
-        public static IDictionary<string, object> BasicInfo;
-
+        
 
         /// <summary>
         /// 整个应用的全局初始化
@@ -39,10 +33,8 @@ namespace BackTestingPlatform.Core
             //Autofac中注册所有组件
             _RegisterComponents(builder);
             container = builder.Build();
-
-            //初始化parameters
-            BasicInfo = new Dictionary<string, object>();
-
+            
+                     
             //初始化CacheData文件夹
             var cdPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
             if (!Directory.Exists(cdPath)) Directory.CreateDirectory(cdPath);

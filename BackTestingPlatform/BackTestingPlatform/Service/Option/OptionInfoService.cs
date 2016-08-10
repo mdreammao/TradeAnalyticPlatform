@@ -23,23 +23,27 @@ namespace BackTestingPlatform.Service.Option
         /// </summary>
         /// <param name="underlyingCode"></param>
         /// <param name="market"></param>
-        public void loadOptionInfo(string underlyingCode="510050.SH", string market="sse")
+        public void loadOptionInfo(string underlyingCode, string market)
         {
             List<OptionInfo> optionInfos;
             int daysUpdateRound = 1;    //CacheData更新周期间隔
             var filePath = FileUtils.GetCacheDataFileThatLatest(OptionInfoRepository.PATH_KEY);
-            var daysdiff = FileUtils.GetCacheFileDaysPastTillToday(filePath);
+            var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(filePath);
             if (daysdiff > daysUpdateRound)
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
                 optionInfos = optionInfoRepository.fetchFromWind(underlyingCode, market);
-                optionInfoRepository.saveToLocalFile(optionInfos);             
+                optionInfoRepository.saveToLocalFile(optionInfos);
+           
+
+
             }
             else
             {   //CacheData不是太旧，直接读取
                 optionInfos = optionInfoRepository.fetchAllFromLocalFile(filePath, underlyingCode, market);
             }
 
-            Platforms.BasicInfo["OptionInfos"] = optionInfos;
+            //加载到内存缓存
+            Caches.put("OptionInfos", optionInfos);
             Console.WriteLine(optionInfos);
             
 

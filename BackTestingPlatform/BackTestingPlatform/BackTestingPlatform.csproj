@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Caches.cs" />
     <Compile Include="DataAccess\Option\OptionMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Option\OptionTickDataRepository.cs" />
     <Compile Include="DataAccess\Stock\AdjFactorRepository.cs" />
@@ -78,9 +79,11 @@
     <Compile Include="Service\TradeDaysService.cs" />
     <Compile Include="Strategies\BackTestingFunc\BackTesting.cs" />
     <Compile Include="Strategies\Option\OptionSample.cs" />
+    <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Strategies\Stock\AdjFactorTest.cs" />
     <Compile Include="Strategies\Stock\NdaysReversion.cs" />
     <Compile Include="Utilities\FreqTransferUtils.cs" />
+    <Compile Include="Strategies\Sample\Sample2.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
     <Compile Include="Utilities\Option\OptionUtilities.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
@@ -93,10 +96,13 @@
     <Compile Include="DataAccess\Stock\KLinesDataRepository.cs" />
     <Compile Include="DataAccess\Stock\StockTickDataRepository.cs" />
     <Compile Include="Model\Option\ImpvSurface.cs" />
-    <Compile Include="PlatformBooter.cs" />
+    <Compile Include="Core\PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strategies\BackTestingFunc\DealJudge.cs" />
     <Compile Include="Strategies\BackTestingFunc\Strategy.cs" />
+    <Compile Include="Core\Platforms.cs" />
+    <Compile Include="Strategies\Sample\SingleMA.cs" />
+    <Compile Include="Utilities\TickUtils.cs" />
     <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Stock\SingleMA.cs" />
     <Compile Include="Utilities\TradeDaysUtils.cs" />

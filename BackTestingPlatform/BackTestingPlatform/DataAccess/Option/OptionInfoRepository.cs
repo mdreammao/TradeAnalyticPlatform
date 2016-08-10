@@ -51,21 +51,17 @@ namespace BackTestingPlatform.DataAccess.Option
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
             return dt.AsEnumerable().Select(row => new OptionInfo
             {
-                optionCode= _toString(row["optionCode"]),
-                optionName= _toString(row["optionName"]),
-                optionType= _toString(row["optionType"]),
-                executeType= _toString(row["executeType"]),
-                strike= Convert.ToDouble(_toString(row["strike"])),
-                startDate =Convert.ToDateTime(_toString(row["startDate"])),
-                endDate= Convert.ToDateTime(_toString(row["endDate"]))
+                optionCode= (string)row["optionCode"],
+                optionName= (string)(row["optionName"]),
+                optionType= (string)(row["optionType"]),
+                executeType= (string)(row["executeType"]),
+                strike= Kit.ToDouble(row["strike"]),
+                startDate = Kit.ToDateTime(row["startDate"]),
+                endDate= Kit.ToDateTime(row["endDate"])
             }).ToList();
         }
 
-        
-        private string _toString(object item)
-        {
-            return Convert.ToString(item).Substring(1, Convert.ToString(item).Length - 2);
-        }
+               
         public void saveToLocalFile(List<OptionInfo> optionInfoList)
         {
             var path = FileUtils.GetCacheDataFilePath(PATH_KEY, DateTime.Now);

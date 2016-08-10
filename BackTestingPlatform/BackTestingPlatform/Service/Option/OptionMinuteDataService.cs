@@ -23,7 +23,7 @@ namespace BackTestingPlatform.Service.Option
             //若本地文件存在，则从本地读取否者先从万德或者数据库中读取
             if (File.Exists(filePath))
             {
-                optionData = optionMinuteDataRepository.fetchAllFromLocalFile(filePath);   
+                optionData = optionMinuteDataRepository.fetchAllFromLocalCsvFile(filePath);   
             }
             else
             {

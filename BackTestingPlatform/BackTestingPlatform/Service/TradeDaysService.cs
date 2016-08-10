@@ -36,7 +36,8 @@ namespace BackTestingPlatform.Service
                 Console.WriteLine("[INFO] TradeDays saved to local file.");
             }
 
-            Platforms.BasicInfo["TradeDays"] = days;
+            Caches.put("TradeDays", days);
+           
         }
     }
 }
