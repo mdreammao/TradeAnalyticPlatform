@@ -33,8 +33,8 @@ namespace BackTestingPlatform.Utilities
         /// <returns>例如TradeDays_20160803.txt</returns>
         public static string GetCacheDataFilePath(string key, DateTime timestamp)
         {
-            
-            
+
+
             return ConfigurationManager.AppSettings["CacheData.RootPath"]
                 + ConfigurationManager.AppSettings[key].Replace("{0}", timestamp.ToString("yyyyMMdd"));
         }
@@ -48,33 +48,43 @@ namespace BackTestingPlatform.Utilities
         /// <summary>
         /// 根据key获取路径配置，列出所有匹配的文件路径，按文件名倒序排列
         /// </summary>
-        /// <param name="key">app.config中的key</param>
+        /// <param name="appKey">app.config中的key</param>
         /// <returns></returns>
-        public static List<string> GetCacheDataFilePaths(string key)
+        public static List<string> GetCacheDataFilePaths(string appKey)
         {
-            var path = FileUtils.GetCacheDataFilePath(key);
+            var path = FileUtils.GetCacheDataFilePath(appKey);
             var dirPath = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
-            return Directory.EnumerateFiles(dirPath, fileName.Replace("{0}", "*"))
+            var fileName_ = fileName.Replace("{0}", "*").Replace("{date}", "*").Replace("{type}", "*").Replace("{code}", "*").Replace("{name}", "*").Replace("{tag}", "*").Replace("{time}", "*");
+            return Directory.EnumerateFiles(dirPath, fileName_)
                 .OrderByDescending(fn => fn).ToList();
         }
 
-        public static string GetCacheDataFileThatLatest(string key)
+        public static string GetCacheDataFilePathThatLatest(string appKey)
         {
-            var list = GetCacheDataFilePaths(key);
+            var list = GetCacheDataFilePaths(appKey);
             return (list != null && list.Count > 0) ? list[0] : null;
         }
-
-
-
-        public static string GetCacheDataFileByCodeAndDate(string key,string code,DateTime date)
+        public static string GetCacheDataFilePath(string appKey, Dictionary<string, string> paramsMap)
         {
-            var path = FileUtils.GetCacheDataFilePath(key);
-            string[] str = code.Split('.');
-            string dateStr = date.ToString("yyyyMMdd");
-            return path.Replace("{0}", str[0]).Replace("{1}", str[1]).Replace("{2}", dateStr);
+            var path = FileUtils.GetCacheDataFilePath(appKey);
+            foreach (var key in paramsMap.Keys)
+            {
+                path = path.Replace(key, paramsMap[key]);
+            }
+            return path;
 
         }
+        public static string GetCacheDataFilePath(string appKey, string tag, string code, string date)
+        {
+            return GetCacheDataFilePath(appKey, new Dictionary<string, string>
+            {
+                ["tag"] = tag,
+                ["code"] = code,
+                ["date"] = date
+            });
+        }
+     
         public static DateTime GetCacheDataFileTimestamp(string filePath)
         {
             int x1 = filePath.LastIndexOf('_');
@@ -90,7 +100,7 @@ namespace BackTestingPlatform.Utilities
             {
                 File.Delete(fpath);
             }
-            
+
         }
 
 

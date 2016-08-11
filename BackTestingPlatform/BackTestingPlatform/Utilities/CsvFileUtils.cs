@@ -69,6 +69,7 @@ namespace BackTestingPlatform.Utilities
         /// <summary>
         /// http://stackoverflow.com/a/27705485
         /// CSV -> DataTable 简单的csv读取处理，不支持含逗号的内容。
+        /// 若文件不存在则返回null
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="firstRowAsHeader">csv文件第一行是否作为header</param>

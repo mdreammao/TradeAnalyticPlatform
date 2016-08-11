@@ -22,7 +22,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="period">周期(分钟)</param>
         /// <param name="fields">获取字段</param>
         /// <returns></returns>
-        public List<RealTimeQuotes> fetchRealTimeQuotesFromWind(string stockCode)
+        public List<Quote> fetchRealTimeQuotesFromWind(string stockCode)
         {
 
             WindAPI wapi = Platforms.GetWindAPI();
@@ -34,7 +34,7 @@ namespace BackTestingPlatform.DataAccess
         }
 
 
-        public List<RealTimeQuotes> fetchRealTimeQuotesFromDatabase(string stockCode, DateTime time, string connName = "corp170")
+        public List<Quote> fetchRealTimeQuotesFromDatabase(string stockCode, DateTime time, string connName = "corp170")
         {
             var timeStr = time.ToString("yyyyMM");
             var codeStr = stockCode.Substring(0, 6) + '_' + stockCode.Substring(7, 2);
@@ -44,14 +44,14 @@ namespace BackTestingPlatform.DataAccess
             var connStr=SqlUtils.GetConnectionString(connName);
             DataTable dt = SqlUtils.GetTable(connStr, sql);
             return dt.AsEnumerable().Select(
-                row => new RealTimeQuotes
+                row => new Quote
                 {
                     time = Kit.ToDateTime((string)row["tdate"],(string)row["ttime"]),
-                    cp = Convert.ToDouble(row["cp"]),
+                    //cp = Convert.ToDouble(row["cp"]),
                     high = Convert.ToDouble(row["hp"]),
                     low = Convert.ToDouble(row["lp"]),
-                    s1 = Convert.ToDouble(row["S1"]),
-                    s2 = Convert.ToDouble(row["S2"]),
+                    //s1 = Convert.ToDouble(row["S1"]),
+                    //s2 = Convert.ToDouble(row["S2"]),
                     volume = Convert.ToDouble(row["ts"]),
                     amount = Convert.ToDouble(row["tt"])
                 }).ToList();
@@ -84,25 +84,25 @@ namespace BackTestingPlatform.DataAccess
                     turnoverVolume = Convert.ToDouble(row["tt"])
                 }).ToList();
         }
-        private PositionData[] _buildPositionAskData(DataRow row)
+        private Position[] _buildPositionAskData(DataRow row)
         {
-            PositionData[] res = new PositionData[5];
-            res[0] = new PositionData(Convert.ToDouble(row["S1"]), Convert.ToDouble(row["SV1"]));
-            res[1] = new PositionData(Convert.ToDouble(row["S2"]), Convert.ToDouble(row["SV2"]));
-            res[2] = new PositionData(Convert.ToDouble(row["S3"]), Convert.ToDouble(row["SV3"]));
-            res[3] = new PositionData(Convert.ToDouble(row["S4"]), Convert.ToDouble(row["SV4"]));
-            res[4] = new PositionData(Convert.ToDouble(row["S5"]), Convert.ToDouble(row["SV5"]));
+            Position[] res = new Position[5];
+            res[0] = new Position(Convert.ToDouble(row["S1"]), Convert.ToDouble(row["SV1"]));
+            res[1] = new Position(Convert.ToDouble(row["S2"]), Convert.ToDouble(row["SV2"]));
+            res[2] = new Position(Convert.ToDouble(row["S3"]), Convert.ToDouble(row["SV3"]));
+            res[3] = new Position(Convert.ToDouble(row["S4"]), Convert.ToDouble(row["SV4"]));
+            res[4] = new Position(Convert.ToDouble(row["S5"]), Convert.ToDouble(row["SV5"]));
             return res;
         }
 
-        private PositionData[] _buildPositionBidData(DataRow row)
+        private Position[] _buildPositionBidData(DataRow row)
         {
-            PositionData[] res = new PositionData[5];
-            res[0] = new PositionData(Convert.ToDouble(row["B1"]), Convert.ToDouble(row["BV1"]));
-            res[1] = new PositionData(Convert.ToDouble(row["B2"]), Convert.ToDouble(row["BV2"]));
-            res[2] = new PositionData(Convert.ToDouble(row["B3"]), Convert.ToDouble(row["BV3"]));
-            res[3] = new PositionData(Convert.ToDouble(row["B4"]), Convert.ToDouble(row["BV4"]));
-            res[4] = new PositionData(Convert.ToDouble(row["B5"]), Convert.ToDouble(row["BV5"]));
+            Position[] res = new Position[5];
+            res[0] = new Position(Convert.ToDouble(row["B1"]), Convert.ToDouble(row["BV1"]));
+            res[1] = new Position(Convert.ToDouble(row["B2"]), Convert.ToDouble(row["BV2"]));
+            res[2] = new Position(Convert.ToDouble(row["B3"]), Convert.ToDouble(row["BV3"]));
+            res[3] = new Position(Convert.ToDouble(row["B4"]), Convert.ToDouble(row["BV4"]));
+            res[4] = new Position(Convert.ToDouble(row["B5"]), Convert.ToDouble(row["BV5"]));
             return res;
         }
 

@@ -17,7 +17,7 @@ namespace BackTestingPlatform.Utilities
         /// <typeparam name="T"></typeparam>
         /// <param name="items"></param>
         /// <returns></returns>
-        public static DataTable ToDataTable<T>(List<T> items)
+        public static DataTable ToDataTable<T>(IList<T> items)
         {
             DataTable dataTable = new DataTable(typeof(T).Name);
 

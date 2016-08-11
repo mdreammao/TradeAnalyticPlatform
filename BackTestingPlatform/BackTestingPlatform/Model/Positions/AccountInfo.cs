@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Model.Position
+namespace BackTestingPlatform.Model.Positions
 {
     /// <summary>
     /// 单只股票持仓数据结构，每只股票的持仓情况，定义每只的数据结构，用List型声明

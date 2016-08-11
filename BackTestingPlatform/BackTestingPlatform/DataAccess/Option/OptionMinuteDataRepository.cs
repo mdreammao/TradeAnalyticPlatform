@@ -14,7 +14,7 @@ namespace BackTestingPlatform.DataAccess.Option
 {
     public class OptionMinuteDataRepository
     {
-        public const string PATH_KEY = "CacheData.Path.OptionMinuteData";
+        public const string PATH_KEY = "CacheData.Path.Option";
         public List<OptionMinuteData> fetchMinuteDataFromWind(string stockCode, DateTime time)
         {
             WindAPI w = Platforms.GetWindAPI();
@@ -25,6 +25,7 @@ namespace BackTestingPlatform.DataAccess.Option
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
             List<OptionMinuteData> items = new List<OptionMinuteData>(len * fieldLen);
+            if (!(wd.data is double[])) return null;
             double[] dataList = (double[])wd.data;
             DateTime[] timeList = wd.timeList;
             for (int k = 0; k < len; k++)
@@ -43,13 +44,12 @@ namespace BackTestingPlatform.DataAccess.Option
             return items;
         }
 
-        public void saveToLocalFile(List<OptionMinuteData> optionMinuteData,string path)
+        public void saveToLocalCsvFile(List<OptionMinuteData> optionMinuteData,string type,string code,DateTime date)
         {
-            var dt = DataTableUtils.ToDataTable(optionMinuteData);
-            CsvFileUtils.WriteToCsvFile(path, dt);
-            Console.WriteLine("{0} saved!", path);
+            TimeSeriesDataRepoHelper.saveToLocalCsvFile<OptionMinuteData>(optionMinuteData, "MinuteDataFromWind",type, code, date);
+         
         }
-
+       
         public List<OptionMinuteData> fetchAllFromLocalCsvFile(string filePath)
         {
 
