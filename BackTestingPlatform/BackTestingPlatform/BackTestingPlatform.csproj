@@ -56,6 +56,7 @@
     <Compile Include="Core\Caches.cs" />
     <Compile Include="DataAccess\Option\OptionMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Option\OptionTickDataRepository.cs" />
+    <Compile Include="DataAccess\Stock\AdjFactorRepository.cs" />
     <Compile Include="DataAccess\Stock\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
@@ -71,14 +72,19 @@
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionMinuteDataService.cs" />
     <Compile Include="Service\Option\OptionInfoService.cs" />
+    <Compile Include="Service\Stock\AdjFactorService.cs" />
     <Compile Include="Service\Stock\StockInfoService.cs" />
     <Compile Include="Service\Stock\StockMinuteDataService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\TradeDaysService.cs" />
     <Compile Include="Strategies\BackTestingFunc\BackTesting.cs" />
     <Compile Include="Strategies\Option\OptionSample.cs" />
+    <Compile Include="Strategies\Option\OptionSample2.cs" />
+    <Compile Include="Strategies\Stock\AdjFactorTest.cs" />
+    <Compile Include="Strategies\Stock\NdaysReversion.cs" />
     <Compile Include="Utilities\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
+    <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
     <Compile Include="Utilities\Option\OptionUtilities.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
@@ -96,8 +102,8 @@
     <Compile Include="Strategies\BackTestingFunc\DealJudge.cs" />
     <Compile Include="Strategies\BackTestingFunc\Strategy.cs" />
     <Compile Include="Core\Platforms.cs" />
-    <Compile Include="Strategies\Sample\SingleMA.cs" />
     <Compile Include="Utilities\TickUtils.cs" />
+    <Compile Include="Strategies\Stock\SingleMA.cs" />
     <Compile Include="Utilities\TradeDaysUtils.cs" />
   </ItemGroup>
   <ItemGroup>

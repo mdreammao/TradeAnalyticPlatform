@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BackTestingPlatform.Core;
+using BackTestingPlatform.DataAccess;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Model;
 using BackTestingPlatform.Model.Option;
@@ -16,44 +17,45 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Strategies.Option
 {
-    public class OptionSample
+    public class OptionSample2
     {
 
-        public OptionSample(int start, int end)
+
+        public class positionShot
         {
+            public DateTime time { get; set; }
+            public double etfPrice { get; set; } 
+            
+        }
+
+       
+        public OptionSample2(int start, int end)
+        {
+            List<int> a = new List<int>();
             var days = Caches.getTradeDays();
             OptionInfoService optionInfoService = Platforms.container.Resolve<OptionInfoService>();
             optionInfoService.loadOptionInfo("510050.SH", "sse");
             var optionInfo = Caches.get<List<OptionInfo>>("OptionInfos");
             days = TradeDaysUtils.getTradeDays(start, end);
-            List<OptionMinuteDataWithUnderlying> answer = new List<OptionMinuteDataWithUnderlying>();
+            List<positionShot> answer = new List<positionShot>();
             foreach (var item in (List<DateTime>)days)
             {
-                StockMinuteDataService etfData = Platforms.container.Resolve<StockMinuteDataService>();
-                var etfMinuteData = etfData.loadStockMinuteData("510050.SH", item);
-
+                StockTickDataRepository etfTick = Platforms.container.Resolve<StockTickDataRepository>();
+                var etf = etfTick.fetchDataFromMssql("510050.SH", item);
                 var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)optionInfo, Kit.ToInt_yyyyMMdd(item));
+                positionShot now = new positionShot();
+                
                 foreach (var options in optionToday)
                 {
-                    if (Utilities.TradeDaysUtils.GetSpanOfTradeDays(item, options.endDate) <= 7 && options.optionType == "认购")
-                    {
-                        OptionMinuteDataService optionData = Platforms.container.Resolve<OptionMinuteDataService>();
-                        var optionMinuteData = optionData.loadOptionMinuteData(options.optionCode, item);
-                        var optionWithEtf = AddEtfPrice(optionMinuteData, etfMinuteData, options);
-                        for (int i = 0; i < 240; i++)
-                        {
-                            if (options.strike + optionWithEtf[i].close < optionWithEtf[i].underlyingPrice - 0.05 * optionWithEtf[i].close && optionWithEtf[i].volume > 5)
-                            {
-                                answer.Add(optionWithEtf[i]);
-                            }
-                        }
-                    }
+                    OptionTickDataRepository optionTick = Platforms.container.Resolve<OptionTickDataRepository>();
+                    var option = optionTick.fetchDataFromMssql(options.optionCode, item);
+
                 }
             }
-            saveToLocalFile(answer, "answer.csv");
+            saveToLocalFile(answer, "positionShot.csv");
         }
 
-        public void saveToLocalFile(List<OptionMinuteDataWithUnderlying> optionMinuteData, string path)
+        public void saveToLocalFile(List<positionShot> optionMinuteData, string path)
         {
             var dt = DataTableUtils.ToDataTable(optionMinuteData);
             CsvFileUtils.WriteToCsvFile(path, dt);
@@ -87,7 +89,7 @@ namespace BackTestingPlatform.Strategies.Option
                     amount = option[i].amount,
                     underlyingPrice = etf[i].close
                 });
-            } 
+            }
             return items;
         }
     }

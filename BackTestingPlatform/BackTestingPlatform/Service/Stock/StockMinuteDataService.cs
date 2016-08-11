@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Service.Stock
 {
-    class StockMinuteDataService
+    public class StockMinuteDataService
     {
         StockMinuteDataRepository stockMinuteDataRepository = Platforms.container.Resolve<StockMinuteDataRepository>();
 

@@ -4,6 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BackTestingPlatform.Model;
+using BackTestingPlatform.Core;
+using BackTestingPlatform.DataAccess;
+using BackTestingPlatform.DataAccess.Stock;
+using BackTestingPlatform.Model.Stock;
+using BackTestingPlatform.Utilities;
+using Autofac;
+using System.IO;
 
 namespace BackTestingPlatform.Service.Stock
 {
@@ -13,29 +20,29 @@ namespace BackTestingPlatform.Service.Stock
     /// </summary>
     class StockInfoService
     {
-        /*
-        OptionMinuteDataRepository optionMinuteDataRepository = Platforms.container.Resolve<OptionMinuteDataRepository>();
+        ASharesInfoRepository ASharesInfoRepository = Platforms.container.Resolve<ASharesInfoRepository>();
 
-        public List<OptionMinuteData> loadOptionMinuteData(string optionCode, DateTime date)
+        public List<ASharesInfo> loadASharesInfoData(string stockCode, DateTime date)
         {
-            List<OptionMinuteData> optionData;
-            var filePath = FileUtils.GetCacheDataFileByCodeAndDate(OptionMinuteDataRepository.PATH_KEY, optionCode, date);
+            List<ASharesInfo> ASharesInfoData;
+            var filePath = FileUtils.GetCacheDataFileByCodeAndDate(ASharesInfoRepository.PATH_KEY, stockCode, date);
             //若本地文件存在，则从本地读取否者先从万德或者数据库中读取
             if (File.Exists(filePath))
             {
-                optionData = optionMinuteDataRepository.fetchAllFromLocalFile(filePath);
+         //       ASharesInfoData = ASharesInfoRepository.fetchAllFromLocalFile(filePath);
             }
             else
             {
-                optionData = optionMinuteDataRepository.fetchMinuteDataFromWind(optionCode, date);
-                if (optionData != null)
+           //     ASharesInfoData = ASharesInfoRepository.fetchASharesInfoDataFromWind(stockCode, date);
+          //      if (ASharesInfoData != null)
                 {
-                    optionMinuteDataRepository.saveToLocalFile(optionData, filePath);
+       //             ASharesInfoRepository.saveToLocalFile(ASharesInfoData, filePath);
                 }
             }
-            return optionData == null ? null : optionData;
+  //          return ASharesInfoData == null ? null : ASharesInfoData;
+            return null;
         }
     
-         * */
+        
     }
 }

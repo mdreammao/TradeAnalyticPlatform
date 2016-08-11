@@ -12,7 +12,7 @@ namespace BackTestingPlatform.DataAccess.Option
 {
     public class OptionTickDataRepository
     {
-        public List<TickFromMssql> fetchRealTimeQuotesFromDatabase(string stockCode, DateTime time, string connName = "corp170")
+        public List<TickFromMssql> fetchDataFromMssql(string stockCode, DateTime time, string connName = "corp170")
         {
             var timeStr = time.ToString("yyyyMM");
             var codeStr = stockCode.Substring(0, 8) + '_' + stockCode.Substring(9, 2);

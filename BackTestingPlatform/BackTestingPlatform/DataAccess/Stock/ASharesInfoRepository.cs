@@ -13,6 +13,7 @@ namespace BackTestingPlatform.DataAccess
     /// </summary>
     public class ASharesInfoRepository
     {
+        public const string PATH_KEY = "CacheData.Path.ASharesInfoData";
         public List<ASharesInfo> fetchFromWind(DateTime startTime)
         {
             WindAPI wapi = Platforms.GetWindAPI();
