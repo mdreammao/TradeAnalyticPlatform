@@ -144,7 +144,7 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="day">日期</param>
         /// <returns>第几周</returns>
-        public int getWeekOfMonth(DateTime dt)
+        public static int GetWeekOfMonth(DateTime dt)
         {
             int weekNum = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dt, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             return weekNum;

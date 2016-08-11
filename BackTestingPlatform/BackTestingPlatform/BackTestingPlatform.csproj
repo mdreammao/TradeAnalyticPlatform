@@ -84,6 +84,7 @@
     <Compile Include="Strategies\Stock\NdaysReversion.cs" />
     <Compile Include="Utilities\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
+    <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
     <Compile Include="Utilities\Option\OptionUtilities.cs" />
     <Compile Include="Utilities\CsvFileUtils.cs" />
@@ -101,9 +102,7 @@
     <Compile Include="Strategies\BackTestingFunc\DealJudge.cs" />
     <Compile Include="Strategies\BackTestingFunc\Strategy.cs" />
     <Compile Include="Core\Platforms.cs" />
-    <Compile Include="Strategies\Sample\SingleMA.cs" />
     <Compile Include="Utilities\TickUtils.cs" />
-    <Compile Include="Platforms.cs" />
     <Compile Include="Strategies\Stock\SingleMA.cs" />
     <Compile Include="Utilities\TradeDaysUtils.cs" />
   </ItemGroup>
