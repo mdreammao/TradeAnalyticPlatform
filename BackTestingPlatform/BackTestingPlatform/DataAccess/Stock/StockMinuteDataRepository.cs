@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.Core;
 using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace BackTestingPlatform.DataAccess.Stock
     class StockMinuteDataRepository
     {
         public const string PATH_KEY = "CacheData.Path.StockMinuteData";
-        public List<StockMinuteData> fetchMinuteDataFromWind(string stockCode, DateTime time)
+        public List<KLine> fetchMinuteDataFromWind(string stockCode, DateTime time)
         {
             WindAPI w = Platforms.GetWindAPI();
             var timeStr = time.ToString("yyyyMM");
@@ -24,14 +25,14 @@ namespace BackTestingPlatform.DataAccess.Stock
             WindData wd = w.wsi(stockCode.ToUpper(), "open,high,low,close,volume,amt", start, end, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
-            List<StockMinuteData> items = new List<StockMinuteData>(len * fieldLen);
+            var items = new List<KLine>(len * fieldLen);
             if (wd.data is double[])
             {
                 double[] dataList = (double[])wd.data;
                 DateTime[] timeList = wd.timeList;
                 for (int k = 0; k < len; k++)
                 {
-                    items.Add(new StockMinuteData
+                    items.Add(new KLine
                     {
                         time = timeList[k],
                         open = (double)dataList[k * fieldLen + 0],
@@ -47,23 +48,24 @@ namespace BackTestingPlatform.DataAccess.Stock
             return items;
         }
 
-        public void saveToLocalFile(List<StockMinuteData> optionMinuteData, string path)
+        public void saveToLocalFile(List<KLine> optionMinuteData, string path)
         {
             var dt = DataTableUtils.ToDataTable(optionMinuteData);
             CsvFileUtils.WriteToCsvFile(path, dt);
             Console.WriteLine("{0} saved!", path);
         }
 
-        public List<StockMinuteData> fetchAllFromLocalFile(string filePath)
+        public List<KLine> fetchAllFromLocalFile(string filePath)
         {
 
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
-            List<StockMinuteData> items = new List<StockMinuteData>();
+            var items = new List<KLine>();
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 var r = dt.Rows[i];                
-                items.Add(new StockMinuteData {
+                items.Add(new KLine
+                {
                  time = Kit.ToDateTime(r["time"]),
                  open = Kit.ToDouble(r["open"]),
                  high = Kit.ToDouble(r["high"]),

@@ -12,12 +12,12 @@ namespace BackTestingPlatform.DataAccess.Stock
 {
     public class TickRepository : SequentialDataRepository<Tick>
     {
-        public override List<Tick> fetchFromDefaultMssql(string code, string date)
+        public override List<Tick> fetchFromDefaultMssql(string code, DateTime date)
         {
             throw new NotImplementedException();
         }
 
-        public override List<Tick> fetchFromWind(string code, string date)
+        public override List<Tick> fetchFromWind(string code, DateTime date)
         {
             WindAPI wapi = Platforms.GetWindAPI();
 
@@ -28,9 +28,5 @@ namespace BackTestingPlatform.DataAccess.Stock
             return null;
         }
 
-        public override Tick toEntity(DataRow row)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

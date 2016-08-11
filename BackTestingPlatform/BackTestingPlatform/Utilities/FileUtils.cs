@@ -26,25 +26,7 @@ namespace BackTestingPlatform.Utilities
         }
         private static string _appRootPath = null;
 
-        /// <summary>
-        /// 根据给定的key和app.config生成CacheData文件路径,包含当前日期后缀
-        /// </summary>
-        /// <param name="key">例如"CacheData.Path.OptionInfo"</param>
-        /// <returns>例如TradeDays_20160803.txt</returns>
-        public static string GetCacheDataFilePath(string key, DateTime timestamp)
-        {
-
-
-            return ConfigurationManager.AppSettings["CacheData.RootPath"]
-                + ConfigurationManager.AppSettings[key].Replace("{0}", timestamp.ToString("yyyyMMdd"));
-        }
-
-        public static string GetCacheDataFilePath(string key)
-        {
-            return
-                ConfigurationManager.AppSettings["CacheData.RootPath"]
-               + ConfigurationManager.AppSettings[key];
-        }
+       
         /// <summary>
         /// 根据key获取路径配置，列出所有匹配的文件路径，按文件名倒序排列
         /// </summary>
@@ -65,6 +47,27 @@ namespace BackTestingPlatform.Utilities
             var list = GetCacheDataFilePaths(appKey);
             return (list != null && list.Count > 0) ? list[0] : null;
         }
+
+        /// <summary>
+        /// 根据给定的key和app.config生成CacheData文件路径,包含当前日期后缀
+        /// </summary>
+        /// <param name="key">例如"CacheData.Path.OptionInfo"</param>
+        /// <returns>例如TradeDays_20160803.txt</returns>
+        public static string GetCacheDataFilePath(string key, DateTime timestamp)
+        {
+
+
+            return ConfigurationManager.AppSettings["CacheData.RootPath"]
+                + ConfigurationManager.AppSettings[key].Replace("{0}", timestamp.ToString("yyyyMMdd"));
+        }
+
+        public static string GetCacheDataFilePath(string key)
+        {
+            return
+                ConfigurationManager.AppSettings["CacheData.RootPath"]
+               + ConfigurationManager.AppSettings[key];
+        }
+
         public static string GetCacheDataFilePath(string appKey, Dictionary<string, string> paramsMap)
         {
             var path = FileUtils.GetCacheDataFilePath(appKey);
@@ -79,9 +82,9 @@ namespace BackTestingPlatform.Utilities
         {
             return GetCacheDataFilePath(appKey, new Dictionary<string, string>
             {
-                ["tag"] = tag,
-                ["code"] = code,
-                ["date"] = date
+                ["{tag}"] = tag,
+                ["{code}"] = code,
+                ["{date}"] = date
             });
         }
      

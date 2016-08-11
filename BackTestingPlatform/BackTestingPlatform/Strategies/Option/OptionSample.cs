@@ -2,6 +2,7 @@
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Option;
 using BackTestingPlatform.Service;
 using BackTestingPlatform.Service.Option;
@@ -60,7 +61,7 @@ namespace BackTestingPlatform.Strategies.Option
             Console.WriteLine("{0} saved!", path);
         }
 
-        public List<OptionMinuteDataWithUnderlying> AddEtfPrice(List<OptionMinuteData> option, List<StockMinuteData> etf, OptionInfo optionInfo)
+        public List<OptionMinuteDataWithUnderlying> AddEtfPrice(List<OptionMinuteData> option, List<KLine> etf, OptionInfo optionInfo)
         {
             if (option.Count != 240 || etf.Count != 240)
             {

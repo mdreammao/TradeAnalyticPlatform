@@ -64,6 +64,7 @@
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
     <Compile Include="DataAccess\Stock\StockDailyInfoRepository.cs" />
     <Compile Include="DataAccess\Stock\StockMinuteDataRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockMinuteKLineRepository.cs" />
     <Compile Include="DataAccess\TimeSeriesDataRepoHelper.cs" />
     <Compile Include="Model\Common\Kline.cs" />
     <Compile Include="DataAccess\Stock\TickRepository.cs" />
@@ -72,7 +73,6 @@
     <Compile Include="Model\Common\Tick.cs" />
     <Compile Include="Model\Contstants.cs" />
     <Compile Include="Model\Futures\Futures.cs" />
-    <Compile Include="Model\KLine.tmp.cs" />
     <Compile Include="Model\Option\OptionDailyInfo.cs" />
     <Compile Include="Model\Option\Option.cs" />
     <Compile Include="Model\Positions\AccountInfo.cs" />
@@ -80,6 +80,7 @@
     <Compile Include="Model\Stock\Stock.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockDailyInfo.cs" />
+    <Compile Include="Model\Stock\StockMinuteKLine.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionMinuteDataService.cs" />
     <Compile Include="Service\Option\OptionInfoService.cs" />

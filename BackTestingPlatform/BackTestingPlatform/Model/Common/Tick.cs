@@ -12,7 +12,8 @@ namespace BackTestingPlatform.Model.Common
         public string code { get; set; }
         public DateTime time { get; set; }
         public double lastPrice { get; set; }
-        public Position[] ask, bid;
+        public Position[] ask { get; set; }
+        public Position[] bid { get; set; }
         public double preClose { get; set; }
 
     }

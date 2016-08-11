@@ -2,6 +2,7 @@
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Stock;
 using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,9 @@ namespace BackTestingPlatform.Service.Stock
     {
         StockMinuteDataRepository stockMinuteDataRepository = Platforms.container.Resolve<StockMinuteDataRepository>();
 
-        public List<StockMinuteData> loadStockMinuteData(string stockCode, DateTime date)
+        public List<KLine> loadStockMinuteData(string stockCode, DateTime date)
         {
-            List<StockMinuteData> stockData=null;
+            List<KLine> stockData=null;
             //var filePath = FileUtils.GetCacheDataFileByCodeAndDate(StockMinuteDataRepository.PATH_KEY, stockCode, date);
             ////若本地文件存在，则从本地读取否者先从万德或者数据库中读取
             //if (File.Exists(filePath))

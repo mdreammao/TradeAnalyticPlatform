@@ -10,18 +10,21 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess
 {
-    public abstract class SequentialDataRepository<T> where T : Sequential
+    public abstract class SequentialDataRepository<T> where T : Sequential , new()
     {
         //int CacheDataUpdateCycleDayLength = 1;    //CacheData有效期天数
         //bool CacheDataShouldPutToMemCache = true;   //
         const string PATH_KEY = "CacheData.Path.Sequential";
 
         /// <summary>
-        /// 由DataTable中的行向实体类的转换
+        /// 由DataTable中的行向实体类的转换函数的默认实现。
         /// </summary>
         /// <param name="row"></param>
         /// <returns></returns>
-        public abstract T toEntity(DataRow row);
+        public virtual T toEntityFromCsv(DataRow row)
+        {
+            return DataTableUtils.CreateItemFromRow<T>(row);    
+        }
 
         /// <summary>
         ///  尝试从Wind获取数据
@@ -29,9 +32,9 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="code"></param>
         /// <param name="date"></param>
         /// <returns></returns>
-        public abstract List<T> fetchFromWind(string code, string date);
+        public abstract List<T> fetchFromWind(string code, DateTime date);
 
-        public abstract List<T> fetchFromDefaultMssql(string code, string date);
+        public abstract List<T> fetchFromDefaultMssql(string code, DateTime date);
       
         /// <summary>
         ///  尝试从本地csv文件获取数据
@@ -40,13 +43,13 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="date"></param>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsv(string code, string date, string tag = null)
+        public List<T> fetchFromLocalCsv(string code, DateTime date, string tag = null)
         {
             if (tag == null) tag = typeof(T).ToString();
-            var filePath = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date);
+            var filePath = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date.ToString("yyyyMMdd"));
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
             if (dt == null) return null;
-            return dt.AsEnumerable().Select(toEntity).ToList();
+            return dt.AsEnumerable().Select(toEntityFromCsv).ToList();
         }
 
         /// <summary>
@@ -56,7 +59,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="date"></param>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsvOrWind(string code, string date, string tag = null)
+        public virtual List<T> fetchFromLocalCsvOrWind(string code, DateTime date, string tag = null)
         {
             return _fetchFromManySouresAndSave(code, date, tag, true, true, false,false);
         }
@@ -68,7 +71,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="date"></param>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsvOrWindAndSave(string code, string date, string tag = null)
+        public List<T> fetchFromLocalCsvOrWindAndSave(string code, DateTime date, string tag = null)
         {
             return _fetchFromManySouresAndSave(code, date, tag, true, true, false, true);
         }
@@ -79,7 +82,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="date"></param>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsvOrMssql(string code, string date, string tag = null)
+        public List<T> fetchFromLocalCsvOrMssql(string code, DateTime date, string tag = null)
         {
             return _fetchFromManySouresAndSave(code, date, tag, true, false, true, false);
         }
@@ -91,12 +94,12 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="date"></param>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsvOrMssqlAndSave(string code,string date, string tag = null)
+        public List<T> fetchFromLocalCsvOrMssqlAndSave(string code, DateTime date, string tag = null)
         {
             return _fetchFromManySouresAndSave(code, date, tag, true, false, true, true);          
         }
 
-        private List<T> _fetchFromManySouresAndSave(string code, string date, string tag,bool tryCsv,bool tryWind,bool tryMssql0,bool saveToCsv)
+        private List<T> _fetchFromManySouresAndSave(string code, DateTime date, string tag,bool tryCsv,bool tryWind,bool tryMssql0,bool saveToCsv)
         {
             if (tag == null) tag = typeof(T).ToString();
             List<T> result = null;
@@ -105,18 +108,39 @@ namespace BackTestingPlatform.DataAccess
             if (tryCsv)
             {
                 //尝试从csv获取
-                result = fetchFromLocalCsv(code, date, tag);
+                try
+                {
+                    result = fetchFromLocalCsv(code, date, tag);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
                 if (result != null) csvHasData = true;
             }           
             if (result == null && tryWind)            
             {
                 //尝试从Wind获取
-                result = fetchFromWind(code, date);
+                try
+                {
+                    result = fetchFromWind(code, date);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
             if (result == null && tryMssql0)
-            {
-                //尝试从默认MSSQL获取
-                result = fetchFromDefaultMssql(code, date);
+            {               
+                try
+                {
+                    //尝试从默认MSSQL获取
+                    result = fetchFromDefaultMssql(code, date);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
             }
             if (!csvHasData && result != null && saveToCsv)
@@ -135,7 +159,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="code"></param>
         /// <param name="date"></param>
         /// <param name="tag"></param>
-        public void saveToLocalCsvFile(IList<T> data, string code, string date, string tag = null)
+        public void saveToLocalCsvFile(IList<T> data, string code, DateTime date, string tag = null)
         {
             if (tag == null) tag = typeof(T).ToString();
             if (data==null ||　data.Count==0)
@@ -144,10 +168,10 @@ namespace BackTestingPlatform.DataAccess
                 return;
             }
             var dt = DataTableUtils.ToDataTable(data);
-            var path = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date);
+            var path = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date.ToString("yyyyMMdd"));
             CsvFileUtils.WriteToCsvFile(path, dt);
             var s = (File.Exists(path)) ? "old file has been overwritten." : "";
-            Console.WriteLine("{0} saved! {1}", path);
+            Console.WriteLine("{0} saved! {1}", path,s);
         }
     }
 }
