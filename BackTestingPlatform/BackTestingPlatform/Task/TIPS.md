@@ -32,8 +32,13 @@ Caches.put("MyKey",tradeDays);											//寄存，如果key已存在则覆盖
 
 ## 获取Service,Repository等实例（全局共享的唯一实例，由autofac托管）。
 ```
-    TradeDaysService tradeDaysService = Platforms.container.Resolve<TradeDaysService>();
-    TradeDaysRepository tradeDaysRepository = Platforms.container.Resolve<TradeDaysRepository>();
+TradeDaysService tradeDaysService = Platforms.container.Resolve<TradeDaysService>();
+TradeDaysRepository tradeDaysRepository = Platforms.container.Resolve<TradeDaysRepository>();
+```
+
+## 集合常用操作
+```
+aList.OrderBy(x=>x.time).ThenBy(x=>x.amount).toList();	//对aList依次按time,amount字段排序得到的新list
 ```
 
 

@@ -10,9 +10,15 @@ using BackTestingPlatform.Model;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Model.Option;
+using BackTestingPlatform.Model.Common;
+using System.IO;
+using System.Data;
 
 namespace BackTestingPlatform.Service.Option
 {
+   
+
+
     public class OptionInfoService
     {
 
@@ -27,13 +33,13 @@ namespace BackTestingPlatform.Service.Option
         {
             List<OptionInfo> optionInfos;
             int daysUpdateRound = 1;    //CacheData更新周期间隔
-            var filePath = FileUtils.GetCacheDataFileThatLatest(OptionInfoRepository.PATH_KEY);
+            var filePath = FileUtils.GetCacheDataFilePathThatLatest(OptionInfoRepository.PATH_KEY);
             var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(filePath);
             if (daysdiff > daysUpdateRound)
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
                 optionInfos = optionInfoRepository.fetchFromWind(underlyingCode, market);
                 optionInfoRepository.saveToLocalFile(optionInfos);
-           
+
 
 
             }
@@ -45,7 +51,7 @@ namespace BackTestingPlatform.Service.Option
             //加载到内存缓存
             Caches.put("OptionInfos", optionInfos);
             Console.WriteLine(optionInfos);
-            
+
 
         }
 

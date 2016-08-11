@@ -47,25 +47,25 @@ namespace BackTestingPlatform.DataAccess.Option
 
         }
 
-        PositionData[] _buildPositionAskData(DataRow row)
+        Position[] _buildPositionAskData(DataRow row)
         {
-            PositionData[] res = new PositionData[5];
-            res[0] = new PositionData(Kit.ToDouble(row["S1"]), Kit.ToDouble(row["SV1"]));
-            res[1] = new PositionData(Kit.ToDouble(row["S2"]), Kit.ToDouble(row["SV2"]));
-            res[2] = new PositionData(Kit.ToDouble(row["S3"]), Kit.ToDouble(row["SV3"]));
-            res[3] = new PositionData(Kit.ToDouble(row["S4"]), Kit.ToDouble(row["SV4"]));
-            res[4] = new PositionData(Kit.ToDouble(row["S5"]), Kit.ToDouble(row["SV5"]));
+            Position[] res = new Position[5];
+            res[0] = new Position(Kit.ToDouble(row["S1"]), Kit.ToDouble(row["SV1"]));
+            res[1] = new Position(Kit.ToDouble(row["S2"]), Kit.ToDouble(row["SV2"]));
+            res[2] = new Position(Kit.ToDouble(row["S3"]), Kit.ToDouble(row["SV3"]));
+            res[3] = new Position(Kit.ToDouble(row["S4"]), Kit.ToDouble(row["SV4"]));
+            res[4] = new Position(Kit.ToDouble(row["S5"]), Kit.ToDouble(row["SV5"]));
             return res;
         }
 
-        PositionData[] _buildPositionBidData(DataRow row)
+        Position[] _buildPositionBidData(DataRow row)
         {
-            return new PositionData[5]{
-                new PositionData(Kit.ToDouble(row["B1"]), Kit.ToDouble(row["BV1"])),
-                new PositionData(Kit.ToDouble(row["B2"]), Kit.ToDouble(row["BV2"])),
-                new PositionData(Kit.ToDouble(row["B3"]), Kit.ToDouble(row["BV3"])),
-                new PositionData(Kit.ToDouble(row["B4"]), Kit.ToDouble(row["BV4"])),
-                new PositionData(Kit.ToDouble(row["B5"]), Kit.ToDouble(row["BV5"]))
+            return new Position[5]{
+                new Position(Kit.ToDouble(row["B1"]), Kit.ToDouble(row["BV1"])),
+                new Position(Kit.ToDouble(row["B2"]), Kit.ToDouble(row["BV2"])),
+                new Position(Kit.ToDouble(row["B3"]), Kit.ToDouble(row["BV3"])),
+                new Position(Kit.ToDouble(row["B4"]), Kit.ToDouble(row["BV4"])),
+                new Position(Kit.ToDouble(row["B5"]), Kit.ToDouble(row["BV5"]))
             };
         }
 

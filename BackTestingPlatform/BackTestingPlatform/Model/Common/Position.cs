@@ -9,10 +9,10 @@ namespace BackTestingPlatform.Model.Common
     /// <summary>
     /// 股票盘口价格的格式，不定长度的N挡盘口价量
     /// </summary>
-    public struct PositionData
+    public struct Position
     {
         public double price, volume;
-        public PositionData(double price, double volume)
+        public Position(double price, double volume)
         {
             this.price = price;
             this.volume = volume;

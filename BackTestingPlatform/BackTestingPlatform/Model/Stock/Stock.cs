@@ -15,61 +15,60 @@ namespace BackTestingPlatform.Model
         public int code;//股票代码
         public DateTime timeToMarket;//上市时间
         public bool isST;//是否是Special Treament股
-        public double[] industry;//行业
-        public double[] sector;//板块
+        public string industry;
+        public string sector;
+        //public double[] industry;//行业
+        //public double[] sector;//板块
         public double dividend;//分红数额
-        public double adjFactor;//权息调整比例，现价*该因子为后复权价格，从万德读取
-        public List<StockTickData> ticks;
-        public List<KLinesData> kLines;
-        public List<PositionData> postions;
+        public double Factor;//权息调整比例，现价*该因子为后复权价格，从万德读取
+        public List<Tick> ticks;
+        public List<KLine> KLines;
+        public List<Position> postions;
     }
+
+     //stockinfowithtickdata:info
+     //   stockinfodaily:info
+     //   stockinfowithminutedata:info
+    //public class stockBasicinfo
 
     /// <summary>
     /// 股票Tick价格的格式，每笔成交的价量
     /// </summary>
-    public class StockTickData
-    {
+    //public class StockTickData
+    //{
 
+    //    public int code;
+    //    public int date, time;//SQL中以整型存放
+    //    public double lastPrice;
+    //    public Position[] ask, bid;
+    //    public double preClose;
+    //}
+
+    //public class StockMinuteData
+    //{
+    //    public DateTime time { get; set; }
+    //    public double open { get; set; }
+    //    public double high { get; set; }
+    //    public double low { get; set; }
+    //    public double close { get; set; }
+    //    public double volume { get; set; }
+    //    public double amount { get; set; }
+    //}
+
+
+
+
+
+    /// <summary>
+    /// 股票权息调整因子，对应wind中的adjfactor
+    /// 后复权因子，实时价格*adjfactor得到后复权价格，回测均使用后复权数据
+    /// </summary>
+
+    public class AdjFactor
+    {
+        public DateTime time;
         public int code;
-        public int date, time;//SQL中以整型存放
-        public double lastPrice;
-        public PositionData[] ask, bid;
-        public double preClose;
+        public double backfwdFactor;//后复权因子,实时股价*backfwdFactor为后复权价格   
     }
-
-    public class StockMinuteData
-    {
-        public DateTime time { get; set; }
-        public double open { get; set; }
-        public double high { get; set; }
-        public double low { get; set; }
-        public double close { get; set; }
-        public double volume { get; set; }
-        public double amount { get; set; }
-    }
-
-    /// <summary>
-    /// 股票K线价格的格式，开高低收量额
-    /// </summary>
-    public class KLinesData
-    {
-        //public string stockCode { get; set; }
-        public DateTime time;
-        public double open, high, low, close, volume, amount;//开高低收量额
-
-    }
-
-    /// <summary>
-    /// 实时行情，对应WindApi中的wsq函数，本地数据库WindFullMarket中的marketData表结构
-    /// </summary>
-    public class RealTimeQuotes
-    {
-        public double open, high, low, close, volume, amount;//开高低收量额
-        public DateTime time;
-        public double cp;
-        public double s1, s2, s3, s4, s5;
-
-    }
-
 
 }

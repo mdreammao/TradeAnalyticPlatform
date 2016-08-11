@@ -22,19 +22,19 @@ namespace BackTestingPlatform.Model.Option
         public DateTime endDate { get; set; }
 
         //public Dictionary<DateTime, string> IHcodes;
- 
+
     }
 
 
 
-    public class OptionTickData 
+    public class OptionTickData : Sequential
     {
 
-        public DateTime time;
+        public DateTime time { get; set; }
         public double lastPrice;
-        public PositionData[] ask, bid;
+        public Common.Position[] ask, bid;
         public OptionGreek greek;
-        public StockTickData underlyingStock;
+        public Tick underlyingStock;
         public FuturesTickData underlyingFutures;
 
     }
@@ -44,15 +44,9 @@ namespace BackTestingPlatform.Model.Option
         public double sigma, delta, gamma, vega, theta;
     }
 
-    public class OptionMinuteData
+    public class OptionMinuteData : KLine
     {
-        public DateTime time { get; set; }
-        public double open { get; set; }
-        public double high { get; set; }
-        public double low { get; set; }
-        public double close { get; set; }
-        public double volume { get; set; }
-        public double amount  { get; set; }
+    
     }
 
     public class OptionMinuteDataWithUnderlying : OptionMinuteData

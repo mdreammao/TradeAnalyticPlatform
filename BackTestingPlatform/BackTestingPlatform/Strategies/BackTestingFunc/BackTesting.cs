@@ -8,13 +8,12 @@ using BackTestingPlatform.Strategies.MA;
 using System.IO;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Model;
-using BackTestingPlatform.Model.Position;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Strategies;
 using BackTestingPlatform.DataAccess;
 using Autofac;
 using WAPIWrapperCSharp;
-
+using BackTestingPlatform.Model.Positions;
 
 namespace BackTestingPlatform.Strategies
 {

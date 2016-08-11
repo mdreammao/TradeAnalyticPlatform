@@ -23,7 +23,7 @@ namespace BackTestingPlatform.Model.Futures
 
         public DateTime time;
         public double lastPrice;
-        public PositionData[] ask, bid;
+        public Common.Position[] ask, bid;
 
     }
 }

@@ -19,6 +19,11 @@ namespace BackTestingPlatform.Core
             data[key] = val;
         }
 
+        public static object get(string key)
+        {
+            return data[key];
+        }
+
         public static T get<T>(string key)
         {
             return (T)data[key];

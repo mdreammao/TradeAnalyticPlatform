@@ -16,24 +16,24 @@ namespace BackTestingPlatform.Service.Option
     {
         OptionMinuteDataRepository optionMinuteDataRepository = Platforms.container.Resolve<OptionMinuteDataRepository>();
 
-        public List<OptionMinuteData> loadOptionMinuteData(string optionCode,DateTime date)
+        public List<OptionMinuteData> loadOptionMinuteData(string optionCode, DateTime date)
         {
-            List<OptionMinuteData> optionData;
-            var filePath= FileUtils.GetCacheDataFileByCodeAndDate(OptionMinuteDataRepository.PATH_KEY,optionCode,date);
-            //若本地文件存在，则从本地读取否者先从万德或者数据库中读取
-            if (File.Exists(filePath))
-            {
-                optionData = optionMinuteDataRepository.fetchAllFromLocalCsvFile(filePath);   
-            }
-            else
-            {
-                optionData = optionMinuteDataRepository.fetchMinuteDataFromWind(optionCode, date);
-                if (optionData!=null)
-                {
-                    optionMinuteDataRepository.saveToLocalFile(optionData, filePath);
-                }
-            }
-            return optionData==null? null :optionData;
+            List<OptionMinuteData> optionData=null;
+            //var filePath = FileUtils.GetCacheDataFileByCodeAndDate(OptionMinuteDataRepository.PATH_KEY, optionCode, date);
+            ////若本地文件存在，则从本地读取否者先从万德或者数据库中读取
+            //if (File.Exists(filePath))
+            //{
+            //    optionData = optionMinuteDataRepository.fetchAllFromLocalCsvFile(filePath);
+            //}
+            //else
+            //{
+            //    optionData = optionMinuteDataRepository.fetchMinuteDataFromWind(optionCode, date);
+            //    if (optionData != null)
+            //    {
+            //        optionMinuteDataRepository.saveToLocalFile(optionData, filePath);
+            //    }
+            //}
+            return optionData == null ? null : optionData;
         }
 
     }

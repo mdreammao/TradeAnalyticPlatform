@@ -24,7 +24,7 @@ namespace BackTestingPlatform.Utilities
         /// <param name="stockTickList"></param>股票tick数据的list
         /// <param name="freq"></param>需要转换的分钟频率值，如5为5分钟频率
         /// <returns></returns>
-        public static List<StockMinuteData> tickToNMinutes(List<TickFromMssql> stockTickList, int freq)
+        public static List<KLine> tickToNMinutes(List<TickFromMssql> stockTickList, int freq)
         {
             /*
                 public class TickFromMssql
@@ -52,7 +52,7 @@ namespace BackTestingPlatform.Utilities
             int endTime = 150100000;//实际不会有到15：01的数据，由于部分数据在15：00以后，故此处的截取点推后
             int freqSpan = freq * 100000;//周期时间跨度，Bar之间的时间距离（毫秒）
 
-            List<StockMinuteData> newMinuteData = new List<StockMinuteData>();
+            var newMinuteData = new List<KLine>();
 
             int headIndex;//bar的起点时间
             int tailIndex = stockTickList.FindIndex(s => s.time >= startTime);//第一个bar的终点时间
@@ -103,8 +103,8 @@ namespace BackTestingPlatform.Utilities
                 nowClose = stockTickList[tailIndex].lastPrice;
                 //记录新的bar数据
                 int fullTime = nowDate * 1000000000 + nowTime;
-                newMinuteData.Add(new StockMinuteData
-                    {
+                newMinuteData.Add(new KLine
+                {
                         time = Kit.ToDateTime(nowDate, nowTime),
                         open =nowOpen,
                         high = nowHigh,
