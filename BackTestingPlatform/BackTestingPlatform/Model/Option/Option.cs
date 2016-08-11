@@ -34,7 +34,7 @@ namespace BackTestingPlatform.Model.Option
         public double lastPrice;
         public Common.Position[] ask, bid;
         public OptionGreek greek;
-        public StockTickData underlyingStock;
+        public Tick underlyingStock;
         public FuturesTickData underlyingFutures;
 
     }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using BackTestingPlatform.Model.TALibrary;
 using BackTestingPlatform.Model;
-using BackTestingPlatform.Model.Position;
+using BackTestingPlatform.Model.Positions;
 
 namespace BackTestingPlatform.Strategies
 {
