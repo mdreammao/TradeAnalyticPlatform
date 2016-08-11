@@ -24,22 +24,22 @@ namespace BackTestingPlatform.Service.Stock
 
         public List<ASharesInfo> loadASharesInfoData(string stockCode, DateTime date)
         {
-            List<ASharesInfo> ASharesInfoData;
-            var filePath = FileUtils.GetCacheDataFileByCodeAndDate(ASharesInfoRepository.PATH_KEY, stockCode, date);
-            //若本地文件存在，则从本地读取否者先从万德或者数据库中读取
-            if (File.Exists(filePath))
-            {
-         //       ASharesInfoData = ASharesInfoRepository.fetchAllFromLocalFile(filePath);
-            }
-            else
-            {
-           //     ASharesInfoData = ASharesInfoRepository.fetchASharesInfoDataFromWind(stockCode, date);
-          //      if (ASharesInfoData != null)
-                {
-       //             ASharesInfoRepository.saveToLocalFile(ASharesInfoData, filePath);
-                }
-            }
-  //          return ASharesInfoData == null ? null : ASharesInfoData;
+  //          List<ASharesInfo> ASharesInfoData;
+  //          var filePath = FileUtils.GetCacheDataFileByCodeAndDate(ASharesInfoRepository.PATH_KEY, stockCode, date);
+  //          //若本地文件存在，则从本地读取否者先从万德或者数据库中读取
+  //          if (File.Exists(filePath))
+  //          {
+  //       //       ASharesInfoData = ASharesInfoRepository.fetchAllFromLocalFile(filePath);
+  //          }
+  //          else
+  //          {
+  //         //     ASharesInfoData = ASharesInfoRepository.fetchASharesInfoDataFromWind(stockCode, date);
+  //        //      if (ASharesInfoData != null)
+  //              {
+  //     //             ASharesInfoRepository.saveToLocalFile(ASharesInfoData, filePath);
+  //              }
+  //          }
+  ////          return ASharesInfoData == null ? null : ASharesInfoData;
             return null;
         }
     

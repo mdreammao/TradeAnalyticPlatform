@@ -16,7 +16,7 @@ namespace BackTestingPlatform.Strategies.Stock
     {
         public double[] stg(DateTime startDate, DateTime nowDate, AccountInfo account)
         {
-            KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
+            KLineRepository repo = Platforms.container.Resolve<KLineRepository>();
 
             //策略参数
             //---------------------------------

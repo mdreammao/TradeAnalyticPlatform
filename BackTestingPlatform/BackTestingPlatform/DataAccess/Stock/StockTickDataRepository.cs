@@ -22,7 +22,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="period">周期(分钟)</param>
         /// <param name="fields">获取字段</param>
         /// <returns></returns>
-        public List<Quote> fetchRealTimeQuotesFromWind(string stockCode)
+        public List<KLine> fetchRealTimeKLinesFromWind(string stockCode)
         {
 
             WindAPI wapi = Platforms.GetWindAPI();
@@ -34,7 +34,7 @@ namespace BackTestingPlatform.DataAccess
         }
 
 
-        public List<Quote> fetchRealTimeQuotesFromDatabase(string stockCode, DateTime time, string connName = "corp170")
+        public List<KLine> fetchRealTimeKLinesFromDatabase(string stockCode, DateTime time, string connName = "corp170")
         {
             var timeStr = time.ToString("yyyyMM");
             var codeStr = stockCode.Substring(0, 6) + '_' + stockCode.Substring(7, 2);
@@ -44,7 +44,7 @@ namespace BackTestingPlatform.DataAccess
             var connStr=SqlUtils.GetConnectionString(connName);
             DataTable dt = SqlUtils.GetTable(connStr, sql);
             return dt.AsEnumerable().Select(
-                row => new Quote
+                row => new KLine
                 {
                     time = Kit.ToDateTime((string)row["tdate"],(string)row["ttime"]),
                     //cp = Convert.ToDouble(row["cp"]),

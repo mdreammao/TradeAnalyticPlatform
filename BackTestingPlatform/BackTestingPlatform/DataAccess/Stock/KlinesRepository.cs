@@ -1,5 +1,5 @@
 ﻿using BackTestingPlatform.Core;
-using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Option;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using WAPIWrapperCSharp;
 namespace BackTestingPlatform.DataAccess
 {
 
-    public class KLinesDataRepository
+    public class KLineRepository
     {
 
         /// <summary>

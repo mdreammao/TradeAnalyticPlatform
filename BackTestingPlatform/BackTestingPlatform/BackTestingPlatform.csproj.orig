@@ -64,22 +64,26 @@
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
     <Compile Include="DataAccess\Stock\StockDailyInfoRepository.cs" />
     <Compile Include="DataAccess\Stock\StockMinuteDataRepository.cs" />
-    <Compile Include="DataAccess\TimeSeriesDataRepoHelper.cs" />
+<<<<<<< e24fcd61294b1df01d4d85e7ed2228b1e25d507c
     <Compile Include="Model\Common\Kline.cs" />
+=======
     <Compile Include="DataAccess\Stock\TickRepository.cs" />
+>>>>>>> 结构调整
     <Compile Include="Model\Common\Position.cs" />
-    <Compile Include="Model\Common\Sequential.cs" />
+    <Compile Include="Model\Common\Quote.cs" />
+    <Compile Include="Model\Common\Sequential .cs" />
     <Compile Include="Model\Common\Tick.cs" />
     <Compile Include="Model\Contstants.cs" />
     <Compile Include="Model\Futures\Futures.cs" />
-    <Compile Include="Model\KLine.tmp.cs" />
     <Compile Include="Model\Option\OptionDailyInfo.cs" />
     <Compile Include="Model\Option\Option.cs" />
-    <Compile Include="Model\Positions\AccountInfo.cs" />
     <Compile Include="Model\Stock\ASharesInfo.cs" />
     <Compile Include="Model\Stock\Stock.cs" />
+<<<<<<< e24fcd61294b1df01d4d85e7ed2228b1e25d507c
     <Compile Include="Model\Stock\StockDaily.cs" />
+=======
     <Compile Include="Model\Stock\StockDailyInfo.cs" />
+>>>>>>> 结构调整
     <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionMinuteDataService.cs" />
     <Compile Include="Service\Option\OptionInfoService.cs" />
@@ -105,7 +109,7 @@
     <Compile Include="Utilities\FileUtils.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
     <Compile Include="DataAccess\TradeDaysRepository.cs" />
-    <Compile Include="DataAccess\Stock\KlinesRepository.cs" />
+    <Compile Include="DataAccess\Stock\KLinesDataRepository.cs" />
     <Compile Include="DataAccess\Stock\StockTickDataRepository.cs" />
     <Compile Include="Model\Option\ImpvSurface.cs" />
     <Compile Include="Core\PlatformBooter.cs" />

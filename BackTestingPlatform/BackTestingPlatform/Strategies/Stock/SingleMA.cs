@@ -22,7 +22,7 @@ namespace BackTestingPlatform.Strategies.MA
 
         public double[] stg(DateTime startDate, DateTime nowDate, AccountInfo account)
         {
-            KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
+            KLineRepository repo = Platforms.container.Resolve<KLineRepository>();
 
             //计算运行时间
             /*

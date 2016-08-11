@@ -19,7 +19,7 @@ namespace BackTestingPlatform.Service.Stock
         public void readRealTimeQuotes(string stockCode,DateTime time)
         {
 
-            var list= stockTickDataRepository.fetchRealTimeQuotesFromDatabase(stockCode,time);
+           
             
            
         }

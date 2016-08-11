@@ -27,8 +27,8 @@ namespace BackTestingPlatform.Service.Stock
         {
             List<AdjFactor> adjFactor;
             int daysUpdateRound = 1;    //CacheData更新周期间隔
-            var filePath = FileUtils.GetCacheDataFileThatLatest(AdjFactorRepository.PATH_KEY);
-            var daysdiff = FileUtils.GetCacheFileDaysPastTillToday(filePath);
+            var filePath = FileUtils.GetCacheDataFilePathThatLatest(AdjFactorRepository.PATH_KEY);
+            var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(filePath);
             if (daysdiff > daysUpdateRound)
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
                 adjFactor = adjFactorRepository.fetchFromWind(stockCode, startTime,endTime);
@@ -39,7 +39,7 @@ namespace BackTestingPlatform.Service.Stock
                 adjFactor = adjFactorRepository.fetchAllFromLocalFile(filePath);
             }
 
-            Platforms.BasicInfo["AdjFactor"] = adjFactor;
+            Caches.put("AdjFactor", adjFactor);
             Console.WriteLine(adjFactor);
         }
     }

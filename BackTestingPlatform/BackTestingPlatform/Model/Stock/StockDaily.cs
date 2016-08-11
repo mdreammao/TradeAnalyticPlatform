@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Stock
 {
-    public class StockDaily: Kline
+    public class StockDaily: KLine
     {
         public string code;//股票代码
         public string name;

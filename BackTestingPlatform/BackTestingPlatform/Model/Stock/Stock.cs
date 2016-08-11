@@ -22,7 +22,7 @@ namespace BackTestingPlatform.Model
         public double dividend;//分红数额
         public double Factor;//权息调整比例，现价*该因子为后复权价格，从万德读取
         public List<Tick> ticks;
-        public List<Quote> kLines;
+        public List<KLine> KLines;
         public List<Position> postions;
     }
 

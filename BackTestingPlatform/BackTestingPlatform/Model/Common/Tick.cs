@@ -16,7 +16,8 @@ namespace BackTestingPlatform.Model.Common
         public double preClose { get; set; }
 
     }
-    public class TickFromMssql
+
+    public class TickFromMssql 
     {
         public string code;
         public int date, time;

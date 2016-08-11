@@ -31,6 +31,8 @@ namespace BackTestingPlatform.DataAccess
         /// <returns></returns>
         public abstract List<T> fetchFromWind(string code, string date);
 
+        public abstract List<T> fetchFromDefaultMssql(string code, string date);
+      
         /// <summary>
         ///  尝试从本地csv文件获取数据
         /// </summary>
@@ -56,16 +58,7 @@ namespace BackTestingPlatform.DataAccess
         /// <returns></returns>
         public List<T> fetchFromLocalCsvOrWind(string code, string date, string tag = null)
         {
-            if (tag == null) tag = typeof(T).ToString();
-            //尝试从csv获取
-            List<T> result = fetchFromLocalCsv(code, date, tag);
-
-            if (result == null)
-            {
-                //尝试从Wind获取
-                result = fetchFromWind(code, date);
-            }
-            return result;
+            return _fetchFromManySouresAndSave(code, date, tag, true, true, false,false);
         }
 
         /// <summary>
@@ -77,17 +70,61 @@ namespace BackTestingPlatform.DataAccess
         /// <returns></returns>
         public List<T> fetchFromLocalCsvOrWindAndSave(string code, string date, string tag = null)
         {
-            if (tag == null) tag = typeof(T).ToString();
-            //尝试从csv获取
-            List<T> result = fetchFromLocalCsv(code, date, tag);
+            return _fetchFromManySouresAndSave(code, date, tag, true, true, false, true);
+        }
+        /// <summary>
+        /// 先后尝试从本地csv文件，默认MSSQL数据库源获取数据。
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="date"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public List<T> fetchFromLocalCsvOrMssql(string code, string date, string tag = null)
+        {
+            return _fetchFromManySouresAndSave(code, date, tag, true, false, true, false);
+        }
 
-            if (result == null)
+        /// <summary>
+        /// 先后尝试从本地csv文件，默认MSSQL数据库源获取数据。若无本地csv，则保存到CacheData文件夹。
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="date"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public List<T> fetchFromLocalCsvOrMssqlAndSave(string code,string date, string tag = null)
+        {
+            return _fetchFromManySouresAndSave(code, date, tag, true, false, true, true);          
+        }
+
+        private List<T> _fetchFromManySouresAndSave(string code, string date, string tag,bool tryCsv,bool tryWind,bool tryMssql0,bool saveToCsv)
+        {
+            if (tag == null) tag = typeof(T).ToString();
+            List<T> result = null;
+            bool csvHasData = false;
+            
+            if (tryCsv)
+            {
+                //尝试从csv获取
+                result = fetchFromLocalCsv(code, date, tag);
+                if (result != null) csvHasData = true;
+            }           
+            if (result == null && tryWind)            
             {
                 //尝试从Wind获取
                 result = fetchFromWind(code, date);
-                //并保存
+            }
+            if (result == null && tryMssql0)
+            {
+                //尝试从默认MSSQL获取
+                result = fetchFromDefaultMssql(code, date);
+
+            }
+            if (!csvHasData && result != null && saveToCsv)
+            {
+                //如果数据不是从csv获取的，可保存至本地，存为csv文件
                 saveToLocalCsvFile(result, code, date, tag);
             }
+           
             return result;
         }
 
@@ -101,6 +138,11 @@ namespace BackTestingPlatform.DataAccess
         public void saveToLocalCsvFile(IList<T> data, string code, string date, string tag = null)
         {
             if (tag == null) tag = typeof(T).ToString();
+            if (data==null ||　data.Count==0)
+            {
+                Console.WriteLine("Nothing to save!");
+                return;
+            }
             var dt = DataTableUtils.ToDataTable(data);
             var path = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date);
             CsvFileUtils.WriteToCsvFile(path, dt);
