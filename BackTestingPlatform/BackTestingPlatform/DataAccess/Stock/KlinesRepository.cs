@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.Core;
-using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Option;
 using System;
 using System.Collections.Generic;
 using WAPIWrapperCSharp;
@@ -8,7 +9,7 @@ using WAPIWrapperCSharp;
 namespace BackTestingPlatform.DataAccess
 {
 
-    public class KLinesDataRepository
+    public class KLineRepository
     {
 
         /// <summary>
@@ -20,7 +21,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="period">周期(分钟)</param>
         /// <param name="fields">获取字段</param>
         /// <returns></returns>
-        public List<KLinesData> fetchFromWind(string stockCode, DateTime startTime, DateTime endTime, int period = 1, string fields = "open,high,low,close,volume,amt")
+        public List<KLine> fetchFromWind(string stockCode, DateTime startTime, DateTime endTime, int period = 1, string fields = "open,high,low,close,volume,amt")
         {
             var options = String.Format("barSize={0}", period);
 
@@ -29,14 +30,14 @@ namespace BackTestingPlatform.DataAccess
 
             int len = d.timeList.Length;
             int fieldLen = d.fieldList.Length;
-            List<KLinesData> items = new List<KLinesData>(len);
+            List<KLine> items = new List<KLine>(len);
             double[] dm = (double[])d.data;
             int dataLen = dm.Length;
             DateTime[] ttime = d.timeList;
 
             for (int j = 0, k = 0; j < len; j++, k += fieldLen)
             {
-                items.Add(new KLinesData
+                items.Add(new KLine
                 {
                     time = ttime[j],
                     open = dm[k],

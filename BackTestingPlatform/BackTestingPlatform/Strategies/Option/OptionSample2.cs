@@ -3,6 +3,7 @@ using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Option;
 using BackTestingPlatform.Service;
 using BackTestingPlatform.Service.Option;
@@ -24,35 +25,62 @@ namespace BackTestingPlatform.Strategies.Option
         public class positionShot
         {
             public DateTime time { get; set; }
-            public double etfPrice { get; set; } 
+            public double etfPrice { get; set; }
+
+            public SortedDictionary<string, OptionShot> option { get; set; }
             
         }
 
+        public class OptionShot
+        {
+            public double strike,ask, bid, last, askv, bidv;
+        }
        
         public OptionSample2(int start, int end)
         {
-            List<int> a = new List<int>();
             var days = Caches.getTradeDays();
             OptionInfoService optionInfoService = Platforms.container.Resolve<OptionInfoService>();
             optionInfoService.loadOptionInfo("510050.SH", "sse");
             var optionInfo = Caches.get<List<OptionInfo>>("OptionInfos");
             days = TradeDaysUtils.getTradeDays(start, end);
             List<positionShot> answer = new List<positionShot>();
+
             foreach (var item in (List<DateTime>)days)
             {
+                SortedDictionary<string, List<TickFromMssql>> optionList = new SortedDictionary<string, List<TickFromMssql>>();
                 StockTickDataRepository etfTick = Platforms.container.Resolve<StockTickDataRepository>();
-                var etf = etfTick.fetchDataFromMssql("510050.SH", item);
+                var etf =DataListUtils.FillList(etfTick.fetchDataFromMssql("510050.SH", item));
                 var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)optionInfo, Kit.ToInt_yyyyMMdd(item));
                 positionShot now = new positionShot();
                 
                 foreach (var options in optionToday)
                 {
                     OptionTickDataRepository optionTick = Platforms.container.Resolve<OptionTickDataRepository>();
-                    var option = optionTick.fetchDataFromMssql(options.optionCode, item);
-
+                    var option =DataListUtils.FillList(optionTick.fetchDataFromMssql(options.optionCode, item));
+                    optionList.Add(options.optionCode, option);
+                }
+                for (int i = 0; i < etf.Count; i++)
+                {
+                    positionShot shot = new positionShot();
+                    shot.etfPrice = etf[i].lastPrice;
+                    shot.time =Kit.ToDateTime(etf[i].date,etf[i].time);
+                    SortedDictionary<string, OptionShot> option = new SortedDictionary<string, OptionShot>();
+                    foreach (var option0 in optionToday)
+                    {
+                        OptionShot shot0 = new OptionShot();
+                        shot0.strike = option0.strike;
+                        shot0.ask = optionList[option0.optionCode][i].ask[0].price;
+                        shot0.bid= optionList[option0.optionCode][i].bid[0].price;
+                        shot0.askv = optionList[option0.optionCode][i].ask[0].volume;
+                        shot0.bidv = optionList[option0.optionCode][i].bid[0].volume;
+                        shot0.last = optionList[option0.optionCode][i].lastPrice;
+                        option.Add(option0.optionCode, shot0);
+                    }
+                    shot.option = option;
+                    answer.Add(shot);
                 }
             }
-            saveToLocalFile(answer, "positionShot.csv");
+            //saveToLocalFile(answer, "positionShot.csv");
         }
 
         public void saveToLocalFile(List<positionShot> optionMinuteData, string path)
@@ -62,7 +90,7 @@ namespace BackTestingPlatform.Strategies.Option
             Console.WriteLine("{0} saved!", path);
         }
 
-        public List<OptionMinuteDataWithUnderlying> AddEtfPrice(List<OptionMinuteData> option, List<StockMinuteData> etf, OptionInfo optionInfo)
+        public List<OptionMinuteDataWithUnderlying> AddEtfPrice(List<OptionMinuteData> option, List<KLine> etf, OptionInfo optionInfo)
         {
             if (option.Count != 240 || etf.Count != 240)
             {

@@ -9,19 +9,19 @@ namespace BackTestingPlatform.Utilities.Option
 {
     public class ImpliedVolatilityUtilities
     {
-        public static double ComputeOptionPrice(string optionCode, double strike, double duration, double riskFreeRate, double StockRate, string optionType, double optionVolatility, double underlyingPrice)
+        public static double ComputeOptionPrice(double strike, double duration, double riskFreeRate, double StockRate, string optionType, double optionVolatility, double underlyingPrice)
         {
             double etfPirce = underlyingPrice * Math.Exp(-StockRate * duration);
             return optionLastPrice(etfPirce, optionVolatility, strike, duration, riskFreeRate, optionType);
         }
-        public static double ComputeImpliedVolatility(string optionCode,double strike,double duration,double riskFreeRate,double StockRate,string optionType,double optionPrice,double underlyingPrice)
+        public static double ComputeImpliedVolatility(double strike,double duration,double riskFreeRate,double StockRate,string optionType,double optionPrice,double underlyingPrice)
         {
             double etfPirce = underlyingPrice * Math.Exp(-StockRate * duration);
             return sigma(etfPirce, optionPrice, strike, duration, riskFreeRate, optionType);
         }
         public static double _StartPoint(double K, double T, double r, double call, double s)///K 是 执行价格 
         {
-            double sigma = 0.0;
+            double sigma = 0.5;
             double x = K * Math.Exp(-r * T); ///x是折现值
             double radicand = Math.Pow(call - (s - x) / 2, 2) - Math.Pow(s - x, 2) / Math.PI * (1 + x / s) / 2;
             if (radicand>0)
@@ -42,27 +42,32 @@ namespace BackTestingPlatform.Utilities.Option
         public static double sigmaOfCall(double callPrice, double spotPrice, double strike, double duration, double r)
         {
             double sigma =_StartPoint(strike,duration,r,callPrice,spotPrice), sigmaold = sigma;
-            if (callPrice < spotPrice - strike * Math.Exp(-r * duration))
-            {
+           if (callPrice < spotPrice - strike * Math.Exp(-r * duration))
+           {
                 return 0;
-            }
-            for (int num = 0; num <= 2; num++)
+           }
+            for (int num = 0; num <= 10; num++)
             {
                 sigmaold = sigma;
                 double d1 = (Math.Log(spotPrice / strike) + (r + sigma * sigma / 2) * duration) / (sigma * Math.Sqrt(duration));
                 double d2 = d1 - sigma * Math.Sqrt(duration);
                 double f_sigma = normcdf(d1) * spotPrice - normcdf(d2) * strike * Math.Exp(-r * duration);
                 double df_sigma = spotPrice * Math.Sqrt(duration) * Math.Exp(-d1 * d1 / 2) / (Math.Sqrt(2 * Math.PI));
+                if (df_sigma<=0.000001)
+                {
+                    break;  
+                }
                 sigma = sigma + (callPrice - f_sigma) / df_sigma;
                 if (Math.Abs(sigma - sigmaold) < 0.0001)
                 {
                     break;
                 }
             }
-            if (sigma > 3 || sigma < 0)
+            if (sigma < 0)///sigma > 3 ||
             {
                 sigma = 0;
             }
+           
             return sigma;
         }
 

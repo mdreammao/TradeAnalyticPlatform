@@ -44,8 +44,9 @@ namespace BackTestingPlatform.Utilities
 
         public static List<T> ToList<T>(this DataTable table) where T : new()
         {
-            List<PropertyInfo> properties = typeof(T).GetProperties().ToList();
-            List<T> result = new List<T>();
+            if (table == null) return null;
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);            
+            List<T> result = new List<T>(table.Rows.Count);
             foreach (var row in table.Rows)
             {
                 var item = CreateItemFromRow<T>((DataRow)row, properties);
@@ -54,8 +55,12 @@ namespace BackTestingPlatform.Utilities
             return result;
         }
 
-
-        private static T CreateItemFromRow<T>(DataRow row, IList<PropertyInfo> properties) where T : new()
+        public static T CreateItemFromRow<T>(DataRow row) where T : new()
+        {
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            return CreateItemFromRow<T>(row,properties);
+        }
+        public static T CreateItemFromRow<T>(DataRow row, IList<PropertyInfo> properties) where T : new()
         {
             T item = new T();
             foreach (var property in properties)

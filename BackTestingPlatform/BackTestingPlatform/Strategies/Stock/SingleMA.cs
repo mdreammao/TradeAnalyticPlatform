@@ -2,14 +2,9 @@
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using BackTestingPlatform.Model.TALibrary;
 using BackTestingPlatform.Model;
-using BackTestingPlatform.Model.Position;
+using BackTestingPlatform.Model.Positions;
 
 namespace BackTestingPlatform.Strategies.MA
 {
@@ -27,7 +22,7 @@ namespace BackTestingPlatform.Strategies.MA
 
         public double[] stg(DateTime startDate, DateTime nowDate, AccountInfo account)
         {
-            KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
+            KLineRepository repo = Platforms.container.Resolve<KLineRepository>();
 
             //计算运行时间
             /*

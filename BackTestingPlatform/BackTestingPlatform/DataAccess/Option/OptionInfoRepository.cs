@@ -9,6 +9,7 @@ using System.Linq;
 using BackTestingPlatform.Utilities;
 using System.Configuration;
 using System.Data;
+using System.Globalization;
 
 namespace BackTestingPlatform.DataAccess.Option
 {
@@ -49,15 +50,19 @@ namespace BackTestingPlatform.DataAccess.Option
         {
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
+            DateTimeFormatInfo dtFormat = new DateTimeFormatInfo();
+            dtFormat.ShortDatePattern = "yyyy/MM/dd HH:mm:ss";
             return dt.AsEnumerable().Select(row => new OptionInfo
             {
-                optionCode= (string)row["optionCode"],
-                optionName= (string)(row["optionName"]),
-                optionType= (string)(row["optionType"]),
-                executeType= (string)(row["executeType"]),
-                strike= Kit.ToDouble(row["strike"]),
-                startDate = Kit.ToDateTime(row["startDate"]),
-                endDate= Kit.ToDateTime(row["endDate"])
+                optionCode = (string)row["optionCode"],
+                optionName = (string)(row["optionName"]),
+                optionType = (string)(row["optionType"]),
+                executeType = (string)(row["executeType"]),
+                strike = Kit.ToDouble(row["strike"]),
+                startDate =Convert.ToDateTime(Convert.ToString((row["startDate"])),dtFormat),
+                endDate = Convert.ToDateTime(Convert.ToString((row["endDate"])),dtFormat)
+                //startDate = Kit.ToDateTime(row["startDate"]),
+                //endDate= Kit.ToDateTime(row["endDate"])
             }).ToList();
         }
 

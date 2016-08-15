@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Common
 {
-    public struct KLine
+    public class KLine : Sequential
     {
         public DateTime time { get; set; }
         public double open { get; set; }

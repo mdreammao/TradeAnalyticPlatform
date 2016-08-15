@@ -12,7 +12,7 @@ namespace BackTestingPlatform.Utilities
     /// <summary>
     /// List按时间区间部分复制，输入原List、起始时间及结束时间，返回子Lsit
     /// </summary>
-    [Obsolete]
+   // [Obsolete]
     public static class DataListUtils
     {
 

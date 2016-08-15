@@ -18,10 +18,10 @@ namespace BackTestingPlatform.Strategies.Stock
     {
         public AdjFactorTest(string stockCode, int start, int end)
         {
-            var days = Platforms.BasicInfo["TradeDays"];
+            var days = Caches.getTradeDays();
             AdjFactorService adjFactorService = Platforms.container.Resolve<AdjFactorService>();
-            adjFactorService.loadAdjFactor(stockCode, Kit.toDate(start), Kit.toDate(end));
-            var adjFactor = Platforms.BasicInfo["AdjFactor"];
+            adjFactorService.loadAdjFactor(stockCode, Kit.ToDate(start), Kit.ToDate(end));
+            var adjFactor = Caches.get("AdjFactor");
             days = TradeDaysUtils.getTradeDays(start, end);
             //        for(int j=0 ;j<adjFactor)
             //       Console.WriteLine("{0}",)
