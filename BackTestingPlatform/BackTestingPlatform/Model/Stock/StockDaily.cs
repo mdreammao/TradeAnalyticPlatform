@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Stock
 {
-    public class StockDaily: Kline
+    public class StockDaily: KLine
     {
         public string code;//股票代码
-        public string name;
+        public string name;//股票名称
         public DateTime date;//当前时间
         public DateTime ipoDate;//上市时间
         public bool isST;//是否是Special Treament股
@@ -23,6 +23,5 @@ namespace BackTestingPlatform.Model.Stock
         public double marketValueFloat;//流通市值
         public double turnover;//换手率
         public string tradeStatus;//"交易"、"停牌"
-
     }
 }
