@@ -27,7 +27,7 @@ namespace BackTestingPlatform.Strategies.Option
             public DateTime time { get; set; }
             public double etfPrice { get; set; }
 
-            public SortedDictionary<double, OptionShot> option { get; set; }
+            public SortedDictionary<string, OptionShot> option { get; set; }
             
         }
 
@@ -64,7 +64,7 @@ namespace BackTestingPlatform.Strategies.Option
                     positionShot shot = new positionShot();
                     shot.etfPrice = etf[i].lastPrice;
                     shot.time =Kit.ToDateTime(etf[i].date,etf[i].time);
-                    SortedDictionary<double, OptionShot> option = new SortedDictionary<double, OptionShot>();
+                    SortedDictionary<string, OptionShot> option = new SortedDictionary<string, OptionShot>();
                     foreach (var option0 in optionToday)
                     {
                         OptionShot shot0 = new OptionShot();
@@ -74,7 +74,7 @@ namespace BackTestingPlatform.Strategies.Option
                         shot0.askv = optionList[option0.optionCode][i].ask[0].volume;
                         shot0.bidv = optionList[option0.optionCode][i].bid[0].volume;
                         shot0.last = optionList[option0.optionCode][i].lastPrice;
-                        option.Add(shot0.strike, shot0);
+                        option.Add(option0.optionCode, shot0);
                     }
                     shot.option = option;
                     answer.Add(shot);

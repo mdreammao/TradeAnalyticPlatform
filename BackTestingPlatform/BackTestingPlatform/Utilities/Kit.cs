@@ -173,7 +173,7 @@ namespace BackTestingPlatform.Utilities
             if (arg == null)
                 return 0;
             if (arg.GetType() == typeof(decimal))
-                return (double)arg;
+                return Convert.ToDouble(arg);
             if (arg.GetType() == typeof(int))
                 return (double)arg;
             if (arg.GetType() == typeof(double))

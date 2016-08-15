@@ -94,6 +94,7 @@
     <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Strategies\Stock\AdjFactorTest.cs" />
     <Compile Include="Strategies\Stock\NdaysReversion.cs" />
+    <Compile Include="System\GlobalizationDateTimeFormatInfo.cs" />
     <Compile Include="Utilities\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
     <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
