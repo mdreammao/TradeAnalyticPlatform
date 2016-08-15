@@ -66,7 +66,7 @@
     <Compile Include="DataAccess\Stock\StockMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Stock\StockMinuteKLineRepository.cs" />
     <Compile Include="DataAccess\TimeSeriesDataRepoHelper.cs" />
-    <Compile Include="Model\Common\Kline.cs" />
+    <Compile Include="Model\Common\KLine.cs" />
     <Compile Include="DataAccess\Stock\TickRepository.cs" />
     <Compile Include="Model\Common\Position.cs" />
     <Compile Include="Model\Common\Sequential.cs" />

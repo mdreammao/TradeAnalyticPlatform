@@ -53,10 +53,13 @@ namespace BackTestingPlatform.Utilities.Option
                 double d2 = d1 - sigma * Math.Sqrt(duration);
                 double f_sigma = normcdf(d1) * spotPrice - normcdf(d2) * strike * Math.Exp(-r * duration);
                 double df_sigma = spotPrice * Math.Sqrt(duration) * Math.Exp(-d1 * d1 / 2) / (Math.Sqrt(2 * Math.PI));
-                sigma = sigma + (callPrice - f_sigma) / df_sigma;
-                if (Math.Abs(sigma - sigmaold) < 0.001)
+                if (df_sigma<=0.000001)
                 {
-                    Console.WriteLine(num);
+                    break;  
+                }
+                sigma = sigma + (callPrice - f_sigma) / df_sigma;
+                if (Math.Abs(sigma - sigmaold) < 0.0001)
+                {
                     break;
                 }
             }
