@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace BackTestingPlatform.Strategies.Option
 {
@@ -80,9 +81,28 @@ namespace BackTestingPlatform.Strategies.Option
                     answer.Add(shot);
                 }
             }
-            //saveToLocalFile(answer, "positionShot.csv");
-        }
+            //saveToLocalFile(answer, "positionShot.csv");strike,ask, bid, last, askv, bidv;
+            //将answer改成List<string[]>
+            List<string[]> answerList = new List<string[]>();
+            for (int obs = 0; obs < answer.Count;obs++ )
+            {
+                answerList[obs][0] = answer[obs].time.ToString();
+                answerList[obs][1] = answer[obs].etfPrice.ToString();
+              //  answerList[obs][2] = answer[obs].option;
+            }
 
+            bool append = true; 
+            StreamWriter fileWriter = new StreamWriter("positionShot.csv", append, Encoding.Default);
+            /*
+                        foreach (string[] strArr in answer)
+                        {
+                            fileWriter.WriteLine(string.Join(",", strArr));
+                        }
+                        fileWriter.Flush();
+                        fileWriter.Close();
+             */
+        }
+           
         public void saveToLocalFile(List<positionShot> optionMinuteData, string path)
         {
             var dt = DataTableUtils.ToDataTable(optionMinuteData);
