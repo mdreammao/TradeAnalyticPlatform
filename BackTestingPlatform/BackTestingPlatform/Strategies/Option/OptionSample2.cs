@@ -81,6 +81,7 @@ namespace BackTestingPlatform.Strategies.Option
                 }
             }
             //saveToLocalFile(answer, "positionShot.csv");
+            //for answer
         }
 
         public void saveToLocalFile(List<positionShot> optionMinuteData, string path)

@@ -32,10 +32,10 @@ namespace BackTestingPlatform.Strategies.Option
             {
                 StockMinuteDataService etfData = Platforms.container.Resolve<StockMinuteDataService>();
                 var etfMinuteData = etfData.loadStockMinuteData("510050.SH", item);
-
                 var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)optionInfo, Kit.ToInt_yyyyMMdd(item));
                 foreach (var options in optionToday)
                 {
+                    #region
                     if (Utilities.TradeDaysUtils.GetSpanOfTradeDays(item, options.endDate) <= 7 && options.optionType == "认购")
                     {
                         OptionMinuteDataService optionData = Platforms.container.Resolve<OptionMinuteDataService>();
@@ -49,6 +49,7 @@ namespace BackTestingPlatform.Strategies.Option
                             }
                         }
                     }
+                    #endregion
                 }
             }
             saveToLocalFile(answer, "answer.csv");
