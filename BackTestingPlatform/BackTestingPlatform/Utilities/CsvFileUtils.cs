@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -44,6 +45,12 @@ namespace BackTestingPlatform.Utilities
 
         static string toReadableString(object cell)
         {
+            if (cell is IList)
+            {
+                return ((IList)cell).Cast<object>()
+                    .Aggregate((i, j) => String.Concat(i , ";" , j))
+                    .ToString();
+            }
             if (cell is DateTime)
             {
                 return ((DateTime)cell).ToString("yyyyMMddhhmmss");

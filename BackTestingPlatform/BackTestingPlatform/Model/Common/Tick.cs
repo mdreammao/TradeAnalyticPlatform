@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace BackTestingPlatform.Model.Common
 {
 
-    public struct Tick : Sequential
+    public class Tick : Sequential
     {
         public string code { get; set; }
         public DateTime time { get; set; }
@@ -18,13 +18,15 @@ namespace BackTestingPlatform.Model.Common
 
     }
 
-    public class TickFromMssql 
+    public class TickFromMssql : Tick
     {
-        public string code;
-        public int date, time;
-        public double lastPrice;
-        public Position[] ask, bid;
-        public double highPrice, lowPrice, volume, turnoverVolume;
-        public double preClose, preSettle;
+        //public double open { get; set; }
+        public double high { get; set; }
+        public double low { get; set; }
+        //public double close { get; set; }
+        public double volume { get; set; }
+        public double amount { get; set; }
+        public double preSettle { get; set; }
+        public int date;
     }
 }

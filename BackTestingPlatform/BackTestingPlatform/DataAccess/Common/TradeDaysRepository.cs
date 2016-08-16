@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using WAPIWrapperCSharp;
 
-namespace BackTestingPlatform.DataAccess
+namespace BackTestingPlatform.DataAccess.Common
 {
     public class TradeDaysRepository
     {

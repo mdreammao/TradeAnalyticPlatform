@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using BackTestingPlatform.DataAccess;
-using BackTestingPlatform.Service;
+using BackTestingPlatform.Service.Common;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

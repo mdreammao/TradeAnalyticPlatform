@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Utilities
 {
+    /// <summary>
+    /// DataTable相关工具类
+    /// </summary>
     public static class DataTableUtils
     {
         /// <summary>
@@ -19,33 +22,52 @@ namespace BackTestingPlatform.Utilities
         /// <returns></returns>
         public static DataTable ToDataTable<T>(IList<T> items)
         {
-            DataTable dataTable = new DataTable(typeof(T).Name);
+            return ToDataTable(items, toColumnsDefaultFunc, toRowValuesDefaultFunc);
+        }
+        public static DataTable ToDataTable<T>(IList<T> items, Func<Type, DataColumn[]> toColumnsFunc, Func<T, object[]> toRowValuesFunc)
+        {
+            DataTable dataTable = new DataTable(typeof(T).Name);           
+            //build columns
+            var cols = toColumnsFunc(typeof(T));
+            dataTable.Columns.AddRange(cols);
 
-            //Get all the properties
-            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (PropertyInfo prop in Props)
-            {
-                //Setting column names as Property names
-                dataTable.Columns.Add(prop.Name);
-            }
+            //fill rows
             foreach (T item in items)
-            {
-                var values = new object[Props.Length];
-                for (int i = 0; i < Props.Length; i++)
-                {
-                    //inserting property values to datatable rows
-                    values[i] = Props[i].GetValue(item, null);
-                }
-                dataTable.Rows.Add(values);
+            {               
+                dataTable.Rows.Add(toRowValuesFunc(item));
             }
-            //put a breakpoint here and check datatable
+           
             return dataTable;
+        }
+
+        static DataColumn[] toColumnsDefaultFunc(Type t)
+        {
+            //Setting column names as Property names
+            return t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(p => new DataColumn(p.Name,p.PropertyType)).ToArray();
+        }
+
+        static object[] toRowValuesDefaultFunc<T>(T t)
+        {
+            var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var values = new object[props.Length];
+            for (int i = 0; i < props.Length; i++)
+            {
+                //Type propType = props[i].PropertyType;
+                values[i] = props[i].GetValue(t);                
+            }
+            return values;
+        }
+
+        static bool IsIEnumerable(Type t)
+        {
+            return t.GetInterface(typeof(IEnumerable<>).FullName) != null;
         }
 
         public static List<T> ToList<T>(this DataTable table) where T : new()
         {
             if (table == null) return null;
-            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);            
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             List<T> result = new List<T>(table.Rows.Count);
             foreach (var row in table.Rows)
             {
@@ -58,18 +80,29 @@ namespace BackTestingPlatform.Utilities
         public static T CreateItemFromRow<T>(DataRow row) where T : new()
         {
             var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            return CreateItemFromRow<T>(row,properties);
+            return CreateItemFromRow<T>(row, properties);
         }
+
+        /// <summary>
+        /// DataRow -> Entity
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="row"></param>
+        /// <param name="properties"></param>
+        /// <returns></returns>
         public static T CreateItemFromRow<T>(DataRow row, IList<PropertyInfo> properties) where T : new()
         {
             T item = new T();
-            foreach (var property in properties)
+            foreach (var prop in properties)
             {
-                property.SetValue(item, row[property.Name], null);
+                object val = row[prop.Name];
+                Type propType = prop.PropertyType;
+                prop.SetValue(item, Kit.To(propType, val));              
+                
             }
             return item;
         }
 
-        
+
     }
 }

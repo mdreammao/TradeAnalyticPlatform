@@ -15,15 +15,8 @@ namespace BackTestingPlatform.Model.Futures
         public string code { get; set; }
         public DateTime endDate { get; set; }
 
-        public List<FuturesTickData> ticks;
+        public List<Tick> ticks;
     }
 
-    public class FuturesTickData
-    {
-
-        public DateTime time;
-        public double lastPrice;
-        public Common.Position[] ask, bid;
-
-    }
+   
 }

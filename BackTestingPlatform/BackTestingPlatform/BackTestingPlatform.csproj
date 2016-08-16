@@ -54,41 +54,40 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Caches.cs" />
-    <Compile Include="DataAccess\Option\Class1.cs" />
-    <Compile Include="DataAccess\Option\OptionMinuteDataRepository.cs" />
-    <Compile Include="DataAccess\Option\OptionTickDataRepository.cs" />
-    <Compile Include="DataAccess\SequentialDataRepository.cs" />
+    <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionDailyRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionTickRepository.cs" />
+    <Compile Include="DataAccess\_old_\OptionMinuteDataRepository.cs" />
+    <Compile Include="DataAccess\Common\SequentialDataRepository.cs" />
     <Compile Include="DataAccess\Stock\AdjFactorRepository.cs" />
-    <Compile Include="DataAccess\Stock\ASharesInfoRepository.cs" />
+    <Compile Include="DataAccess\_old_\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesRepository.cs" />
-    <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
-    <Compile Include="DataAccess\Stock\StockDailyInfoRepository.cs" />
-    <Compile Include="DataAccess\Stock\StockMinuteDataRepository.cs" />
+    <Compile Include="DataAccess\_old_\OptionInfoRepository0.cs" />
+    <Compile Include="DataAccess\Stock\StockDailyRepository.cs" />
+    <Compile Include="DataAccess\_old_\StockMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Stock\StockMinuteKLineRepository.cs" />
-    <Compile Include="DataAccess\TimeSeriesDataRepoHelper.cs" />
+    <Compile Include="DataAccess\Stock\StockTickRepository.cs" />
     <Compile Include="Model\Common\KLine.cs" />
-    <Compile Include="DataAccess\Stock\TickRepository.cs" />
+    <Compile Include="DataAccess\_old_\TickRepository.cs" />
     <Compile Include="Model\Common\Position.cs" />
     <Compile Include="Model\Common\Sequential.cs" />
     <Compile Include="Model\Common\Tick.cs" />
-    <Compile Include="Model\Contstants.cs" />
+    <Compile Include="Model\Common\Contstants.cs" />
     <Compile Include="Model\Futures\Futures.cs" />
-    <Compile Include="Model\Option\OptionDailyInfo.cs" />
-    <Compile Include="Model\Option\Option.cs" />
+    <Compile Include="Model\Option\OptionTick.cs" />
+    <Compile Include="Model\Option\OptionMinuteKLine.cs" />
+    <Compile Include="Model\Option\OptionDaily.cs" />
     <Compile Include="Model\Positions\AccountInfo.cs" />
-    <Compile Include="Model\Stock\ASharesInfo.cs" />
+    <Compile Include="Model\Stock\AdjFactor.cs" />
     <Compile Include="Model\Stock\Stock.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
-    <Compile Include="Model\Stock\StockDailyInfo.cs" />
     <Compile Include="Model\Stock\StockMinuteKLine.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
-    <Compile Include="Service\Option\OptionMinuteDataService.cs" />
-    <Compile Include="Service\Option\OptionInfoService.cs" />
+    <Compile Include="Service\Option\OptionDailyService.cs" />
+    <Compile Include="Service\_old_\OptionInfoService.cs" />
     <Compile Include="Service\Stock\AdjFactorService.cs" />
-    <Compile Include="Service\Stock\StockInfoService.cs" />
-    <Compile Include="Service\Stock\StockMinuteDataService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
-    <Compile Include="Service\TradeDaysService.cs" />
+    <Compile Include="Service\Common\TradeDaysService.cs" />
     <Compile Include="Strategies\BackTestingFunc\BackTesting.cs" />
     <Compile Include="Strategies\Option\OptionSample.cs" />
     <Compile Include="Strategies\Option\OptionSample2.cs" />
@@ -106,9 +105,8 @@
     <Compile Include="Utilities\Kit.cs" />
     <Compile Include="Utilities\FileUtils.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
-    <Compile Include="DataAccess\TradeDaysRepository.cs" />
-    <Compile Include="DataAccess\Stock\KlinesRepository.cs" />
-    <Compile Include="DataAccess\Stock\StockTickDataRepository.cs" />
+    <Compile Include="DataAccess\Common\TradeDaysRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockKLineRepository.cs" />
     <Compile Include="Model\Option\ImpvSurface.cs" />
     <Compile Include="Core\PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,9 +123,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\Position\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Task\HeFeiying.txt" />
     <Content Include="Task\HuangZhenkun.txt" />

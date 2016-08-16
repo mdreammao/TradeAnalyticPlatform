@@ -1,5 +1,5 @@
 ﻿using BackTestingPlatform.Core;
-using BackTestingPlatform.Model;
+using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;

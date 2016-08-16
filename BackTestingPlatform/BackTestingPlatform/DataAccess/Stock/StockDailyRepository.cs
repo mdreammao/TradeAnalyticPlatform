@@ -8,14 +8,14 @@ using System.Data;
 
 namespace BackTestingPlatform.DataAccess.Stock
 {
-    class StockDailyInfoRepository : SequentialDataRepository<StockDailyInfo>
+    class StockDailyRepository : SequentialDataRepository<StockDaily>
     {
-        public override List<StockDailyInfo> fetchFromDefaultMssql(string code, DateTime date)
+        public override List<StockDaily> fetchFromDefaultMssql(string code, DateTime date)
         {
             throw new NotImplementedException();
         }
 
-        public override List<StockDailyInfo> fetchFromWind(string code, DateTime date)
+        public override List<StockDaily> fetchFromWind(string code, DateTime date)
         {
             throw new NotImplementedException();
         }

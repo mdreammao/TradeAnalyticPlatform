@@ -81,15 +81,22 @@ namespace BackTestingPlatform.DataAccess
         public static DataTable GetTable(string connStr, string sql, SqlParameter[] paramArr, CommandType commandType)
         {
             DataTable dt = new DataTable();
-            using (SqlConnection conn = new SqlConnection(connStr))
+            try
             {
-                SqlDataAdapter da = new SqlDataAdapter(sql, conn);
-                da.SelectCommand.CommandType = commandType;
-                if (paramArr != null)
+                using (SqlConnection conn = new SqlConnection(connStr))
                 {
-                    da.SelectCommand.Parameters.AddRange(paramArr);
+                    SqlDataAdapter da = new SqlDataAdapter(sql, conn);
+                    da.SelectCommand.CommandType = commandType;
+                    if (paramArr != null)
+                    {
+                        da.SelectCommand.Parameters.AddRange(paramArr);
+                    }
+                    da.Fill(dt);
                 }
-                da.Fill(dt);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
             return dt;
         }

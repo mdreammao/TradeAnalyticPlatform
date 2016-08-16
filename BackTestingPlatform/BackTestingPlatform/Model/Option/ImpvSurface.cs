@@ -12,9 +12,4 @@ namespace BackTestingPlatform.Model.Option
     }
 
 
-
-    public class ImpvSurfaceCalculator
-    {
-
-    }
 }

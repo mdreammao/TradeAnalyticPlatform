@@ -27,37 +27,37 @@ namespace BackTestingPlatform.Utilities
         }
 
 
-        public static List<TickFromMssql> ModifyListByTime(List<TickFromMssql> originalList, int startTime, int endTime)
-        {
-            int startIndex = originalList.FindIndex(s => s.time >= startTime);
-            int endIndex = originalList.FindIndex(s => s.time >= endTime);
-            if (startIndex != -1 & endIndex != -1)
-                return originalList.GetRange(startIndex, endIndex - startIndex + 1);
-            else
-                return null;
-        }
+        //public static List<TickFromMssql> ModifyListByTime(List<TickFromMssql> originalList, int startTime, int endTime)
+        //{
+        //    int startIndex = originalList.FindIndex(s => s.time >= startTime);
+        //    int endIndex = originalList.FindIndex(s => s.time >= endTime);
+        //    if (startIndex != -1 & endIndex != -1)
+        //        return originalList.GetRange(startIndex, endIndex - startIndex + 1);
+        //    else
+        //        return null;
+        //}
 
-        public static List<TickFromMssql> FillList(List<TickFromMssql> originalList)
-        {
-            TickFromMssql[] arr = new TickFromMssql[14402];
-            foreach (var item in originalList)
-            {
-                int index = TimeToIndex(item.time);
-                if (index >= 0 && index <= 14401)
-                {
-                    arr[index] = item;
-                }
-            }
-            for (int i = 1; i < 14402; i++)
-            {
-                TickFromMssql thisTick = arr[i];
-                if (thisTick == null)
-                {
-                    arr[i] = arr[i - 1];
-                }
-            }
-            return arr.ToList();
-        }
+        //public static List<TickFromMssql> FillList(List<TickFromMssql> originalList)
+        //{
+        //    TickFromMssql[] arr = new TickFromMssql[14402];
+        //    foreach (var item in originalList)
+        //    {
+        //        int index = TimeToIndex(item.time);
+        //        if (index >= 0 && index <= 14401)
+        //        {
+        //            arr[index] = item;
+        //        }
+        //    }
+        //    for (int i = 1; i < 14402; i++)
+        //    {
+        //        TickFromMssql thisTick = arr[i];
+        //        if (thisTick == null)
+        //        {
+        //            arr[i] = arr[i - 1];
+        //        }
+        //    }
+        //    return arr.ToList();
+        //}
 
         /// <summary>
         /// 静态函数。将数组下标转化为具体时刻。

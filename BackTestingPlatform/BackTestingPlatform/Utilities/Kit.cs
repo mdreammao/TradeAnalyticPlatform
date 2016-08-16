@@ -42,6 +42,11 @@ namespace BackTestingPlatform.Utilities
             int.TryParse(ttime, out t);
             return ToDateTime(d, t);
         }
+
+        public static DateTime ToDateTime(object tdate, object ttime)
+        {
+            return ToDateTime(tdate.ToString(), ttime.ToString());
+        }
         /// <summary>
         /// 转换到DateTime类型，遇到非法转换则返回DateTime.MinValue，用例：
         /// ToDateTime(20160805)
@@ -80,18 +85,18 @@ namespace BackTestingPlatform.Utilities
             long.TryParse(arg, out x);
             return ToDateTime(x);
         }
-        
+
         public static DateTime ToDateTime(object arg)
         {
             if (arg == null)
                 return DateTime.MinValue;
-            if (arg.GetType() == typeof(string))                     
-                return ToDateTime((string)arg);             
-            
+            if (arg.GetType() == typeof(string))
+                return ToDateTime((string)arg);
+
             if (arg.GetType() == typeof(decimal))
                 return ToDateTime((long)arg);
             if (arg.GetType() == typeof(int))
-                return ToDateTime((long)arg);           
+                return ToDateTime((long)arg);
             if (arg.GetType() == typeof(long))
                 return ToDateTime((long)arg);
 
@@ -187,6 +192,39 @@ namespace BackTestingPlatform.Utilities
                 return r;
             }
             return 0;
+        }
+
+        /// <summary>
+        /// 更简洁的表达，万能转换
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public static object To<T>(object arg)
+        {
+            return To(typeof(T), arg);
+        }
+
+        /// <summary>
+        /// 万能转换
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public static object To(Type type, object arg)
+        {
+            if (arg == null)
+                return null;
+            if (type == typeof(DateTime))
+                return Kit.ToDateTime(arg);
+            if (type == typeof(int))
+                return Kit.ToInt(arg);
+            if (type == typeof(string))
+                return arg.ToString();
+            if (type == typeof(double))
+                return Kit.ToDouble(arg);
+
+            return arg;
         }
 
     }
