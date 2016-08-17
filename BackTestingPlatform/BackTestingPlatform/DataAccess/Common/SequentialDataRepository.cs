@@ -195,7 +195,7 @@ namespace BackTestingPlatform.DataAccess
                 Console.WriteLine("正在保存到本地csv文件...");
                 saveToLocalCsvFile(result, code, date, tag);
             }
-
+            Console.WriteLine("获取{0}数据列表成功.共{1}行.", tag, result.Count);
             return result;
         }
 

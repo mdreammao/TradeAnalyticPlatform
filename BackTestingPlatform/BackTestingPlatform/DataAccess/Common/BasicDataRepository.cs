@@ -57,7 +57,7 @@ namespace BackTestingPlatform.DataAccess.Common
         /// <param name="appendMode">是否为append模式，否则为new模式</param>
         /// <param name="localCsvExpiration">CacheData中本地csv文件的保鲜期（天数）</param>
         /// <param name="tag"></param>
-        public List<T> fetchFromLocalCsvOrWindAndUpdateAndCache(int localCsvExpiration, bool appendMode = false, String tag = null)
+        public List<T> fetchFromLocalCsvOrWindAndSaveAndCache(int localCsvExpiration, bool appendMode = false, String tag = null)
         {
 
             if (tag == null) tag = typeof(T).Name;
@@ -73,7 +73,8 @@ namespace BackTestingPlatform.DataAccess.Common
             var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(lastestFilePath);
             if (daysdiff > localCsvExpiration)
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
-                Console.WriteLine("本地csv文件不存在或已过期，尝试Wind读取新数据...");
+                var txt = (daysdiff == int.MaxValue) ? "不存在" : "已过期" + daysdiff + "天";
+                Console.WriteLine("本地csv文件{0}，尝试Wind读取新数据...", txt);
                 try
                 {
                     data = readFromWind();
@@ -90,7 +91,7 @@ namespace BackTestingPlatform.DataAccess.Common
                     if (lastestFilePath == null)
                     {   //新增                        
                         saveToLocalCsvFile(data, todayFilePath, appendMode, tag);
-                        Console.WriteLine("正在保存新数据到本地...");
+                        Console.WriteLine("文件{0}已保存.", todayFilePath);
                     }
                     else
                     {   //修改
@@ -109,7 +110,7 @@ namespace BackTestingPlatform.DataAccess.Common
             }
             else
             {   //CacheData不是太旧，直接读取
-                Console.WriteLine("从本地cs文件读取数据...");
+                Console.WriteLine("从本地cs文件{0}读取数据... ", lastestFilePath);
                 try
                 {
 
@@ -126,6 +127,7 @@ namespace BackTestingPlatform.DataAccess.Common
             //加载到内存缓存
             Caches.put(tag, data);
             Console.WriteLine("已将{0}加载到内存缓存.", tag);
+            Console.WriteLine("获取{0}数据列表成功.共{1}行.", tag, data.Count);
             return data;
         }
 

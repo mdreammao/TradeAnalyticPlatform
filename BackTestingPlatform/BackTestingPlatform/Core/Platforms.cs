@@ -42,7 +42,7 @@ namespace BackTestingPlatform.Core
 
             //初始化交易日数据           
             TradeDaysService tradeDaysService = container.Resolve<TradeDaysService>();
-            tradeDaysService.fetchFromLocalCsvOrWindAndUpdateAndCache();
+            tradeDaysService.fetchFromLocalCsvOrWindAndSaveAndCache();
 
         }
         /// <summary>

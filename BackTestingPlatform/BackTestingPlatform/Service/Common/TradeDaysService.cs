@@ -15,9 +15,9 @@ namespace BackTestingPlatform.Service.Common
     {
         TradeDayRepository tradeDayRepository = Platforms.container.Resolve<TradeDayRepository>();
 
-        public List<DateTime> fetchFromLocalCsvOrWindAndUpdateAndCache(int localCsvExpiration = 180, bool appendMode = false, String tag = "TradeDays")
+        public List<DateTime> fetchFromLocalCsvOrWindAndSaveAndCache(int localCsvExpiration = 180, bool appendMode = false, String tag = "TradeDays")
         {
-            return tradeDayRepository.fetchFromLocalCsvOrWindAndUpdateAndCache(localCsvExpiration, appendMode, tag);
+            return tradeDayRepository.fetchFromLocalCsvOrWindAndSaveAndCache(localCsvExpiration, appendMode, tag);
         }
 
     }

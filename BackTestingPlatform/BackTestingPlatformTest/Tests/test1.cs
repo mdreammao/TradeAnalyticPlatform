@@ -88,7 +88,7 @@ namespace BackTestingPlatformTest.Tests
                 }
             };
 
-            BBB bbb = new BBB();
+            EntityFlattenAndDeflattenPropsTests bbb = new EntityFlattenAndDeflattenPropsTests();
             //bbb.t2(t1,"");
             var properties = typeof(Tick).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var xxxxx = bbb.propNames;

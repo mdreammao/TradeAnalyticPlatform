@@ -14,7 +14,8 @@ namespace BackTestingPlatformTest.Tests
         {
             Console.WriteLine(Kit.ToDate("2016/9/3"));
             Console.WriteLine(Kit.ToDate("2016/9/3 9:30:55"));
-            Console.WriteLine(Kit.ToDate("20160903093055"));
+            Console.WriteLine(Kit.ToDate("20160705093055"));
+            Console.WriteLine(Kit.ToDate(20160705093055));
             Console.WriteLine(Kit.ToDate(20160903));
             Console.WriteLine(Kit.ToDate("20160903"));
             Console.WriteLine(Kit.ToDate(20160903));

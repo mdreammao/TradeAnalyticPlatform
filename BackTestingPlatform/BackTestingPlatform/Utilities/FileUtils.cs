@@ -118,7 +118,7 @@ namespace BackTestingPlatform.Utilities
 
         /// <summary>
         /// 计算出CacheDataFile中的指定文件的时间戳和今天所差的天数，
-        /// 返回值=今天-该文件的时间戳，如果没有找到文件则返回36500（100年）
+        /// 返回值=今天-该文件的时间戳，如果没有找到文件则返回MaxValue
         /// </summary>      
         /// <returns></returns>
         public static int GetCacheDataFileDaysPastTillToday(string filePath)
@@ -130,7 +130,7 @@ namespace BackTestingPlatform.Utilities
             }
             else
             {
-                return 36500;
+                return int.MaxValue;
             }
         }
 
