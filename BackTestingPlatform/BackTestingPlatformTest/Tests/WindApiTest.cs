@@ -21,19 +21,19 @@ namespace BackTestingPlatform.Tests
 
         }
 
-        public static void testTDay()
-        {
-            TradeDaysInfoRepository repo = Platforms.container.Resolve<TradeDaysInfoRepositoryFromWind>();
-            var d = repo.fetch(new DateTime(2016, 7, 26, 0, 0, 0), new DateTime(2016, 7, 27, 18, 0, 0));
-            Console.WriteLine(d.Count());
-        }
-        public static void testKLine()
-        {
-            KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
-            var d =
-             repo.fetch("510050.SH", new DateTime(2015, 7, 26, 9, 0, 0), new DateTime(2016, 7, 26, 15, 0, 0));
-            Console.WriteLine(d.Count());
-        }
+        //public static void testTDay()
+        //{
+        //    TradeDaysInfoRepository repo = Platforms.container.Resolve<TradeDaysInfoRepositoryFromWind>();
+        //    var d = repo.fetch(new DateTime(2016, 7, 26, 0, 0, 0), new DateTime(2016, 7, 27, 18, 0, 0));
+        //    Console.WriteLine(d.Count());
+        //}
+        //public static void testKLine()
+        //{
+        //    KLinesDataRepository repo = Platforms.container.Resolve<KLinesDataRepository>();
+        //    var d =
+        //     repo.fetch("510050.SH", new DateTime(2015, 7, 26, 9, 0, 0), new DateTime(2016, 7, 26, 15, 0, 0));
+        //    Console.WriteLine(d.Count());
+        //}
 
 
 

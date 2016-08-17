@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform", "Back
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform.Test", "BackTestingPlatformTest\BackTestingPlatform.Test.csproj", "{236EF379-B062-4C69-A12C-841344889E0C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalTester3", "Tester\LocalTester3.csproj", "{99D097BC-50C2-4F00-952D-87201D46F65A}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalTester", "LocalTester\LocalTester.csproj", "{5C6D52ED-1A05-432E-ACFF-AE7DBD4BDC50}"
 EndProject
 Global
@@ -23,10 +25,10 @@ Global
 		{236EF379-B062-4C69-A12C-841344889E0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{236EF379-B062-4C69-A12C-841344889E0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{236EF379-B062-4C69-A12C-841344889E0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C6D52ED-1A05-432E-ACFF-AE7DBD4BDC50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C6D52ED-1A05-432E-ACFF-AE7DBD4BDC50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C6D52ED-1A05-432E-ACFF-AE7DBD4BDC50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C6D52ED-1A05-432E-ACFF-AE7DBD4BDC50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99D097BC-50C2-4F00-952D-87201D46F65A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99D097BC-50C2-4F00-952D-87201D46F65A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99D097BC-50C2-4F00-952D-87201D46F65A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99D097BC-50C2-4F00-952D-87201D46F65A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

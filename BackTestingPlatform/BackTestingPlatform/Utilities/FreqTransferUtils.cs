@@ -55,67 +55,67 @@ namespace BackTestingPlatform.Utilities
             var newMinuteData = new List<KLine>();
 
             int headIndex;//bar的起点时间
-            int tailIndex = stockTickList.FindIndex(s => s.time >= startTime);//第一个bar的终点时间
+            //int tailIndex = stockTickList.FindIndex(s => s.time >= startTime);//第一个bar的终点时间
 
-            for (int nowTick = 0; nowTick < stockTickList.Count;nowTick ++ )
-            {
-                int nowTime = stockTickList[nowTick].time / 100000 * 100000;//现在时刻,去除分钟以下的时间信息
-                int nowDate = stockTickList[nowTick].date;//现在日期
-                int nexTime = nowTime / 100000 * 100000 + freqSpan;//去除分钟以下的时间信息
-                Console.WriteLine("Date:{0} Time:{1}", nowDate, nowTime);
+            //for (int nowTick = 0; nowTick < stockTickList.Count;nowTick ++ )
+            //{
+            //    int nowTime = stockTickList[nowTick].time / 100000 * 100000;//现在时刻,去除分钟以下的时间信息
+            //    int nowDate = stockTickList[nowTick].date;//现在日期
+            //    int nexTime = nowTime / 100000 * 100000 + freqSpan;//去除分钟以下的时间信息
+            //    Console.WriteLine("Date:{0} Time:{1}", nowDate, nowTime);
        
-                double nowOpen, nowHigh, nowLow, nowClose, nowVolume=0, nowAmt=0;
+            //    double nowOpen, nowHigh, nowLow, nowClose, nowVolume=0, nowAmt=0;
 
-                if (nowTime < 093100000)
-                    if (nowTime == 092500000)
-                    {
-                        headIndex = nowTick;//记下第一个起点，9：25                       
-                        continue;
-                    }                       
-                    else
-                        continue;
-                else if (nowTime == 093100000)
-                {
-                    headIndex = nowTick;
-                    tailIndex = stockTickList.FindLastIndex(s => s.time < nexTime & s.date == nowDate);
-                }
-                else if (nowTime > 113000000 & nowTime < 130000000)
-                    continue;
-                else if (nowTime > 150000000)
-                    continue;
-                else
-                {
-                    headIndex = nowTick;//起点的索引
-                    tailIndex = stockTickList.FindLastIndex(s => s.time < nexTime & s.date == nowDate);//同一天内下一时刻之前的最后一个tick为末尾
-                }
-                nowOpen = stockTickList[headIndex].lastPrice;
-                nowHigh = stockTickList[headIndex].lastPrice;
-                nowLow = stockTickList[headIndex].lastPrice;
-                for (int sign = headIndex; sign <= tailIndex; sign++)
-                {
-                    if (stockTickList[sign].lastPrice > nowHigh)
-                        nowHigh = stockTickList[sign].lastPrice;
-                    if (stockTickList[sign].lastPrice < nowLow)
-                        nowLow = stockTickList[sign].lastPrice;
-                    nowVolume += stockTickList[sign].volume;
-                    nowAmt += stockTickList[sign].turnoverVolume;                            
-                }
-                nowClose = stockTickList[tailIndex].lastPrice;
-                //记录新的bar数据
-                int fullTime = nowDate * 1000000000 + nowTime;
-                newMinuteData.Add(new KLine
-                {
-                        time = Kit.ToDateTime(nowDate, nowTime),
-                        open =nowOpen,
-                        high = nowHigh,
-                        low = nowLow,
-                        close = nowClose,
-                        volume = nowVolume,
-                        amount = nowAmt
-                    });
+            //    if (nowTime < 093100000)
+            //        if (nowTime == 092500000)
+            //        {
+            //            headIndex = nowTick;//记下第一个起点，9：25                       
+            //            continue;
+            //        }                       
+            //        else
+            //            continue;
+            //    else if (nowTime == 093100000)
+            //    {
+            //        headIndex = nowTick;
+            //        tailIndex = stockTickList.FindLastIndex(s => s.time < nexTime & s.date == nowDate);
+            //    }
+            //    else if (nowTime > 113000000 & nowTime < 130000000)
+            //        continue;
+            //    else if (nowTime > 150000000)
+            //        continue;
+            //    else
+            //    {
+            //        headIndex = nowTick;//起点的索引
+            //        tailIndex = stockTickList.FindLastIndex(s => s.time < nexTime & s.date == nowDate);//同一天内下一时刻之前的最后一个tick为末尾
+            //    }
+            //    nowOpen = stockTickList[headIndex].lastPrice;
+            //    nowHigh = stockTickList[headIndex].lastPrice;
+            //    nowLow = stockTickList[headIndex].lastPrice;
+            //    for (int sign = headIndex; sign <= tailIndex; sign++)
+            //    {
+            //        if (stockTickList[sign].lastPrice > nowHigh)
+            //            nowHigh = stockTickList[sign].lastPrice;
+            //        if (stockTickList[sign].lastPrice < nowLow)
+            //            nowLow = stockTickList[sign].lastPrice;
+            //        nowVolume += stockTickList[sign].volume;
+            //        nowAmt += stockTickList[sign].turnoverVolume;                            
+            //    }
+            //    nowClose = stockTickList[tailIndex].lastPrice;
+            //    //记录新的bar数据
+            //    int fullTime = nowDate * 1000000000 + nowTime;
+            //    newMinuteData.Add(new KLine
+            //    {
+            //            time = Kit.ToDateTime(nowDate, nowTime),
+            //            open =nowOpen,
+            //            high = nowHigh,
+            //            low = nowLow,
+            //            close = nowClose,
+            //            volume = nowVolume,
+            //            amount = nowAmt
+            //        });
                
-                nowTick = tailIndex + 1; //下一个bar的起点        
-            }
+            //    nowTick = tailIndex + 1; //下一个bar的起点        
+            //}
             return newMinuteData;
         }
 

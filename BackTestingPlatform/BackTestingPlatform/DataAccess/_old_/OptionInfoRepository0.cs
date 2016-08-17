@@ -16,8 +16,8 @@ namespace BackTestingPlatform.DataAccess.Option
 
     public class OptionInfoRepository
     {
-        public const string PATH_KEY = "CacheData.Path.OptionInfo";
-        public List<OptionInfo> fetchFromWind(string underlyingCode = "510050.SH", string market = "sse")
+        public const string PATH_KEY = "CacheData.Path.OptionDaily";
+        public List<OptionDaily> fetchFromWind(string underlyingCode = "510050.SH", string market = "sse")
         {
             string marketStr = "";
             if (market == "sse")
@@ -28,11 +28,11 @@ namespace BackTestingPlatform.DataAccess.Option
             WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=" + market + ";windcode=" + underlyingCode + ";status=all");
             int len = wd.codeList.Length;
             int fieldLen = wd.fieldList.Length;
-            List<OptionInfo> items = new List<OptionInfo>(len * fieldLen);
+            List<OptionDaily> items = new List<OptionDaily>(len * fieldLen);
             object[] dm = (object[])wd.data;
             for (int k = 0; k < len; k++)
             {
-                items.Add(new OptionInfo
+                items.Add(new OptionDaily
                 {
                     optionCode = (string)dm[k * fieldLen + 0] + marketStr,
                     optionName = (string)dm[k * fieldLen + 1],
@@ -46,13 +46,13 @@ namespace BackTestingPlatform.DataAccess.Option
             return items;
         }
         
-        public List<OptionInfo> fetchAllFromLocalFile(string filePath,string underlyingCode = "510050.SH", string market = "sse")
+        public List<OptionDaily> fetchAllFromLocalFile(string filePath,string underlyingCode = "510050.SH", string market = "sse")
         {
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
             DateTimeFormatInfo dtFormat = new DateTimeFormatInfo();
             dtFormat.ShortDatePattern = "yyyy/MM/dd HH:mm:ss";
-            return dt.AsEnumerable().Select(row => new OptionInfo
+            return dt.AsEnumerable().Select(row => new OptionDaily
             {
                 optionCode = (string)row["optionCode"],
                 optionName = (string)(row["optionName"]),
@@ -67,10 +67,10 @@ namespace BackTestingPlatform.DataAccess.Option
         }
 
                
-        public void saveToLocalFile(List<OptionInfo> optionInfoList)
+        public void saveToLocalFile(List<OptionDaily> OptionDailyList)
         {
             var path = FileUtils.GetCacheDataFilePath(PATH_KEY, DateTime.Now);
-            var dt=DataTableUtils.ToDataTable(optionInfoList);
+            var dt=DataTableUtils.ToDataTable(OptionDailyList);
             CsvFileUtils.WriteToCsvFile(path, dt);
             Console.WriteLine("{0} saved!", path);
 

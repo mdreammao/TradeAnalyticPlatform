@@ -12,17 +12,10 @@ namespace BackTestingPlatform.Service.Stock
 {
     public class StockService
     {
-        //ASharesInfoRepository aSharesInfoRepo = Platforms.container.Resolve<ASharesInfoRepository>();
-        StockTickDataRepository stockTickDataRepository = Platforms.container.Resolve<StockTickDataRepository>();
+        
+        StockTickRepository stockTickRepository = Platforms.container.Resolve<StockTickRepository>();
 
 
-        public void readRealTimeQuotes(string stockCode,DateTime time)
-        {
-
-           
-            
-           
-        }
 
     }
 }

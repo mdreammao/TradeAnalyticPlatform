@@ -19,7 +19,7 @@ namespace BackTestingPlatform.Service.Option
    
 
 
-    public class OptionInfoService
+    public class OptionInfoService3
     {
 
         OptionInfoRepository optionInfoRepository = Platforms.container.Resolve<OptionInfoRepository>();
@@ -31,7 +31,7 @@ namespace BackTestingPlatform.Service.Option
         /// <param name="market"></param>
         public void loadOptionInfo(string underlyingCode, string market)
         {
-            List<OptionInfo> optionInfos;
+            List<OptionDaily> optionInfos;
             int daysUpdateRound = 1;    //CacheData更新周期间隔
             var filePath = FileUtils.GetCacheDataFilePathThatLatest(OptionInfoRepository.PATH_KEY);
             var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(filePath);

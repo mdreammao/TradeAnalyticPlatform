@@ -10,7 +10,7 @@ namespace BackTestingPlatform.Utilities.Futures
     {
         public static string GetCodeByDate(string code,DateTime date)
         {
-            DateTime lastTradingDate =TradeDaysUtils.NextOrCurrent(GetLastTradingDayOfThisMonth(date));
+            DateTime lastTradingDate =DateUtils.NextOrCurrentTradeDay(GetLastTradingDayOfThisMonth(date));
             if (date<=lastTradingDate)
             {
                 code+=date.ToString("yyMM") + ".CFE";

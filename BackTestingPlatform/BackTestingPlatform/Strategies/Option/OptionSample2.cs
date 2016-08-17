@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
 namespace BackTestingPlatform.Strategies.Option
 {
@@ -40,60 +39,59 @@ namespace BackTestingPlatform.Strategies.Option
         public OptionSample2(int start, int end)
         {
             var days = Caches.getTradeDays();
-            OptionInfoService optionInfoService = Platforms.container.Resolve<OptionInfoService>();
-            optionInfoService.loadOptionInfo("510050.SH", "sse");
-            var optionInfo = Caches.get<List<OptionInfo>>("OptionInfos");
-            days = TradeDaysUtils.getTradeDays(start, end);
-            List<positionShot> answer = new List<positionShot>();
+            //OptionInfoService optionInfoService = Platforms.container.Resolve<OptionInfoService>();
+            //optionInfoService.loadOptionInfo("510050.SH", "sse");
+            //var optionInfo = Caches.get<List<OptionDaily>>("OptionInfos");
+            //days = TradeDaysUtils.getTradeDays(start, end);
+            //List<positionShot> answer = new List<positionShot>();
 
-            foreach (var item in (List<DateTime>)days)
-            {
-                SortedDictionary<string, List<TickFromMssql>> optionList = new SortedDictionary<string, List<TickFromMssql>>();
-                StockTickDataRepository etfTick = Platforms.container.Resolve<StockTickDataRepository>();
-                var etf =DataListUtils.FillList(etfTick.fetchDataFromMssql("510050.SH", item));
-                var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)optionInfo, Kit.ToInt_yyyyMMdd(item));
-                positionShot now = new positionShot();
+            //foreach (var item in (List<DateTime>)days)
+            //{
+            //    SortedDictionary<string, List<TickFromMssql>> optionList = new SortedDictionary<string, List<TickFromMssql>>();
+            //    StockTickDataRepository etfTick = Platforms.container.Resolve<StockTickDataRepository>();
+            //    var etf =DataListUtils.FillList(etfTick.fetchDataFromMssql("510050.SH", item));
+            //    var optionToday = OptionUtilities.getOptionListByDate((List<OptionInfo>)optionInfo, Kit.ToInt_yyyyMMdd(item));
+            //    positionShot now = new positionShot();
                 
-                foreach (var options in optionToday)
-                {
-                    OptionTickDataRepository optionTick = Platforms.container.Resolve<OptionTickDataRepository>();
-                    var option =DataListUtils.FillList(optionTick.fetchDataFromMssql(options.optionCode, item));
-                    optionList.Add(options.optionCode, option);
-                }
-                for (int i = 0; i < etf.Count; i++)
-                {
-                    positionShot shot = new positionShot();
-                    shot.etfPrice = etf[i].lastPrice;
-                    shot.time =Kit.ToDateTime(etf[i].date,etf[i].time);
-                    SortedDictionary<string, OptionShot> option = new SortedDictionary<string, OptionShot>();
-                    foreach (var option0 in optionToday)
-                    {
-                        OptionShot shot0 = new OptionShot();
-                        shot0.strike = option0.strike;
-                        shot0.ask = optionList[option0.optionCode][i].ask[0].price;
-                        shot0.bid= optionList[option0.optionCode][i].bid[0].price;
-                        shot0.askv = optionList[option0.optionCode][i].ask[0].volume;
-                        shot0.bidv = optionList[option0.optionCode][i].bid[0].volume;
-                        shot0.last = optionList[option0.optionCode][i].lastPrice;
-                        option.Add(option0.optionCode, shot0);
-                    }
-                    shot.option = option;
-                    answer.Add(shot);
-                }
-            }
-            //saveToLocalFile(answer, "positionShot.csv");strike,ask, bid, last, askv, bidv;
-            //将answer改成List<string[]>
-            List<string[]> answerList = new List<string[]>();
-            for (int obs = 0; obs < answer.Count;obs++ )
-            {
-                answerList[obs][0] = answer[obs].time.ToString();
-                answerList[obs][1] = answer[obs].etfPrice.ToString();
-              //  answerList[obs][2] = answer[obs].option;
-            }
-
-            bool append = true; 
-            StreamWriter fileWriter = new StreamWriter("positionShot.csv", append, Encoding.Default);
+            //    foreach (var options in optionToday)
+            //    {
+            //        OptionTickRepository optionTick = Platforms.container.Resolve<OptionTickRepository>();
+            //        var option =DataListUtils.FillList(optionTick.fetchDataFromMssql(options.optionCode, item));
+            //        optionList.Add(options.optionCode, option);
+            //    }
+            //    for (int i = 0; i < etf.Count; i++)
+            //    {
+            //        positionShot shot = new positionShot();
+            //        shot.etfPrice = etf[i].lastPrice;
+            //        shot.time =Kit.ToDateTime(etf[i].date,etf[i].time);
+            //        SortedDictionary<string, OptionShot> option = new SortedDictionary<string, OptionShot>();
+            //        foreach (var option0 in optionToday)
+            //        {
+            //            OptionShot shot0 = new OptionShot();
+            //            shot0.strike = option0.strike;
+            //            shot0.ask = optionList[option0.optionCode][i].ask[0].price;
+            //            shot0.bid= optionList[option0.optionCode][i].bid[0].price;
+            //            shot0.askv = optionList[option0.optionCode][i].ask[0].volume;
+            //            shot0.bidv = optionList[option0.optionCode][i].bid[0].volume;
+            //            shot0.last = optionList[option0.optionCode][i].lastPrice;
+            //            option.Add(option0.optionCode, shot0);
+            //        }
+            //        shot.option = option;
+            //        answer.Add(shot);
+            //    }
+            //}
+            //saveToLocalFile(answer, "positionShot.csv");
+            //List<string[]> answerList = new List<string[]>();
+            //for (int obs = 0; obs < answer.Count; obs++)
+            //{
+            //    answerList[obs][0] = answer[obs].time.ToString();
+            //    answerList[obs][1] = answer[obs].etfPrice.ToString();
+            //    //  answerList[obs][2] = answer[obs].option;
+            //}
+            //bool append = true;
             /*
+            StreamWriter fileWriter = new StreamWriter("positionShot.csv", append, Encoding.Default);
+            
                         foreach (string[] strArr in answer)
                         {
                             fileWriter.WriteLine(string.Join(",", strArr));
@@ -101,8 +99,9 @@ namespace BackTestingPlatform.Strategies.Option
                         fileWriter.Flush();
                         fileWriter.Close();
              */
+
         }
-           
+
         public void saveToLocalFile(List<positionShot> optionMinuteData, string path)
         {
             var dt = DataTableUtils.ToDataTable(optionMinuteData);
@@ -110,16 +109,16 @@ namespace BackTestingPlatform.Strategies.Option
             Console.WriteLine("{0} saved!", path);
         }
 
-        public List<OptionMinuteDataWithUnderlying> AddEtfPrice(List<OptionMinuteData> option, List<KLine> etf, OptionInfo optionInfo)
+        public List<OptionMinuteKLineWithUnderlying> AddEtfPrice(List<OptionMinuteKLine> option, List<KLine> etf, OptionDaily optionInfo)
         {
             if (option.Count != 240 || etf.Count != 240)
             {
                 return null;
             }
-            List<OptionMinuteDataWithUnderlying> items = new List<OptionMinuteDataWithUnderlying>();
+            List<OptionMinuteKLineWithUnderlying> items = new List<OptionMinuteKLineWithUnderlying>();
             for (int i = 0; i < 240; i++)
             {
-                items.Add(new OptionMinuteDataWithUnderlying
+                items.Add(new OptionMinuteKLineWithUnderlying
                 {
                     optionCode = optionInfo.optionCode,
                     optionName = optionInfo.optionName,

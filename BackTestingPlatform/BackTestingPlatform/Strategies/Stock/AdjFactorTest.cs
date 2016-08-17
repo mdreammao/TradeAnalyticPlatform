@@ -22,7 +22,7 @@ namespace BackTestingPlatform.Strategies.Stock
             AdjFactorService adjFactorService = Platforms.container.Resolve<AdjFactorService>();
             adjFactorService.loadAdjFactor(stockCode, Kit.ToDate(start), Kit.ToDate(end));
             var adjFactor = Caches.get("AdjFactor");
-            days = TradeDaysUtils.getTradeDays(start, end);
+            days = DateUtils.GetTradeDays(start, end);
             //        for(int j=0 ;j<adjFactor)
             //       Console.WriteLine("{0}",)
 

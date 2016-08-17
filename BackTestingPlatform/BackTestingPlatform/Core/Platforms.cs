@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using BackTestingPlatform.DataAccess;
-using BackTestingPlatform.Service;
+using BackTestingPlatform.DataAccess.Common;
+using BackTestingPlatform.Service.Common;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -39,9 +40,9 @@ namespace BackTestingPlatform.Core
             var cdPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
             if (!Directory.Exists(cdPath)) Directory.CreateDirectory(cdPath);
 
-            //初始化交易日数据
+            //初始化交易日数据           
             TradeDaysService tradeDaysService = container.Resolve<TradeDaysService>();
-            tradeDaysService.loadTradeDays();
+            tradeDaysService.fetchFromLocalCsvOrWindAndSaveAndCache();
 
         }
         /// <summary>

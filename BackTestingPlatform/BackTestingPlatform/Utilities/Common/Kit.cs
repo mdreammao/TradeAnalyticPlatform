@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,9 +39,19 @@ namespace BackTestingPlatform.Utilities
         public static DateTime ToDateTime(string tdate, string ttime)
         {
             int d = 0, t = 0;
-            int.TryParse(tdate, out d);
-            int.TryParse(ttime, out t);
-            return ToDateTime(d, t);
+            bool ok1 = int.TryParse(tdate, out d);
+            bool ok2 = int.TryParse(ttime, out t);
+            if (ok1 && ok2)
+            {
+                return ToDateTime(d, t);
+
+            }
+            return _tryParseToDateTime(tdate + ttime, "yyyy/M/d h:mm:ss");
+        }
+
+        public static DateTime ToDateTime(object tdate, object ttime)
+        {
+            return ToDateTime(tdate.ToString(), ttime.ToString());
         }
         /// <summary>
         /// 转换到DateTime类型，遇到非法转换则返回DateTime.MinValue，用例：
@@ -77,21 +88,25 @@ namespace BackTestingPlatform.Utilities
         public static DateTime ToDateTime(string arg)
         {
             long x = 0;
-            long.TryParse(arg, out x);
-            return ToDateTime(x);
+            bool ok = long.TryParse(arg, out x);
+            if (ok)
+            {
+                return ToDateTime(x);
+            }
+            return _tryParseToDateTime(arg, "yyyy/M/d h:mm:ss");
         }
-        
+
         public static DateTime ToDateTime(object arg)
         {
             if (arg == null)
                 return DateTime.MinValue;
-            if (arg.GetType() == typeof(string))                     
-                return ToDateTime((string)arg);             
-            
+            if (arg.GetType() == typeof(string))
+                return ToDateTime((string)arg);
+
             if (arg.GetType() == typeof(decimal))
-                return ToDateTime((long)arg);
+                return ToDateTime(Convert.ToInt64(arg));
             if (arg.GetType() == typeof(int))
-                return ToDateTime((long)arg);           
+                return ToDateTime(Convert.ToInt64(arg));
             if (arg.GetType() == typeof(long))
                 return ToDateTime((long)arg);
 
@@ -104,15 +119,41 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="arg">类似yyyyMMdd</param>
         /// <returns></returns>
-        public static DateTime ToDate(int arg)
+        public static DateTime ToDate(object arg)
         {
-            return ToDateTime(arg, 0);
+            if (arg == null)
+                return DateTime.MinValue;
+            if (arg.GetType() == typeof(string))
+                return ToDate((string)arg);
+            if (arg.GetType() == typeof(int))
+                return ToDateTime((int)arg, 0);
+            return ToDateTime(arg).Date;
         }
 
         public static DateTime ToDate(string arg)
         {
-            return ToDateTime(arg, "0");
+            long d = 0;
+
+            bool ok = long.TryParse(arg, out d);
+            if (ok)
+            {
+                return ToDateTime(d, 0);
+            }
+            return _tryParseToDateTime(arg, new string[] { "yyyy/M/d", "yyyy/M/d h:mm:ss", }).Date;
         }
+
+
+        private static DateTime _tryParseToDateTime(string arg, string pattern = "yyyy/M/d h:mm:ss")
+        {
+            return _tryParseToDateTime(arg, new string[] { pattern });
+        }
+        private static DateTime _tryParseToDateTime(string arg, string[] patterns)
+        {
+            var res = DateTime.MinValue;
+            DateTime.TryParseExact(arg, patterns, CultureInfo.InvariantCulture, DateTimeStyles.None, out res);
+            return res;
+        }
+
         /// <summary>
         /// 返回值类似20160805093000
         /// </summary>
@@ -146,13 +187,13 @@ namespace BackTestingPlatform.Utilities
             if (arg == null)
                 return 0;
             if (arg.GetType() == typeof(decimal))
-                return (int)arg;
+                return Convert.ToInt32((decimal)arg);
             if (arg.GetType() == typeof(int))
                 return (int)arg;
             if (arg.GetType() == typeof(double))
-                return (int)arg;
+                return Convert.ToInt32((double)arg);
             if (arg.GetType() == typeof(long))
-                return (int)arg;
+                return Convert.ToInt32((long)arg);
             if (arg.GetType() == typeof(string))
             {
                 int r = 0;
@@ -161,6 +202,35 @@ namespace BackTestingPlatform.Utilities
             }
             return 0;
         }
+
+        /// <summary>
+        /// 安全的类型转换。
+        /// 相较于Convert.ToInt64(object)更为安全。
+        /// 若发生溢出，null值等无法转换的情形，返回0
+        /// </summary>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public static long ToLong(object arg)
+        {
+            if (arg == null)
+                return 0;
+            if (arg.GetType() == typeof(decimal))
+                return Convert.ToInt64((decimal)arg);
+            if (arg.GetType() == typeof(int))
+                return Convert.ToInt64((int)arg); ;
+            if (arg.GetType() == typeof(double))
+                return Convert.ToInt64((double)arg); ;
+            if (arg.GetType() == typeof(long))
+                return (long)arg;
+            if (arg.GetType() == typeof(string))
+            {
+                long r = 0;
+                long.TryParse((string)arg, out r);
+                return r;
+            }
+            return 0;
+        }
+
         /// <summary>
         /// 安全的类型转换。
         /// 相较于Convert.ToDouble(object)更为安全。
@@ -173,13 +243,13 @@ namespace BackTestingPlatform.Utilities
             if (arg == null)
                 return 0;
             if (arg.GetType() == typeof(decimal))
-                return Convert.ToDouble(arg);
+                return Convert.ToDouble((decimal)arg);
             if (arg.GetType() == typeof(int))
-                return (double)arg;
+                return Convert.ToDouble((int)arg);
             if (arg.GetType() == typeof(double))
                 return (double)arg;
             if (arg.GetType() == typeof(long))
-                return (double)arg;
+                return Convert.ToDouble((long)arg);
             if (arg.GetType() == typeof(string))
             {
                 double r = 0;
@@ -187,6 +257,40 @@ namespace BackTestingPlatform.Utilities
                 return r;
             }
             return 0;
+        }
+
+        /// <summary>
+        /// 万能转换,更简洁的表达
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public static object To<T>(object arg)
+        {
+            return To(typeof(T), arg);
+        }
+
+        /// <summary>
+        /// 万能转换
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="arg"></param>
+        /// <returns></returns>
+        public static object To(Type type, object arg)
+        {
+            if (arg == null)
+                return null;
+            if (type == typeof(DateTime))
+                return Kit.ToDateTime(arg);
+            if (type == typeof(int))
+                return Kit.ToInt(arg);
+            if (type == typeof(string))
+                return arg.ToString();
+            if (type == typeof(double))
+                return Kit.ToDouble(arg);
+            if (type == typeof(long))
+                return Kit.ToLong(arg);
+            return arg;
         }
 
     }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Utilities
 {
-    public class TradeDaysUtils
+    public class DateUtils
     {
         private static List<DateTime> _tradeDays;
         private static List<DateTime> getTradeDays()
@@ -34,7 +34,7 @@ namespace BackTestingPlatform.Utilities
         /// <param name="firstDate"></param>
         /// <param name="lastDate"></param>
         /// <returns></returns>
-        public static List<DateTime> getTradeDays(DateTime firstDate, DateTime lastDate)
+        public static List<DateTime> GetTradeDays(DateTime firstDate, DateTime lastDate)
         {
             int x1 = getTradeDays().BinarySearch(firstDate);
             int x2 = getTradeDays().BinarySearch(lastDate);
@@ -43,9 +43,9 @@ namespace BackTestingPlatform.Utilities
             return getTradeDays().GetRange(x1, x2 - x1 + 1);
         }
 
-        public static List<DateTime> getTradeDays(int firstDate, int lastDate)
+        public static List<DateTime> GetTradeDays(int firstDate, int lastDate)
         {
-            return getTradeDays(
+            return GetTradeDays(
                 Kit.ToDateTime(firstDate, 0),
                 Kit.ToDateTime(lastDate, 235959));
         }
@@ -57,17 +57,17 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前日</param>
         /// <returns></returns>
-        public static bool isTradeDay(DateTime today)
+        public static bool IsTradeDay(DateTime today)
         {
             return getTradeDays().BinarySearch(today) >= 0;
         }
 
-        static int IndexOfPrevious(DateTime today)
+        static int _IndexOfPreviousTradeDay(DateTime today)
         {
             int x = getTradeDays().BinarySearch(today);
             return x < 0 ? -x - 2 : x - 1;
         }
-        static int IndexOfNext(DateTime today)
+        static int _IndexOfNextTradeDay(DateTime today)
         {
             int x = getTradeDays().BinarySearch(today);
             return x < 0 ? -x - 1 : x + 1;
@@ -78,9 +78,9 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前日</param>
         /// <returns>返回前一交易日</returns>
-        public static DateTime Previous(DateTime today)
+        public static DateTime PreviousTradeDay(DateTime today)
         {
-            return getTradeDay(IndexOfPrevious(today));
+            return getTradeDay(_IndexOfPreviousTradeDay(today));
         }
 
         /// <summary>
@@ -88,9 +88,9 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前日</param>
         /// <returns>下一交易日</returns>
-        public static DateTime Next(DateTime today)
+        public static DateTime NextTradeDay(DateTime today)
         {
-            return getTradeDay(IndexOfNext(today));
+            return getTradeDay(_IndexOfNextTradeDay(today));
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today"></param>
         /// <returns></returns>
-        public static DateTime PreviousOrCurrent(DateTime today)
+        public static DateTime PreviousOrCurrentTradeDay(DateTime today)
         {
             int x = getTradeDays().BinarySearch(today);
             x = x < 0 ? -x - 2 : x;
@@ -110,7 +110,7 @@ namespace BackTestingPlatform.Utilities
         /// </summary>
         /// <param name="today">当前日期</param>
         /// <returns>交易日</returns>
-        public static DateTime NextOrCurrent(DateTime today)
+        public static DateTime NextOrCurrentTradeDay(DateTime today)
         {
             int x = getTradeDays().BinarySearch(today);
             x = x < 0 ? -x - 1 : x;
@@ -140,15 +140,36 @@ namespace BackTestingPlatform.Utilities
 
 
         /// <summary>
-        /// 判断当日是本月第几周。
+        /// 获取当日是本月第几周。
         /// </summary>
         /// <param name="day">日期</param>
         /// <returns>第几周</returns>
-        public static int GetWeekOfMonth(DateTime dt)
+        public static int GetWeekOfMonth(DateTime date)
         {
-            int weekNum = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(dt, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int weekNum = CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             return weekNum;
         }
 
+        /// <summary>
+        /// 获取第三个周五
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        public static DateTime GetThirdFridayOfMonth(int year, int month)
+        {
+            var d = new DateTime(year, month, 15);  //3rd Friday must between day 15 ~ 21
+            while (d.DayOfWeek != DayOfWeek.Friday) d = d.AddDays(1);
+            return d;
+        }
+        /// <summary>
+        /// 获取第三个周五
+        /// </summary>
+        /// <param name="aDateOfThisMonth"></param>
+        /// <returns></returns>
+        public static DateTime GetThirdFridayOfMonth(DateTime aDateOfThisMonth)
+        {
+            return GetThirdFridayOfMonth(aDateOfThisMonth.Year, aDateOfThisMonth.Month);
+        }
     }
 }

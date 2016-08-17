@@ -42,8 +42,8 @@ namespace BackTestingPlatform.Strategies
             DateTime endDate = new DateTime(2016, 7, 1); ;
             DateTime nowDate;//当前时间，每次循环传入策略，返回开仓或平仓信息
 
-            DateTime d1 = (DateTime)TradeDaysUtils.NextOrCurrent(startDate);
-            DateTime d2 = (DateTime)TradeDaysUtils.NextOrCurrent(endDate);
+            DateTime d1 = (DateTime)DateUtils.NextOrCurrentTradeDay(startDate);
+            DateTime d2 = (DateTime)DateUtils.NextOrCurrentTradeDay(endDate);
             int indexOfStart = timeList.BinarySearch(d1);
             int indexOfEnd = timeList.BinarySearch(d2);
 
