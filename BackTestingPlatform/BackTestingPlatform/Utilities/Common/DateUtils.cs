@@ -151,7 +151,7 @@ namespace BackTestingPlatform.Utilities
         }
 
         /// <summary>
-        /// 获取第三个周五
+        /// 获取第三个周五，返回自然日，不考虑交易日
         /// </summary>
         /// <param name="year"></param>
         /// <param name="month"></param>
@@ -163,13 +163,59 @@ namespace BackTestingPlatform.Utilities
             return d;
         }
         /// <summary>
-        /// 获取第三个周五
+        /// 获取第三个周五，返回自然日，不考虑交易日
         /// </summary>
         /// <param name="aDateOfThisMonth"></param>
         /// <returns></returns>
         public static DateTime GetThirdFridayOfMonth(DateTime aDateOfThisMonth)
         {
             return GetThirdFridayOfMonth(aDateOfThisMonth.Year, aDateOfThisMonth.Month);
+        }
+
+        /// <summary>
+        /// 获取第4个周三，返回自然日，不考虑交易日
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        public static DateTime GetFourthWednesdayOfMonth(int year, int month)
+        {
+            var d = new DateTime(year, month, 22);  //4th Wednesday must between day 22 ~ 28
+            while (d.DayOfWeek != DayOfWeek.Wednesday) d = d.AddDays(1);
+            return d;
+        }
+        /// <summary>
+        /// 获取第4个周三，返回自然日，不考虑交易日
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        public static DateTime GetFourthWednesdayOfMonth(DateTime aDateOfThisMonth)
+        {
+            return GetFourthWednesdayOfMonth(aDateOfThisMonth.Year, aDateOfThisMonth.Month);
+        }
+
+        /// <summary>
+        /// 获取这个月的第N个周M
+        /// </summary>
+        /// <param name="year"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        public static DateTime GetNthMthDayOfWeekOfMonth(int year, int month, int n, int m)
+        {
+            var d = new DateTime(year, month, (n - 1) * 7 + 1);
+            while (DayOfWeekToInt(d.DayOfWeek) != m) d = d.AddDays(1);
+            return d;
+        }
+
+        /// <summary>
+        /// Monday -> 1 and Sunday-> 7
+        /// </summary>
+        /// <param name="dow"></param>
+        /// <returns></returns>
+        private static int DayOfWeekToInt(DayOfWeek dow)
+        {
+            return ((int)dow == 0) ? 7 : (int)dow;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.DataAccess
+namespace BackTestingPlatform.Utilities
 {
     using System;
     using System.Collections.Generic;
