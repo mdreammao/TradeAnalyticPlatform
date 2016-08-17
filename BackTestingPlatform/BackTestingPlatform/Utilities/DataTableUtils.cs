@@ -26,35 +26,35 @@ namespace BackTestingPlatform.Utilities
         }
         public static DataTable ToDataTable<T>(IList<T> items, Func<Type, DataColumn[]> toColumnsFunc, Func<T, object[]> toRowValuesFunc)
         {
-            DataTable dataTable = new DataTable(typeof(T).Name);           
+            DataTable dataTable = new DataTable(typeof(T).Name);
             //build columns
             var cols = toColumnsFunc(typeof(T));
             dataTable.Columns.AddRange(cols);
 
             //fill rows
             foreach (T item in items)
-            {               
+            {
                 dataTable.Rows.Add(toRowValuesFunc(item));
             }
-           
+
             return dataTable;
         }
 
-        static DataColumn[] toColumnsDefaultFunc(Type t)
+        public static DataColumn[] toColumnsDefaultFunc(Type t)
         {
             //Setting column names as Property names
             return t.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Select(p => new DataColumn(p.Name,p.PropertyType)).ToArray();
+                .Select(p => new DataColumn(p.Name, p.PropertyType)).ToArray();
         }
 
-        static object[] toRowValuesDefaultFunc<T>(T t)
+        public static object[] toRowValuesDefaultFunc<T>(T t)
         {
             var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var values = new object[props.Length];
             for (int i = 0; i < props.Length; i++)
             {
                 //Type propType = props[i].PropertyType;
-                values[i] = props[i].GetValue(t);                
+                values[i] = props[i].GetValue(t);
             }
             return values;
         }
@@ -97,8 +97,11 @@ namespace BackTestingPlatform.Utilities
             {
                 object val = row[prop.Name];
                 Type propType = prop.PropertyType;
-                prop.SetValue(item, Kit.To(propType, val));              
-                
+                if (!propType.IsArray)
+                {
+                    prop.SetValue(item, Kit.To(propType, val));
+                }
+
             }
             return item;
         }

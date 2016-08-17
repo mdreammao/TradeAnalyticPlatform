@@ -10,19 +10,19 @@ using BackTestingPlatform.Utilities;
 using System.Configuration;
 using System.Data;
 using System.Globalization;
+using BackTestingPlatform.DataAccess.Common;
 
 namespace BackTestingPlatform.DataAccess.Option
 {
 
-    public class OptionDailyRepository : SequentialDataRepository<OptionDaily>
+    public class OptionDailyRepository : BasicDataRepository<OptionDaily>
     {
         
         
         
 
-        public override List<OptionDaily> fetchFromWind(string code, DateTime date)
-        {
-            var market = "sse";
+        public List<OptionDaily> readFromWind(string code, string market)
+        {            
             string marketStr = "";
             if (market == "sse")
             {
@@ -50,9 +50,9 @@ namespace BackTestingPlatform.DataAccess.Option
             return items;
         }
 
-        public override List<OptionDaily> fetchFromDefaultMssql(string code, DateTime date)
+        protected override List<OptionDaily> readFromWind()
         {
-            throw new NotImplementedException();
+            return readFromWind("510050.SH", "sse");
         }
     }
 

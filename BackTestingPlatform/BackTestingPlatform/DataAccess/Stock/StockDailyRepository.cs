@@ -10,12 +10,12 @@ namespace BackTestingPlatform.DataAccess.Stock
 {
     class StockDailyRepository : SequentialDataRepository<StockDaily>
     {
-        public override List<StockDaily> fetchFromDefaultMssql(string code, DateTime date)
+        protected override List<StockDaily> readFromDefaultMssql(string code, DateTime date)
         {
             throw new NotImplementedException();
         }
 
-        public override List<StockDaily> fetchFromWind(string code, DateTime date)
+        protected override List<StockDaily> readFromWind(string code, DateTime date)
         {
             throw new NotImplementedException();
         }

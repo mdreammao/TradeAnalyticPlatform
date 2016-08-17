@@ -17,6 +17,7 @@ namespace BackTestingPlatform.Test
             //LinqSqlTest.testDataSet();
 
             KitTests.test1();
+            OptionDailyRepositoryTests.test();
             Console.ReadKey();
         }
     }

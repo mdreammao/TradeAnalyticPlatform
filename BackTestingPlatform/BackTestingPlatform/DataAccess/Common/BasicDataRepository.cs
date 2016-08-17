@@ -2,6 +2,7 @@
 using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,12 +10,46 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess.Common
 {
-    public abstract class SequentialDataRepository<T> where T : new()
+    public abstract class BasicDataRepository<T> where T : new()
     {
         const string PATH_KEY = "CacheData.Path.Basic";
 
-        public abstract List<T> fetchFromLocalCsv();
-        public abstract List<T> fetchFromWind();
+        /// <summary>
+        /// 由DataTable中的行向实体类的转换函数的默认实现。
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public virtual T toEntityFromCsv(DataRow row)
+        {
+            return DataTableUtils.CreateItemFromRow<T>(row);
+        }
+
+        public virtual DataColumn[] toCsvColumnsFromEntity(Type t)
+        {
+            return DataTableUtils.toColumnsDefaultFunc(t);
+        }
+
+        public virtual object[] toCsvRowValuesFromEntity(T t)
+        {
+            return DataTableUtils.toRowValuesDefaultFunc<T>(t);
+        }
+
+        /// <summary>
+        ///  尝试从本地csv文件获取数据,可能会抛出异常
+        /// </summary>
+        /// <returns></returns>
+        protected List<T> readFromLocalCsv(string path)
+        {
+            DataTable dt = CsvFileUtils.ReadFromCsvFile(path);
+            if (dt == null) return null;
+            return dt.AsEnumerable().Select(toEntityFromCsv).ToList();
+        }
+
+        /// <summary>
+        ///  尝试从Wind获取数据,可能会抛出异常
+        /// </summary>
+        /// <returns></returns>
+        protected abstract List<T> readFromWind();
 
         /// <summary>
         /// 
@@ -22,28 +57,48 @@ namespace BackTestingPlatform.DataAccess.Common
         /// <param name="appendMode">是否为append模式，否则为new模式</param>
         /// <param name="localCsvExpration">CacheData更新周期间隔</param>
         /// <param name="tag"></param>
-        public void fetchFromLocalCsvOrWindAndUpdateAndCache(int localCsvExpration, bool appendMode = false, String tag = null)
+        public List<T> fetchFromLocalCsvOrWindAndUpdateAndCache(int localCsvExpration, bool appendMode = false, String tag = null)
         {
 
             if (tag == null) tag = typeof(T).Name;
-            List<T> data=null;
-            var filePath = FileUtils.GetCacheDataFilePathThatLatest(PATH_KEY);
-            var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(filePath);
+            List<T> data = null;
+            var filePathPattern = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, "*");
+            var todayFilePath = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, DateTime.Now.ToString("yyyyMMdd"));
+            var dirPath = Path.GetDirectoryName(filePathPattern);
+            var fileNamePattern = Path.GetFileName(filePathPattern);
+            var allFilePaths = Directory.EnumerateFiles(dirPath, fileNamePattern)
+                .OrderByDescending(fn => fn).ToList();
+
+            var lastestFilePath = (allFilePaths == null || allFilePaths.Count == 0) ? null : allFilePaths[0];
+            var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(lastestFilePath);
             if (daysdiff > localCsvExpration)
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
-                Console.WriteLine("本地csv文件已过期，尝试Wind读取新数据...");
+                Console.WriteLine("本地csv文件不存在或已过期，尝试Wind读取新数据...");
                 try
                 {
-                    data = fetchFromWind();
+                    data = readFromWind();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine("从Wind读取数据失败！");
                     Console.WriteLine(e);
                 }
+
+                Console.WriteLine("正在保存新数据到本地...");
                 try
                 {
-                    //data = saveToLocalCsvFile();
+                    if (lastestFilePath == null)
+                    {   //新增                        
+                        saveToLocalCsvFile(data, todayFilePath, appendMode, tag);
+                        Console.WriteLine("正在保存新数据到本地...");
+                    }
+                    else
+                    {   //修改
+                        saveToLocalCsvFile(data, lastestFilePath, appendMode, tag);
+                        //重命名为最新日期
+                        File.Move(lastestFilePath, todayFilePath);
+                        Console.WriteLine("文件重命名为{0}", todayFilePath);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -57,27 +112,28 @@ namespace BackTestingPlatform.DataAccess.Common
                 Console.WriteLine("从本地cs文件读取数据...");
                 try
                 {
-                    data = fetchFromLocalCsv();
+
+                    data = readFromLocalCsv(lastestFilePath);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("从本地cs文件读取数据失败！");
                     Console.WriteLine(e);
                 }
-               
+
             }
 
             //加载到内存缓存
             Caches.put(tag, data);
-            Console.WriteLine("已将{0}加载到内存缓存.",tag);
-
+            Console.WriteLine("已将{0}加载到内存缓存.", tag);
+            return data;
         }
 
-      
+
         /// <summary>
         /// 将数据以csv文件的形式保存到CacheData文件夹下的预定路径
         /// </summary>
-        public void saveToLocalCsvFile(IList<T> data, string path,bool appendMode=false, string tag = null)
+        public void saveToLocalCsvFile(IList<T> data, string path, bool appendMode = false, string tag = null)
         {
             if (tag == null) tag = typeof(T).Name;
             if (data == null || data.Count == 0)
@@ -85,8 +141,7 @@ namespace BackTestingPlatform.DataAccess.Common
                 Console.WriteLine("Nothing to save!");
                 return;
             }
-            var dt = DataTableUtils.ToDataTable(data);
-            //var path = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date.ToString("yyyyMMdd"));
+            var dt = DataTableUtils.ToDataTable(data, toCsvColumnsFromEntity, toCsvRowValuesFromEntity);
             try
             {
                 var s = (File.Exists(path)) ? "覆盖" : "新增";

@@ -12,12 +12,12 @@ namespace BackTestingPlatform.DataAccess.Stock
 {
     public class StockMinuteKLineRepository : SequentialDataRepository<StockMinuteKLine>
     {
-        public override List<StockMinuteKLine> fetchFromDefaultMssql(string code, DateTime date)
+        protected override List<StockMinuteKLine> readFromDefaultMssql(string code, DateTime date)
         {
             throw new NotImplementedException();
         }
 
-        public override List<StockMinuteKLine> fetchFromWind(string code, DateTime date)
+        protected override List<StockMinuteKLine> readFromWind(string code, DateTime date)
         {
             WindAPI w = Platforms.GetWindAPI();
             DateTime date1 = date.Date, date2 = date.Date.AddDays(1);            

@@ -14,14 +14,14 @@ namespace BackTestingPlatform.DataAccess
     public class StockTickRepository : SequentialDataRepository<TickFromMssql>
     {
 
-       
 
-        public override List<TickFromMssql> fetchFromWind(string code, DateTime date)
+
+        protected override List<TickFromMssql> readFromWind(string code, DateTime date)
         {
             throw new NotImplementedException();
         }
 
-        public override List<TickFromMssql> fetchFromDefaultMssql(string code, DateTime date)
+        protected override List<TickFromMssql> readFromDefaultMssql(string code, DateTime date)
         {
             var connName = "corp170";
             var yyyyMM = date.ToString("yyyyMM");

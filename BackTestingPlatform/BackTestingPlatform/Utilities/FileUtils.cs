@@ -78,6 +78,15 @@ namespace BackTestingPlatform.Utilities
             return path;
 
         }
+
+        public static string GetCacheDataFilePath(string appKey,string tag,string date = "*")
+        {
+            return GetCacheDataFilePath(appKey, new Dictionary<string, string>
+            {
+                ["{tag}"] = tag,               
+                ["{date}"] = date
+            });
+        }
         public static string GetCacheDataFilePath(string appKey, string tag, string code, string date)
         {
             return GetCacheDataFilePath(appKey, new Dictionary<string, string>

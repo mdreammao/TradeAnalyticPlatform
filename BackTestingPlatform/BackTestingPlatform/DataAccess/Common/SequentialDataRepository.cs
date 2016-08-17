@@ -25,23 +25,29 @@ namespace BackTestingPlatform.DataAccess
         }
 
         /// <summary>
-        ///  尝试从Wind获取数据
+        ///  尝试从Wind获取数据,可能会抛出异常
         /// </summary>
         /// <param name="code"></param>
         /// <param name="date"></param>
         /// <returns></returns>
-        public abstract List<T> fetchFromWind(string code, DateTime date);
-
-        public abstract List<T> fetchFromDefaultMssql(string code, DateTime date);
+        protected abstract List<T> readFromWind(string code, DateTime date);
 
         /// <summary>
-        ///  尝试从本地csv文件获取数据
+        /// 尝试从默认MSSQL源获取数据,可能会抛出异常
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        protected abstract List<T> readFromDefaultMssql(string code, DateTime date);
+
+        /// <summary>
+        ///  尝试从本地csv文件获取数据,可能会抛出异常
         /// </summary>
         /// <param name="code"></param>
         /// <param name="date"></param>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsv(string code, DateTime date, string tag = null)
+        public List<T> readFromLocalCsv(string code, DateTime date, string tag = null)
         {
             if (tag == null) tag = typeof(T).ToString();
             var filePath = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date.ToString("yyyyMMdd"));
@@ -51,15 +57,39 @@ namespace BackTestingPlatform.DataAccess
         }
 
         /// <summary>
-        /// 先后尝试从本地csv文件，Wind获取数据。
+        /// 尝试从本地csv文件，Wind获取数据。
         /// </summary>
         /// <param name="code"></param>
         /// <param name="date"></param>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public virtual List<T> fetchFromLocalCsvOrWind(string code, DateTime date, string tag = null)
+        public List<T> fetchFromLocalCsv(string code, DateTime date, string tag = null)
         {
-            return _fetchFromManySouresAndSave(code, date, tag, true, true, false, false);
+            return _fetchFromManySouresAndSave(code, date, tag, true, false, false, false);
+        }
+
+        /// <summary>
+        /// 尝试从Wind获取数据。
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="date"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public List<T> fetchFromWind(string code, DateTime date, string tag = null)
+        {
+            return _fetchFromManySouresAndSave(code, date, tag, false, true, false, false);
+        }
+
+        /// <summary>
+        /// 尝试从默认MSSQL源获取数据。
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="date"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public List<T> fetchFromMssql(string code, DateTime date, string tag = null)
+        {
+            return _fetchFromManySouresAndSave(code, date, tag, false, false, true, false);
         }
 
         /// <summary>
@@ -97,6 +127,18 @@ namespace BackTestingPlatform.DataAccess
             return _fetchFromManySouresAndSave(code, date, tag, true, false, true, true);
         }
 
+        /// <summary>
+        /// 尝试Wind获取数据。然后将数据覆盖保存到CacheData文件夹
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="date"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public List<T> fetchFromWindAndSave(string code, DateTime date, string tag = null)
+        {
+            return _fetchFromManySouresAndSave(code, date, tag, false, true, false, true);
+        }
+
         private List<T> _fetchFromManySouresAndSave(string code, DateTime date, string tag, bool tryCsv, bool tryWind, bool tryMssql0, bool saveToCsv)
         {
             if (tag == null) tag = typeof(T).ToString();
@@ -109,7 +151,7 @@ namespace BackTestingPlatform.DataAccess
                 Console.WriteLine("尝试从csv获取...");
                 try
                 {
-                    result = fetchFromLocalCsv(code, date, tag);
+                    result = readFromLocalCsv(code, date, tag);
                 }
                 catch (Exception e)
                 {
@@ -124,7 +166,7 @@ namespace BackTestingPlatform.DataAccess
                 Console.WriteLine("尝试从Wind获取...");
                 try
                 {
-                    result = fetchFromWind(code, date);
+                    result = readFromWind(code, date);
                 }
                 catch (Exception e)
                 {
@@ -138,7 +180,7 @@ namespace BackTestingPlatform.DataAccess
                 {
                     //尝试从默认MSSQL源获取
                     Console.WriteLine("尝试从默认MSSQL源获取...");
-                    result = fetchFromDefaultMssql(code, date);
+                    result = readFromDefaultMssql(code, date);
                 }
                 catch (Exception e)
                 {
