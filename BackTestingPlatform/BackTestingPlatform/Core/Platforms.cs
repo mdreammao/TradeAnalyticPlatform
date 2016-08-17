@@ -40,11 +40,9 @@ namespace BackTestingPlatform.Core
             var cdPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
             if (!Directory.Exists(cdPath)) Directory.CreateDirectory(cdPath);
 
-            //初始化交易日数据
-            TradeDayRepository tradeDayRepository = container.Resolve<TradeDayRepository>();
-            tradeDayRepository.fetchFromLocalCsvOrWindAndUpdateAndCache(1,false,"TradeDays");
-            //TradeDaysService tradeDaysService = container.Resolve<TradeDaysService>();
-            //tradeDaysService.loadTradeDays();
+            //初始化交易日数据           
+            TradeDaysService tradeDaysService = container.Resolve<TradeDaysService>();
+            tradeDaysService.fetchFromLocalCsvOrWindAndUpdateAndCache();
 
         }
         /// <summary>

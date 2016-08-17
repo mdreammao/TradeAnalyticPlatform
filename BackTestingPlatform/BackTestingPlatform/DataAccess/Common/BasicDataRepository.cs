@@ -55,9 +55,9 @@ namespace BackTestingPlatform.DataAccess.Common
         /// 
         /// </summary>
         /// <param name="appendMode">是否为append模式，否则为new模式</param>
-        /// <param name="localCsvExpration">CacheData更新周期间隔</param>
+        /// <param name="localCsvExpiration">CacheData中本地csv文件的保鲜期（天数）</param>
         /// <param name="tag"></param>
-        public List<T> fetchFromLocalCsvOrWindAndUpdateAndCache(int localCsvExpration, bool appendMode = false, String tag = null)
+        public List<T> fetchFromLocalCsvOrWindAndUpdateAndCache(int localCsvExpiration, bool appendMode = false, String tag = null)
         {
 
             if (tag == null) tag = typeof(T).Name;
@@ -71,7 +71,7 @@ namespace BackTestingPlatform.DataAccess.Common
 
             var lastestFilePath = (allFilePaths == null || allFilePaths.Count == 0) ? null : allFilePaths[0];
             var daysdiff = FileUtils.GetCacheDataFileDaysPastTillToday(lastestFilePath);
-            if (daysdiff > localCsvExpration)
+            if (daysdiff > localCsvExpiration)
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
                 Console.WriteLine("本地csv文件不存在或已过期，尝试Wind读取新数据...");
                 try

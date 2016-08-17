@@ -103,10 +103,9 @@
     <Compile Include="Utilities\CsvFileUtils.cs" />
     <Compile Include="Utilities\DataListUtils.cs" />
     <Compile Include="Utilities\DataTableUtils.cs" />
-    <Compile Include="Utilities\Kit.cs" />
+    <Compile Include="Utilities\Common\Kit.cs" />
     <Compile Include="Utilities\FileUtils.cs" />
     <Compile Include="Utilities\SqlUtils.cs" />
-    <Compile Include="DataAccess\Common\TradeDaysRepository.cs" />
     <Compile Include="DataAccess\Stock\StockKLineRepository.cs" />
     <Compile Include="Model\Option\ImpvSurface.cs" />
     <Compile Include="Core\PlatformBooter.cs" />
@@ -116,7 +115,7 @@
     <Compile Include="Core\Platforms.cs" />
     <Compile Include="Utilities\TickUtils.cs" />
     <Compile Include="Strategies\Stock\SingleMA.cs" />
-    <Compile Include="Utilities\TradeDaysUtils.cs" />
+    <Compile Include="Utilities\Common\DateUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

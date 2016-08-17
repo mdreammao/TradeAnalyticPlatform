@@ -13,31 +13,12 @@ namespace BackTestingPlatform.Service.Common
 {
     class TradeDaysService
     {
-        TradeDaysRepository tradeDaysRepository = Platforms.container.Resolve<TradeDaysRepository>();
+        TradeDayRepository tradeDayRepository = Platforms.container.Resolve<TradeDayRepository>();
 
-        /// <summary>
-        /// 获取tradeDays到内存，先后尝试从本地文件，万德获取
-        /// </summary>
-        public void loadTradeDays()
+        public List<DateTime> fetchFromLocalCsvOrWindAndUpdateAndCache(int localCsvExpiration = 180, bool appendMode = false, String tag = "TradeDays")
         {
-            var days = tradeDaysRepository.fetchFromLocalFile(
-                Constants.TRADE_DAY_START, Constants.TRADE_DAY_END);
-            if (days == null)
-            {
-                days = tradeDaysRepository.fetchFromWind(
-                 Constants.TRADE_DAY_START, Constants.TRADE_DAY_END);
-
-                if (days == null)
-                {
-                    Console.WriteLine("[ERROR] fetch TradeDays failure!");
-                }
-
-                tradeDaysRepository.saveToLocalFile(days); //写入csv
-                Console.WriteLine("[INFO] TradeDays saved to local file.");
-            }
-
-            Caches.put("TradeDays", days);
-           
+            return tradeDayRepository.fetchFromLocalCsvOrWindAndUpdateAndCache(localCsvExpiration, appendMode, tag);
         }
+
     }
 }
