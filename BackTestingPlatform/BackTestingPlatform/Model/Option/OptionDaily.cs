@@ -11,7 +11,18 @@ namespace BackTestingPlatform.Model.Option
     /// <summary>
     /// 期权 基础信息
     /// </summary>
-    public class OptionInfo
+
+    public interface IOptionInfo
+    {
+        string optionCode { get; set; }
+        string optionName { get; set; }
+        string executeType { get; set; }
+        double strike { get; set; }
+        string optionType { get; set; }
+        DateTime startDate { get; set; }
+        DateTime endDate { get; set; }
+    }
+    public class OptionInfo : IOptionInfo
     {
         public string optionCode { get; set; }
         public string optionName { get; set; }
@@ -23,7 +34,10 @@ namespace BackTestingPlatform.Model.Option
 
     }
 
-    public class OptionDailyWithInfo : KLine
+
+
+
+    public class OptionDailyWithInfo : OptionDaily, IOptionInfo
     {
         public string optionCode { get; set; }
         public string optionName { get; set; }
@@ -36,5 +50,8 @@ namespace BackTestingPlatform.Model.Option
     }
 
 
+    public class OptionDaily : KLine
+    {
+    }
 
 }

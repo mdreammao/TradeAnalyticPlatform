@@ -187,8 +187,6 @@ namespace BackTestingPlatform.Utilities
         /// <summary>
         /// 获取第4个周三，返回自然日，不考虑交易日
         /// </summary>
-        /// <param name="year"></param>
-        /// <param name="month"></param>
         /// <returns></returns>
         public static DateTime GetFourthWednesdayOfMonth(DateTime aDateOfThisMonth)
         {

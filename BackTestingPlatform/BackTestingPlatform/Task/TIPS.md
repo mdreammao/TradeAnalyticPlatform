@@ -26,7 +26,9 @@ int b=Kit.ToDouble(anObject);					//decimal,double,string等类型 -> double, �
 ## 获取/寄存全局缓存数据
 ```
 List<DateTime> tradeDays = Caches.get<List<DateTime>>("TradeDays");		//获取TradeDays
+List<DateTime> tradeDays = Caches.getTradeDays()						//获取TradeDays另一种便捷写法，只适用于少部分特殊数据
 MyModel m = Caches.get<MyModel>("MyModelKey");							//获取MyModelKey
+
 Caches.put("MyKey",tradeDays);											//寄存，如果key已存在则覆盖
 ```
 
