@@ -11,7 +11,7 @@ namespace BackTestingPlatform.Model.Option
 
     public class OptionMinuteKLine : KLine
     {
-    
+        
     }
 
     public class OptionMinuteKLineWithUnderlying : OptionMinuteKLine

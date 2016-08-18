@@ -27,6 +27,10 @@ namespace BackTestingPlatform.Model.Common
         public double volume { get; set; }
         public double amount { get; set; }
         public double preSettle { get; set; }
+
         public int date;
+
+        public int moment;
+
     }
 }

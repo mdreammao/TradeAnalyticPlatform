@@ -7,27 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.DataAccess.Option
+namespace BackTestingPlatform.DataAccess.Futures
 {
-    class OptionTickRepository : SequentialDataRepository<TickFromMssql>
+    class FuturesTickRepository : SequentialDataRepository<TickFromMssql>
     {
         protected override List<TickFromMssql> readFromDefaultMssql(string code, DateTime date)
         {
-            var connName = "corp170";
+            var connName = "corp218";
             var yyyyMM = date.ToString("yyyyMM");
             var yyyyMMdd = date.ToString("yyyyMMdd");
-            var codeStr = code.Replace('.', '_');           
+            var codeStr = code.Replace('.', '_');
             var sql = String.Format(@"
             SELECT * FROM [WindFullMarket{0}].[dbo].[MarketData_{1}] where tdate={2}
-            ", yyyyMM, codeStr,yyyyMMdd);
-            if (Convert.ToInt32(yyyyMM) < 201511)
-            {
-                connName = "corp217";
-                sql = String.Format(@"
-            SELECT * FROM [TradeMarket{0}].[dbo].[MarketData_{1}] where tdate={2}
-            ", yyyyMM, codeStr,yyyyMMdd);
-            }
-
+            ", yyyyMM, codeStr, yyyyMMdd);
             var connStr = SqlUtils.GetConnectionString(connName);
             DataTable dt = SqlUtils.GetTable(connStr, sql);
             return dt.AsEnumerable().Select(
@@ -35,7 +27,7 @@ namespace BackTestingPlatform.DataAccess.Option
                 {
                     code = (string)row["stkcd"],
                     time = Kit.ToDateTime(row["tdate"], row["ttime"]),
-                   
+
                     lastPrice = Kit.ToDouble(row["cp"]),
                     ask = Position.buildAsk5(row),
                     bid = Position.buildBid5(row),
@@ -52,7 +44,5 @@ namespace BackTestingPlatform.DataAccess.Option
         {
             throw new NotImplementedException();
         }
-
-
     }
 }
