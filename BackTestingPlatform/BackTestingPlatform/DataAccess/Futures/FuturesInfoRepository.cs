@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess.Futures
 {
-    public class FuturesDailyRepository : BasicDataRepository<FuturesDaily>
+    public class FuturesInfoRepository : BasicDataRepository<FuturesInfo>
     {
-        protected override List<FuturesDaily> readFromWind()
+        protected override List<FuturesInfo> readFromWind()
         {
             throw new NotImplementedException();
         }

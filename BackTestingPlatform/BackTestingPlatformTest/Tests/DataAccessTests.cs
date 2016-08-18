@@ -28,7 +28,7 @@ namespace BackTestingPlatformTest.Tests
 
         public static void testStockMinuteKLineRepo()
         {
-            var repo3 = Platforms.container.Resolve<StockMinuteKLineRepository>();
+            var repo3 = Platforms.container.Resolve<StockMinuteRepository>();
             var rr = repo3.fetchFromLocalCsvOrWindAndSave("000977.SH", Kit.ToDate(20160810));
         }
     }

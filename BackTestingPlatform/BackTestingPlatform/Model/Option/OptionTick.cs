@@ -11,14 +11,7 @@ namespace BackTestingPlatform.Model.Option
  
    public class OptionTickFromMssqlWithInfo : OptionTickFromMssql
     {
-        //public double underlyingPrice { get; set; }
-        public string optionCode { get; set; }
-        public string optionName { get; set; }
-        public string executeType { get; set; }
-        public double strike { get; set; }
-        public string optionType { get; set; }
-        public DateTime startDate { get; set; }
-        public DateTime endDate { get; set; }
+       public OptionInfo basicInfo { get; set; }
     }
 
     public class OptionTickFromMssql : TickFromMssql

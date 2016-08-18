@@ -11,4 +11,8 @@ namespace BackTestingPlatform.Model.Stock
     {
 
     }
+    public class StockMinuteWithInfo : StockMinute
+    {
+        public StockInfo basicInfo { get; set; }
+    }
 }

@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Futures
 {
-    class FuturesTickFromMssql : TickFromMssql
+    public class FuturesTickFromMssql : TickFromMssql
     {
 
     }
+    public class FuturesTickFromMssqlWithInfo : FuturesTickFromMssql
+    {
+        public FuturesInfo basicInfo { get; set; }
+    }
+    
 }

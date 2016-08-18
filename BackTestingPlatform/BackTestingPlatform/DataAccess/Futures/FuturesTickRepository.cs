@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess.Futures
 {
-    class FuturesTickRepository : SequentialDataRepository<FuturesTickFromMssql>
+    public class FuturesTickRepository : SequentialDataRepository<FuturesTickFromMssql>
     {
         protected override List<FuturesTickFromMssql> readFromDefaultMssql(string code, DateTime date)
         {

@@ -14,7 +14,7 @@ using System.Globalization;
 namespace BackTestingPlatform.DataAccess.Option
 {
 
-    public class OptionInfoRepository
+    public class OptionInfoRepository2
     {
         public const string PATH_KEY = "CacheData.Path.OptionDaily";
         public List<OptionInfo> fetchFromWind(string underlyingCode = "510050.SH", string market = "sse")

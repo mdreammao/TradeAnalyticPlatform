@@ -57,20 +57,23 @@
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
     <Compile Include="DataAccess\Common\TradeDayRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesDailyRepository.cs" />
+    <Compile Include="DataAccess\Futures\FuturesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesMinuteKLineRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesTickRepository.cs" />
     <Compile Include="DataAccess\Option\OptionDailyRepository.cs" />
-    <Compile Include="DataAccess\Option\OptionMinuteKLineRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionMinuteRepository.cs" />
     <Compile Include="DataAccess\Option\OptionTickRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockDailyRepository.cs" />
     <Compile Include="DataAccess\_old_\OptionMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Common\SequentialDataRepository.cs" />
     <Compile Include="DataAccess\_old_\AdjFactorRepository.cs" />
     <Compile Include="DataAccess\_old_\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\_old_\FuturesRepository.cs" />
     <Compile Include="DataAccess\_old_\OptionInfoRepository0.cs" />
-    <Compile Include="DataAccess\Stock\StockDailyRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockInfoRepository.cs" />
     <Compile Include="DataAccess\_old_\StockMinuteDataRepository.cs" />
-    <Compile Include="DataAccess\Stock\StockMinuteKLineRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockMinuteRepository.cs" />
     <Compile Include="DataAccess\Stock\StockTickRepository.cs" />
     <Compile Include="Model\Common\KLine.cs" />
     <Compile Include="DataAccess\_old_\TickRepository.cs" />
@@ -78,7 +81,10 @@
     <Compile Include="Model\Common\Sequential.cs" />
     <Compile Include="Model\Common\Tick.cs" />
     <Compile Include="Model\Futures\FuturesDaily.cs" />
+    <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
+    <Compile Include="Model\Option\OptionInfo.cs" />
+    <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
     <Compile Include="Model\_old_\Contstants.cs" />
     <Compile Include="Model\Futures\FuturesMinute.cs" />
@@ -92,7 +98,6 @@
     <Compile Include="Model\Stock\StockMinute.cs" />
     <Compile Include="Model\_old_\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
-    <Compile Include="Service\_old_\OptionInfoService.cs" />
     <Compile Include="Service\Stock\AdjFactorService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
@@ -133,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Record\" />
+    <Folder Include="Service\_old_\" />
     <Folder Include="Transaction\" />
     <Folder Include="Utilities\Stock\" />
   </ItemGroup>

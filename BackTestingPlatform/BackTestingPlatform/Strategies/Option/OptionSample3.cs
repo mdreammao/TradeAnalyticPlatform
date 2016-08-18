@@ -18,13 +18,14 @@ namespace BackTestingPlatform.Strategies.Option
         {
             startdate = Kit.ToDate(start);
             endDate = Kit.ToDate(end);
-            var repo = Platforms.container.Resolve<OptionDailyRepository>();
+            var repo = Platforms.container.Resolve<OptionInfoRepository>();
             var list=OptionUtilities.getOptionListByDate(repo.fetchFromLocalCsvOrWindAndSaveAndCache(1),20150209);
             List<DateTime> tradeDays=DateUtils.GetTradeDays(startdate, endDate);
             foreach (var day in tradeDays)
             {
-
+               
             }
+
 
       }
 

@@ -11,4 +11,8 @@ namespace BackTestingPlatform.Model.Stock
     {
 
     }
+    public class StockTickFromMssqlWithInfo : TickFromMssql
+    {
+        public StockInfo basicInfo { get; set; }
+    }
 }

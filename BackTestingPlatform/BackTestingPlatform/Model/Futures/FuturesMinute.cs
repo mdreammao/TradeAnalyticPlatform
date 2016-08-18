@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Futures
 {
-    class FuturesMinute : KLine
+    public class FuturesMinute : KLine
     {
 
+    }
+
+    public class FuturesMinuteWithInfo : FuturesMinute
+    {
+        public FuturesInfo basicInfo { get; set; }
     }
 }
