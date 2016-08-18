@@ -23,7 +23,6 @@ namespace BackTestingPlatformTest.Tests
         {
             var repo2 = Platforms.container.Resolve<TickRepository>();
             var rrr = repo2.fetchFromLocalCsvOrMssqlAndSave("510050.SH", Kit.ToDate("20160811"));
-
             Console.WriteLine(rrr.Count);
         }
 

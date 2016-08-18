@@ -99,6 +99,7 @@
     <Compile Include="Strategies\BackTestingFunc\BackTesting.cs" />
     <Compile Include="Strategies\Option\OptionSample.cs" />
     <Compile Include="Strategies\Option\OptionSample2.cs" />
+    <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Stock\AdjFactorTest.cs" />
     <Compile Include="Strategies\Stock\NdaysReversion.cs" />
     <Compile Include="System\GlobalizationDateTimeFormatInfo.cs" />
