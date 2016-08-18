@@ -7,16 +7,8 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Futures
 {
-    /// <summary>
-    /// 期货 基础信息
-    /// </summary>
-    public class FuturesInfo
+    class FuturesTickFromMssql : TickFromMssql
     {
-        public string code { get; set; }
-        public DateTime endDate { get; set; }
 
-        public List<Tick> ticks;
     }
-
-   
 }

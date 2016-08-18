@@ -1,5 +1,5 @@
 ﻿using BackTestingPlatform.Core;
-using BackTestingPlatform.Model.Option;
+using BackTestingPlatform.Model.Futures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,16 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using WAPIWrapperCSharp;
 
-namespace BackTestingPlatform.DataAccess.Option
+namespace BackTestingPlatform.DataAccess.Futures
 {
-    class OptionKLineRepository : SequentialDataRepository<OptionMinuteKLine>
+    class FuturesMinuteKLineRepository : SequentialDataRepository<FuturesMinute>
     {
-        protected override List<OptionMinuteKLine> readFromDefaultMssql(string code, DateTime date)
+        protected override List<FuturesMinute> readFromDefaultMssql(string code, DateTime date)
         {
             throw new NotImplementedException();
         }
 
-        protected override List<OptionMinuteKLine> readFromWind(string code, DateTime date)
+        protected override List<FuturesMinute> readFromWind(string code, DateTime date)
         {
             WindAPI w = Platforms.GetWindAPI();
             DateTime date1 = date.Date, date2 = date.Date.AddDays(1);
@@ -24,14 +24,14 @@ namespace BackTestingPlatform.DataAccess.Option
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
 
-            var items = new List<OptionMinuteKLine>(len * fieldLen);
+            var items = new List<FuturesMinute>(len * fieldLen);
             if (wd.data is double[])
             {
                 double[] dataList = (double[])wd.data;
                 DateTime[] timeList = wd.timeList;
                 for (int k = 0; k < len; k++)
                 {
-                    items.Add(new OptionMinuteKLine
+                    items.Add(new FuturesMinute
                     {
                         time = timeList[k],
                         open = (double)dataList[k * fieldLen + 0],

@@ -5,20 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using BackTestingPlatform.DataAccess.Common;
 
 namespace BackTestingPlatform.DataAccess.Stock
 {
-    class StockDailyRepository : SequentialDataRepository<StockDaily>
+    class StockDailyRepository : BasicDataRepository<StockInfo>
     {
-        protected override List<StockDaily> readFromDefaultMssql(string code, DateTime date)
+        protected override List<StockInfo> readFromWind()
         {
             throw new NotImplementedException();
         }
-
-        protected override List<StockDaily> readFromWind(string code, DateTime date)
-        {
-            throw new NotImplementedException();
-        }
-
     }
 }

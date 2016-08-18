@@ -15,7 +15,7 @@ namespace BackTestingPlatform.DataAccess.Option
     public class OptionMinuteDataRepository
     {
         public const string PATH_KEY = "CacheData.Path.Option";
-        public List<OptionMinuteKLine> fetchMinuteDataFromWind(string stockCode, DateTime time)
+        public List<OptionMinute> fetchMinuteDataFromWind(string stockCode, DateTime time)
         {
             WindAPI w = Platforms.GetWindAPI();
             var timeStr = time.ToString("yyyyMM");
@@ -24,13 +24,13 @@ namespace BackTestingPlatform.DataAccess.Option
             WindData wd = w.wsi(stockCode.ToUpper(), "open,high,low,close,volume,amt", start,end, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
-            List<OptionMinuteKLine> items = new List<OptionMinuteKLine>(len * fieldLen);
+            List<OptionMinute> items = new List<OptionMinute>(len * fieldLen);
             if (!(wd.data is double[])) return null;
             double[] dataList = (double[])wd.data;
             DateTime[] timeList = wd.timeList;
             for (int k = 0; k < len; k++)
             {
-                items.Add(new OptionMinuteKLine
+                items.Add(new OptionMinute
                 {
                     time = timeList[k],
                     open = (double)dataList[k * fieldLen + 0],
@@ -44,19 +44,19 @@ namespace BackTestingPlatform.DataAccess.Option
             return items;
         }
 
-        public void saveToLocalCsvFile(List<OptionMinuteKLine> optionMinuteData,string type,string code,DateTime date)
+        public void saveToLocalCsvFile(List<OptionMinute> optionMinuteData,string type,string code,DateTime date)
         {
             
          
         }
        
-        public List<OptionMinuteKLine> fetchAllFromLocalCsvFile(string filePath)
+        public List<OptionMinute> fetchAllFromLocalCsvFile(string filePath)
         {
 
             if (!File.Exists(filePath)) return null;
             DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
             
-            return dt.AsEnumerable().Select(row => new OptionMinuteKLine
+            return dt.AsEnumerable().Select(row => new OptionMinute
             {
                 time = Kit.ToDateTime(row["time"]),
                 open = Kit.ToDouble(row["open"]),

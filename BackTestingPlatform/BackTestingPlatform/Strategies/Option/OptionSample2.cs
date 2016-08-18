@@ -109,35 +109,6 @@ namespace BackTestingPlatform.Strategies.Option
             Console.WriteLine("{0} saved!", path);
         }
 
-        public List<OptionMinuteKLineWithUnderlying> AddEtfPrice(List<OptionMinuteKLine> option, List<KLine> etf, OptionDaily optionInfo)
-        {
-            if (option.Count != 240 || etf.Count != 240)
-            {
-                return null;
-            }
-            List<OptionMinuteKLineWithUnderlying> items = new List<OptionMinuteKLineWithUnderlying>();
-            for (int i = 0; i < 240; i++)
-            {
-                items.Add(new OptionMinuteKLineWithUnderlying
-                {
-                    optionCode = optionInfo.optionCode,
-                    optionName = optionInfo.optionName,
-                    executeType = optionInfo.executeType,
-                    startDate = optionInfo.startDate,
-                    endDate = optionInfo.endDate,
-                    optionType = optionInfo.optionType,
-                    strike = optionInfo.strike,
-                    time = option[i].time,
-                    open = option[i].open,
-                    high = option[i].high,
-                    low = option[i].low,
-                    close = option[i].close,
-                    volume = option[i].volume,
-                    amount = option[i].amount,
-                    underlyingPrice = etf[i].close
-                });
-            }
-            return items;
-        }
+        
     }
 }

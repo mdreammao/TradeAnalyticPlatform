@@ -1,6 +1,7 @@
 ﻿using BackTestingPlatform.Core;
 using BackTestingPlatform.Model;
 using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
@@ -11,17 +12,17 @@ using WAPIWrapperCSharp;
 namespace BackTestingPlatform.DataAccess
 {
 
-    public class StockTickRepository : SequentialDataRepository<TickFromMssql>
+    public class StockTickRepository : SequentialDataRepository<StockTickFromMssql>
     {
 
 
 
-        protected override List<TickFromMssql> readFromWind(string code, DateTime date)
+        protected override List<StockTickFromMssql> readFromWind(string code, DateTime date)
         {
             throw new NotImplementedException();
         }
 
-        protected override List<TickFromMssql> readFromDefaultMssql(string code, DateTime date)
+        protected override List<StockTickFromMssql> readFromDefaultMssql(string code, DateTime date)
         {
             var connName = "corp170";
             var yyyyMM = date.ToString("yyyyMM");
@@ -34,7 +35,7 @@ namespace BackTestingPlatform.DataAccess
             DataTable dt = SqlUtils.GetTable(connStr, sql);
 
             return dt.AsEnumerable().Select(
-                row => new TickFromMssql
+                row => new StockTickFromMssql
                 {
                     code = (string)row["stkcd"],
                     time = Kit.ToDateTime(row["tdate"], row["ttime"]),

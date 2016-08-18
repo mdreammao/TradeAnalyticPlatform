@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Model.Stock
+namespace BackTestingPlatform.Model.Futures
 {
-    public class StockMinuteKLine :KLine
+    class FuturesMinute : KLine
     {
 
     }

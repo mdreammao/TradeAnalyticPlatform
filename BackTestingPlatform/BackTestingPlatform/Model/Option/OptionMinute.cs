@@ -9,14 +9,13 @@ using System.Threading.Tasks;
 namespace BackTestingPlatform.Model.Option
 {
 
-    public class OptionMinuteKLine : KLine
+    public class OptionMinute : KLine
     {
         
     }
 
-    public class OptionMinuteKLineWithUnderlying : OptionMinuteKLine
+    public class OptionMinuteWithInfo : OptionMinute
     {
-        public double underlyingPrice { get; set; }
         public string optionCode { get; set; }
         public string optionName { get; set; }
         public string executeType { get; set; }

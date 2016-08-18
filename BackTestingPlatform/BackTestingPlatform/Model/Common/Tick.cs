@@ -14,19 +14,20 @@ namespace BackTestingPlatform.Model.Common
         public double lastPrice { get; set; }
         public Position[] ask { get; set; }
         public Position[] bid { get; set; }
-        public double preClose { get; set; }
+       
 
     }
 
     public class TickFromMssql : Tick
     {
-        //public double open { get; set; }
         public double high { get; set; }
         public double low { get; set; }
-        //public double close { get; set; }
+       
         public double volume { get; set; }
         public double amount { get; set; }
         public double preSettle { get; set; }
+
+        public double preClose { get; set; }
 
         public int date;
 

@@ -10,9 +10,9 @@ namespace BackTestingPlatform.Utilities.Option
     static class OptionUtilities
     {
 
-        public static List<OptionDaily> getOptionListByOptionType(List<OptionDaily> list, string type)
+        public static List<OptionInfo> getOptionListByOptionType(List<OptionInfo> list, string type)
         {
-            return list.FindAll(delegate (OptionDaily item)
+            return list.FindAll(delegate (OptionInfo item)
             {
                 if (item.optionType == type)
                 {
@@ -25,9 +25,9 @@ namespace BackTestingPlatform.Utilities.Option
             }
             );
         }
-        public static List<OptionDaily> getOptionListByStrike(List<OptionDaily> list, double strikeLower,double strikeUpper)
+        public static List<OptionInfo> getOptionListByStrike(List<OptionInfo> list, double strikeLower,double strikeUpper)
         {
-            return list.FindAll(delegate (OptionDaily item)
+            return list.FindAll(delegate (OptionInfo item)
             {
                 if (item.strike >= strikeLower && item.strike<=strikeUpper)
                 {
@@ -41,9 +41,9 @@ namespace BackTestingPlatform.Utilities.Option
             );
         }
 
-        public static List<OptionDaily> getOptionListByStrike(List<OptionDaily> list,double strike )
+        public static List<OptionInfo> getOptionListByStrike(List<OptionInfo> list,double strike )
         {
-            return list.FindAll(delegate (OptionDaily item)
+            return list.FindAll(delegate (OptionInfo item)
             {
                 if (item.strike==strike)
                 {
@@ -56,9 +56,9 @@ namespace BackTestingPlatform.Utilities.Option
             }
             );
         }
-        public static List<OptionDaily> getOptionListByDate(List<OptionDaily> list, int firstDay,int lastDay)
+        public static List<OptionInfo> getOptionListByDate(List<OptionInfo> list, int firstDay,int lastDay)
         {
-            return list.FindAll(delegate (OptionDaily item)
+            return list.FindAll(delegate (OptionInfo item)
             {
                 if (Convert.ToInt32(item.startDate.ToString("yyyyMMdd"))<=lastDay && Convert.ToInt32(item.endDate.ToString("yyyyMMdd")) >= firstDay)
                 {
@@ -72,9 +72,9 @@ namespace BackTestingPlatform.Utilities.Option
             );
         }
 
-        public static List<OptionDaily> getOptionListByDate(List<OptionDaily> list, int date)
+        public static List<OptionInfo> getOptionListByDate(List<OptionInfo> list, int date)
         {
-            return list.FindAll(delegate (OptionDaily item)
+            return list.FindAll(delegate (OptionInfo item)
             {
                 if (Convert.ToInt32(item.startDate.ToString("yyyyMMdd")) <= date && Convert.ToInt32(item.endDate.ToString("yyyyMMdd")) >= date)
                 {

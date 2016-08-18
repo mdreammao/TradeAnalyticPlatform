@@ -11,7 +11,7 @@ namespace BackTestingPlatform.Model.Option
     /// <summary>
     /// 期权 基础信息
     /// </summary>
-    public class OptionDaily : KLine
+    public class OptionInfo
     {
         public string optionCode { get; set; }
         public string optionName { get; set; }
@@ -23,6 +23,17 @@ namespace BackTestingPlatform.Model.Option
 
     }
 
+    public class OptionDailyWithInfo : KLine
+    {
+        public string optionCode { get; set; }
+        public string optionName { get; set; }
+        public string executeType { get; set; }
+        public double strike { get; set; }
+        public string optionType { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
+
+    }
 
 
 

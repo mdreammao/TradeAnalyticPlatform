@@ -1,4 +1,5 @@
 ﻿using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Futures;
 using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess.Futures
 {
-    class FuturesTickRepository : SequentialDataRepository<TickFromMssql>
+    class FuturesTickRepository : SequentialDataRepository<FuturesTickFromMssql>
     {
-        protected override List<TickFromMssql> readFromDefaultMssql(string code, DateTime date)
+        protected override List<FuturesTickFromMssql> readFromDefaultMssql(string code, DateTime date)
         {
             var connName = "corp218";
             var yyyyMM = date.ToString("yyyyMM");
@@ -23,7 +24,7 @@ namespace BackTestingPlatform.DataAccess.Futures
             var connStr = SqlUtils.GetConnectionString(connName);
             DataTable dt = SqlUtils.GetTable(connStr, sql);
             return dt.AsEnumerable().Select(
-                row => new TickFromMssql
+                row => new FuturesTickFromMssql
                 {
                     code = (string)row["stkcd"],
                     time = Kit.ToDateTime(row["tdate"], row["ttime"]),
@@ -40,7 +41,7 @@ namespace BackTestingPlatform.DataAccess.Futures
                 }).ToList();
         }
 
-        protected override List<TickFromMssql> readFromWind(string code, DateTime date)
+        protected override List<FuturesTickFromMssql> readFromWind(string code, DateTime date)
         {
             throw new NotImplementedException();
         }

@@ -15,13 +15,10 @@ using BackTestingPlatform.DataAccess.Common;
 namespace BackTestingPlatform.DataAccess.Option
 {
 
-    public class OptionDailyRepository : BasicDataRepository<OptionDaily>
+    public class OptionDailyRepository : BasicDataRepository<OptionInfo>
     {
-        
-        
-        
 
-        public List<OptionDaily> readFromWind(string code, string market)
+        public List<OptionInfo> readFromWind(string code, string market)
         {            
             string marketStr = "";
             if (market == "sse")
@@ -32,11 +29,11 @@ namespace BackTestingPlatform.DataAccess.Option
             WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=" + market + ";windcode=" + code + ";status=all");
             int len = wd.codeList.Length;
             int fieldLen = wd.fieldList.Length;
-            List<OptionDaily> items = new List<OptionDaily>(len * fieldLen);
+            List<OptionInfo> items = new List<OptionInfo>(len * fieldLen);
             object[] dm = (object[])wd.data;
             for (int k = 0; k < len; k++)
             {
-                items.Add(new OptionDaily
+                items.Add(new OptionInfo
                 {
                     optionCode = (string)dm[k * fieldLen + 0] + marketStr,
                     optionName = (string)dm[k * fieldLen + 1],
@@ -50,7 +47,7 @@ namespace BackTestingPlatform.DataAccess.Option
             return items;
         }
 
-        protected override List<OptionDaily> readFromWind()
+        protected override List<OptionInfo> readFromWind()
         {
             return readFromWind("510050.SH", "sse");
         }
