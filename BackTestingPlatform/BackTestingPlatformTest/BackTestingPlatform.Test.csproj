@@ -75,7 +75,7 @@
     <Compile Include="Tests\DateUtilsTests.cs" />
     <Compile Include="Tests\KitTests.cs" />
     <Compile Include="Tests\LinqSqlTest.cs" />
-    <Compile Include="Tests\OptionDailyRepositoryTests.cs" />
+    <Compile Include="Tests\DataAccessTests.cs" />
     <Compile Include="Tests\ToolKits.cs" />
     <Compile Include="Tests\WindApiTest.cs" />
   </ItemGroup>
