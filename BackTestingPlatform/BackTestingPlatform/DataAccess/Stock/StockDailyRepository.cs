@@ -19,18 +19,10 @@ namespace BackTestingPlatform.DataAccess.Stock
 
 
        
-        public List<StockDaily> readFromWind(string code,DateTime startDate,DateTime endDate,string adjustType="")
+        public List<StockDaily> readFromWind(string code,DateTime startDate,DateTime endDate)
         {
             WindAPI w = Platforms.GetWindAPI();
-            if (adjustType=="F")
-            {
-                adjustType = "PriceAdj=F";
-            }
-            if (adjustType == "B")
-            {
-                adjustType = "PriceAdj=B";
-            }
-            WindData wd = w.wsd(code, "open,high,low,close,volume,amt", startDate,endDate, "Fill=Previous"+adjustType);
+            WindData wd = w.wsd(code, "open,high,low,close,volume,amt", startDate,endDate, "Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
 

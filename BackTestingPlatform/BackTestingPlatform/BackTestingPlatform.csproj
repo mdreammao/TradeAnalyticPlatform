@@ -58,7 +58,7 @@
     <Compile Include="DataAccess\Common\TradeDayRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesDailyRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesInfoRepository.cs" />
-    <Compile Include="DataAccess\Futures\FuturesMinuteKLineRepository.cs" />
+    <Compile Include="DataAccess\Futures\FuturesMinuteRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesTickRepository.cs" />
     <Compile Include="DataAccess\Option\OptionDailyRepository.cs" />
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
@@ -84,6 +84,7 @@
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
+    <Compile Include="Model\Signal\BasicSignal.cs" />
     <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
     <Compile Include="Model\_old_\Contstants.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="Strategies\Stock\AdjFactorTest.cs" />
     <Compile Include="Strategies\Stock\NdaysReversion.cs" />
     <Compile Include="System\GlobalizationDateTimeFormatInfo.cs" />
+    <Compile Include="Transaction\RawTransaction.cs" />
     <Compile Include="Utilities\Common\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
     <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
@@ -139,8 +141,8 @@
   <ItemGroup>
     <Folder Include="Record\" />
     <Folder Include="Service\_old_\" />
-    <Folder Include="Transaction\" />
     <Folder Include="Utilities\Stock\" />
+    <Folder Include="Utilities\Transaction\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Task\HeFeiying.txt" />

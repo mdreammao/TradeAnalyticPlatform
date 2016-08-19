@@ -10,6 +10,31 @@ namespace BackTestingPlatform.Utilities.Option
     static class OptionUtilities
     {
 
+        public static string getCorrespondingIHCode(OptionInfo info,int date)
+        {
+            
+            DateTime today = Kit.ToDate(date);
+            if (info.endDate <today || date<20150416)
+            {
+                return null;
+            }
+            if (Kit.ToInt_yyyyMMdd(info.endDate)<=20150430 && Kit.ToInt_yyyyMMdd(info.endDate)>=20150401)
+            {
+                return "IH1505.CFE";
+            }
+            DateTime IHExpirationDate =DateUtils.NextOrCurrentTradeDay(DateUtils.GetThirdFridayOfMonth(info.endDate));
+            
+            if (today<=IHExpirationDate)
+            {
+                return "IH" + IHExpirationDate.ToString("yyMM") + ".CFE";
+            }
+            else
+            {
+                return "IH" + IHExpirationDate.AddMonths(1).ToString("yyMM") + ".CFE";
+            }
+
+        }
+
         public static List<OptionInfo> getOptionListByOptionType(List<OptionInfo> list, string type)
         {
             return list.FindAll(delegate (OptionInfo item)

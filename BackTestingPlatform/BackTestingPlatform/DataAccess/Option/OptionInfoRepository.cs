@@ -13,7 +13,7 @@ namespace BackTestingPlatform.DataAccess.Option
     public class OptionInfoRepository : BasicDataRepository<OptionInfo>
     {
 
-        public List<OptionInfo> readFromWind(string code, string market)
+        public List<OptionInfo> readFromWind(string underlying="510050.SH", string market="sse")
         {
             string marketStr = "";
             if (market == "sse")
@@ -21,7 +21,7 @@ namespace BackTestingPlatform.DataAccess.Option
                 marketStr = ".SH";
             }
             WindAPI wapi = Platforms.GetWindAPI();
-            WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=" + market + ";windcode=" + code + ";status=all");
+            WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=" + market + ";windcode=" + underlying + ";status=all");
             int len = wd.codeList.Length;
             int fieldLen = wd.fieldList.Length;
             List<OptionInfo> items = new List<OptionInfo>(len * fieldLen);

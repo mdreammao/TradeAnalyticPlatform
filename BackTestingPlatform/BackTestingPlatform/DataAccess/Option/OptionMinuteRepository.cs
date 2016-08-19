@@ -20,11 +20,11 @@ namespace BackTestingPlatform.DataAccess.Option
         {
             WindAPI w = Platforms.GetWindAPI();
             DateTime date1 = date.Date, date2 = date.Date.AddDays(1);
-            WindData wd = w.wsi(code, "open,high,low,close,volume,amt", date1, date2, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
+            WindData wd = w.wsi(code, "open,high,low,close,volume,amt,oi", date1, date2, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
 
-            var items = new List<OptionMinute>(len * fieldLen);
+            var items = new List<OptionMinute>(len);
             if (wd.data is double[])
             {
                 double[] dataList = (double[])wd.data;
@@ -39,7 +39,8 @@ namespace BackTestingPlatform.DataAccess.Option
                         low = (double)dataList[k * fieldLen + 2],
                         close = (double)dataList[k * fieldLen + 3],
                         volume = (double)dataList[k * fieldLen + 4],
-                        amount = (double)dataList[k * fieldLen + 5]
+                        amount = (double)dataList[k * fieldLen + 5],
+                        openInterest=(double)dataList[k*fieldLen+6]
                     });
                 }
             }

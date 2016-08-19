@@ -42,6 +42,8 @@ namespace BackTestingPlatform.DataAccess.Common
         {
             DataTable dt = CsvFileUtils.ReadFromCsvFile(path);
             if (dt == null) return null;
+            //var tmp2 = toEntityFromCsv(dt.Rows[0]);
+            //var tmp= dt.AsEnumerable().Select(toEntityFromCsv).ToList();
             return dt.AsEnumerable().Select(toEntityFromCsv).ToList();
         }
 
