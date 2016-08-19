@@ -24,8 +24,7 @@ namespace BackTestingPlatform.DataAccess.Stock
             WindData wd = w.wsi(code, "open,high,low,close,volume,amt", date1, date2, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
-
-            var items = new List<StockMinute>(len * fieldLen);
+            var items = new List<StockMinute>(len);
             if (wd.data is double[])
             {
                 double[] dataList = (double[])wd.data;

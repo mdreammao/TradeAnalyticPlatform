@@ -8,11 +8,10 @@ namespace BackTestingPlatform.Model.Signal
 {
     public class BasicSignal
     {
-        public DateTime time;
-        public string code;
-        public double position;
-        public double volume;
-        public double price;
-        public string type;
+        public DateTime time { get; set; }
+        public string code { get; set; }
+        public double positions { get; set; }
+        public double price { get; set; }
+        public string type { get; set; }
     }
 }

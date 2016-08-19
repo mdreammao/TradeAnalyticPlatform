@@ -84,6 +84,7 @@
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
+    <Compile Include="Model\Positions\BasicPositions.cs" />
     <Compile Include="Model\Signal\BasicSignal.cs" />
     <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
@@ -139,7 +140,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Record\" />
+    <Folder Include="Positions\" />
     <Folder Include="Service\_old_\" />
     <Folder Include="Utilities\Stock\" />
     <Folder Include="Utilities\Transaction\" />
