@@ -19,7 +19,7 @@ namespace BackTestingPlatform.DataAccess.Futures
             var yyyyMMdd = date.ToString("yyyyMMdd");
             var codeStr = code.Replace('.', '_');
             var sql = String.Format(@"
-            SELECT * FROM [WindFullMarket{0}].[dbo].[MarketData_{1}] where tdate={2}
+            SELECT * FROM [TradeMarket{0}].[dbo].[MarketData_{1}] where tdate={2}
             ", yyyyMM, codeStr, yyyyMMdd);
             var connStr = SqlUtils.GetConnectionString(connName);
             DataTable dt = SqlUtils.GetTable(connStr, sql);
@@ -28,7 +28,8 @@ namespace BackTestingPlatform.DataAccess.Futures
                 {
                     code = (string)row["stkcd"],
                     time = Kit.ToDateTime(row["tdate"], row["ttime"]),
-
+                    date = Kit.ToInt(row["tdate"]),
+                    moment = Kit.ToInt(row["ttime"]),
                     lastPrice = Kit.ToDouble(row["cp"]),
                     ask = Position.buildAsk5(row),
                     bid = Position.buildBid5(row),

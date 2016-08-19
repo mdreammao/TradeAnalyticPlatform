@@ -36,7 +36,8 @@ namespace BackTestingPlatform.DataAccess.Option
                 {
                     code = (string)row["stkcd"],
                     time = Kit.ToDateTime(row["tdate"], row["ttime"]),
-                   
+                    date = Kit.ToInt(row["tdate"]),
+                    moment = Kit.ToInt(row["ttime"]),
                     lastPrice = Kit.ToDouble(row["cp"]),
                     ask = Position.buildAsk5(row),
                     bid = Position.buildBid5(row),
