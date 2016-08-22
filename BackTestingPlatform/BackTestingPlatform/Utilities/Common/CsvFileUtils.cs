@@ -53,7 +53,8 @@ namespace BackTestingPlatform.Utilities
             }
             if (cell is DateTime)
             {
-                return ((DateTime)cell).ToString("yyyyMMddhhmmss");
+                //return ((DateTime)cell).ToString("yyyyMMddHHmmssfff");
+                return ((DateTime)cell).ToString("yyyyMMdd");
             }
             return cell.ToString();
         }

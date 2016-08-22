@@ -67,7 +67,7 @@ namespace BackTestingPlatform.Utilities
         public static DateTime ToDateTime(long arg)
         {
             if (arg >= 10000000000000000) arg = arg / 1000; //可能包含了毫秒值
-            if (arg < 100000000) arg = arg * 100000000; //可能未包含hhmmss
+            if (arg < 100000000) arg = arg * 1000000; //可能未包含hhmmss
             return ToDateTime((int)(arg / 1000000), (int)(arg % 1000000));
         }
 

@@ -92,18 +92,19 @@ namespace BackTestingPlatform.Utilities
         /// <returns></returns>
         public static T CreateItemFromRow<T>(DataRow row, IList<PropertyInfo> properties) where T : new()
         {
-            T item = new T();
-            foreach (var prop in properties)
+            T entity = new T();
+            Type type = typeof(T);
+            foreach (var item in properties)
             {
-                object val = row[prop.Name];
-                Type propType = prop.PropertyType;
-                if (!propType.IsArray)
+                object val = row[item.Name];
+                Type propType = item.PropertyType;
+                
+                if (!propType.IsArray )
                 {
-                    prop.SetValue(item, Kit.To(propType, val));
+                    item.SetValue(entity, Convert.ChangeType(Kit.To(propType, val), item.PropertyType),null);
                 }
-
             }
-            return item;
+            return entity;
         }
 
 

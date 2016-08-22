@@ -30,7 +30,8 @@ namespace BackTestingPlatform.Strategies.Option
       public void compute()
         {
             var repo = Platforms.container.Resolve<OptionInfoRepository>();
-            var OptionInfoList = repo.readFromWind();
+            //var OptionInfoList = repo.readFromWind();
+            var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
             Caches.put("OptionInfo", OptionInfoList);
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startdate, endDate);
             foreach (var day in tradeDays)
