@@ -24,7 +24,7 @@ namespace BackTestingPlatform.DataAccess.Option
             WindData wd = wapi.wset("optioncontractbasicinfo", "exchange=" + market + ";windcode=" + underlying + ";status=all");
             int len = wd.codeList.Length;
             int fieldLen = wd.fieldList.Length;
-            List<OptionInfo> items = new List<OptionInfo>(len * fieldLen);
+            List<OptionInfo> items = new List<OptionInfo>(len);
             object[] dm = (object[])wd.data;
             for (int k = 0; k < len; k++)
             {

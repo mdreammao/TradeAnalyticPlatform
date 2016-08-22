@@ -26,15 +26,18 @@ namespace BackTestingPlatform.Utilities
         public static DateTime ToDateTime(int tdate, int ttime, bool considerMillis = true)
         {
             int y = tdate / 10000, m = (tdate % 10000) / 100, d = tdate % 100;
+            int millisecond = 0;
             if (y < 1 || m == 0 || d == 0)
                 return DateTime.MinValue;
             if (considerMillis && ttime > 240000)
+            {
+                millisecond = ttime % 1000;
                 ttime = ttime / 1000;   //ttime可能包含了毫秒值
+            }
             if (ttime < 0 || ttime > 240000)
                 return DateTime.MinValue;
-
             return new DateTime(y, m, d,
-                 ttime / 10000, (ttime % 10000) / 100, ttime % 100);
+                 ttime / 10000, (ttime % 10000) / 100, ttime % 100,millisecond);
         }
         public static DateTime ToDateTime(string tdate, string ttime)
         {
@@ -157,12 +160,22 @@ namespace BackTestingPlatform.Utilities
         /// <summary>
         /// 返回值类似20160805093000
         /// </summary>
-        /// <param name="t"></param>
+        /// <param name="t">时间(DateTime)</param>
         /// <returns></returns>
         public static int ToInt_yyyyMMddHHmmss(DateTime t)
         {
             return (t.Year * 10000 + t.Month * 100 + t.Day) * 1000000
             + t.Hour * 10000 + t.Minute * 100 + t.Second;
+        }
+
+        /// <summary>
+        /// 返回值类似93000000
+        /// </summary>
+        /// <param name="t">时间(DateTime)</param>
+        /// <returns></returns>
+        public static int ToInt_HHmmssfff(DateTime t)
+        {
+            return t.Hour * 10000000 + t.Minute * 100000 + t.Second*1000+t.Millisecond;
         }
 
         /// <summary>

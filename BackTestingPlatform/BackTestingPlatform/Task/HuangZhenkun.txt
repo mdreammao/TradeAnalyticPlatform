@@ -11,3 +11,7 @@
 4. List<struct>类型的property的flatten和deflatten，便于datatable与List<Entity>互相转换
 5. 更为通用的CacheData读写流程
 
+1、时间转换里面毫秒值的问题
+2、数据从csv里面读取的问起。
+3、DateTime数据存储到csv里面的问题。
+4、日线数据获取的问题。
