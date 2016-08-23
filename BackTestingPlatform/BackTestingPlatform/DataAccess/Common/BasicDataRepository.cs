@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.Core;
 using BackTestingPlatform.Utilities;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,6 +14,7 @@ namespace BackTestingPlatform.DataAccess.Common
     public abstract class BasicDataRepository<T> where T : new()
     {
         const string PATH_KEY = "CacheData.Path.Basic";
+        Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// 由DataTable中的行向实体类的转换函数的默认实现。
@@ -76,52 +78,50 @@ namespace BackTestingPlatform.DataAccess.Common
             if (daysdiff > localCsvExpiration)
             {   //CacheData太旧，需要远程更新，然后保存到本地CacheData目录
                 var txt = (daysdiff == int.MaxValue) ? "不存在" : "已过期" + daysdiff + "天";
-                Console.WriteLine("本地csv文件{0}，尝试Wind读取新数据...", txt);
+                log.Info("本地csv文件{0}，尝试Wind读取新数据...", txt);
                 try
                 {
                     data = readFromWind();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("从Wind读取数据失败！");
-                    Console.WriteLine(e);
+                    log.Error(e,"从Wind读取数据失败！");
+                    
                 }
 
-                Console.WriteLine("正在保存新数据到本地...");
+                log.Info("正在保存新数据到本地...");
                 try
                 {
                     if (lastestFilePath == null)
                     {   //新增                        
                         saveToLocalCsvFile(data, todayFilePath, appendMode, tag);
-                        Console.WriteLine("文件{0}已保存.", todayFilePath);
+                        log.Info("文件{0}已保存.", todayFilePath);
                     }
                     else
                     {   //修改
                         saveToLocalCsvFile(data, lastestFilePath, appendMode, tag);
                         //重命名为最新日期
                         File.Move(lastestFilePath, todayFilePath);
-                        Console.WriteLine("文件重命名为{0}", todayFilePath);
+                        log.Info("文件重命名为{0}", todayFilePath);
                     }
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("从Wind读取数据失败！");
-                    Console.WriteLine(e);
+                    log.Error(e);
                 }
 
             }
             else
             {   //CacheData不是太旧，直接读取
-                Console.WriteLine("从本地cs文件{0}读取数据... ", lastestFilePath);
+                log.Info("从本地csv文件{0}读取数据... ", lastestFilePath);
                 try
                 {
 
                     data = readFromLocalCsv(lastestFilePath);
                 }
                 catch (Exception e)
-                {
-                    Console.WriteLine("从本地cs文件读取数据失败！");
-                    Console.WriteLine(e);
+                {                   
+                    log.Error(e, "从本地csv文件读取数据失败！");
                 }
 
             }
@@ -129,11 +129,11 @@ namespace BackTestingPlatform.DataAccess.Common
             {
                 //加载到内存缓存
                 Caches.put(tag, data);
-                Console.WriteLine("已将{0}加载到内存缓存.", tag);
-                Console.WriteLine("获取{0}数据列表成功.共{1}行.", tag, data.Count);
+                log.Info("已将{0}加载到内存缓存.", tag);
+                log.Info("获取{0}数据列表成功.共{1}行.", tag, data.Count);
             }else
             {
-                Console.WriteLine("没有任何内容可以缓存！");
+                log.Warn("没有任何内容可以缓存！");
             }
           
             return data;
@@ -148,7 +148,7 @@ namespace BackTestingPlatform.DataAccess.Common
             if (tag == null) tag = typeof(T).Name;
             if (data == null || data.Count == 0)
             {
-                Console.WriteLine("Nothing to save!");
+                log.Warn("没有任何内容可以保存到csv！");
                 return;
             }
             var dt = DataTableUtils.ToDataTable(data, toCsvColumnsFromEntity, toCsvRowValuesFromEntity);
@@ -156,12 +156,12 @@ namespace BackTestingPlatform.DataAccess.Common
             {
                 var s = (File.Exists(path)) ? "覆盖" : "新增";
                 CsvFileUtils.WriteToCsvFile(path, dt);
-                Console.WriteLine("文件已{0}：{1} ", s, path);
+                log.Info("文件已{0}：{1} ", s, path);
             }
             catch (Exception e)
             {
-                Console.WriteLine("保存到本地csv文件失败！");
-                Console.WriteLine(e);
+                log.Error(e,"保存到本地csv文件失败！");
+               
             }
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -11,13 +12,15 @@ namespace BackTestingPlatform.Utilities
 {
     public static class CsvFileUtils
     {
+
+        static Logger log = LogManager.GetCurrentClassLogger();
         /// <summary>
         ///  DataTable -> CSV.
         ///  如果是appendMode，会覆盖旧文件全部内容，否则在旧文件尾部新增内容
         /// </summary>
         /// <param name="dt"></param>
         /// <param name="filePath"></param>
-        public static void WriteToCsvFile(string filePath,DataTable dt, bool appendMode=false)
+        public static void WriteToCsvFile(string filePath, DataTable dt, bool appendMode = false)
         {
             StringBuilder sb = new StringBuilder();
             IEnumerable<string> columnNames = dt.Columns.Cast<DataColumn>().Select(column => column.ColumnName);
@@ -33,7 +36,7 @@ namespace BackTestingPlatform.Utilities
             var dirPath = Path.GetDirectoryName(filePath);
             var fileName = Path.GetFileName(filePath);
             //若文件路径不存在则生成该文件夹
-            if (dirPath!="" && !Directory.Exists(dirPath))
+            if (dirPath != "" && !Directory.Exists(dirPath))
             {
                 Directory.CreateDirectory(dirPath);
             }
@@ -48,7 +51,7 @@ namespace BackTestingPlatform.Utilities
             if (cell is IList)
             {
                 return ((IList)cell).Cast<object>()
-                    .Aggregate((i, j) => String.Concat(i , ";" , j))
+                    .Aggregate((i, j) => String.Concat(i, ";", j))
                     .ToString();
             }
             if (cell is DateTime)
@@ -58,10 +61,10 @@ namespace BackTestingPlatform.Utilities
             }
             return cell.ToString();
         }
-        
+
         static string toDoubleQuotedString(string src)
         {
-            return string.Concat("\"", src.Replace("\"", "\"\""), "\"");          
+            return string.Concat("\"", src.Replace("\"", "\"\""), "\"");
         }
 
         static string toNonDoubleQuotedString(string src)
@@ -70,7 +73,7 @@ namespace BackTestingPlatform.Utilities
             if (src[0] == '\"' && src[len - 1] == '\"')
                 return src.Substring(1, len - 2);
             else
-                return src;            
+                return src;
         }
 
 
@@ -82,7 +85,7 @@ namespace BackTestingPlatform.Utilities
         /// <param name="filePath"></param>
         /// <param name="firstRowAsHeader">csv文件第一行是否作为header</param>
         /// <returns></returns>
-        public static DataTable ReadFromCsvFile(string filePath,bool firstRowAsHeader=true)
+        public static DataTable ReadFromCsvFile(string filePath, bool firstRowAsHeader = true)
         {
             DataTable dt = new DataTable();
             try
@@ -107,9 +110,10 @@ namespace BackTestingPlatform.Utilities
                         }
                     }
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                Console.WriteLine(e);
+                log.Error(e);
                 return null;
             }
             return dt;
@@ -131,7 +135,7 @@ namespace BackTestingPlatform.Utilities
             foreach (var val in values)
             {
                 var s = "";
-                if (val is DateTime)                
+                if (val is DateTime)
                     s = ((DateTime)val).ToString("yyyyMMddhhmmss");
                 s = val.ToString();
                 res.Append(s);
@@ -141,5 +145,5 @@ namespace BackTestingPlatform.Utilities
     }
 
 
-   
+
 }

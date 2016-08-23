@@ -34,8 +34,10 @@ namespace BackTestingPlatform.Core
             //Autofac中注册所有组件
             _RegisterComponents(builder);
             container = builder.Build();
-            
-                     
+
+            //配置NLog日志模块
+            MyNLogConfig.Apply();
+
             //初始化CacheData文件夹
             var cdPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
             if (!Directory.Exists(cdPath)) Directory.CreateDirectory(cdPath);

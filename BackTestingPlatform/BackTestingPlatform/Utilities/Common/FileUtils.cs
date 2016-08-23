@@ -27,6 +27,10 @@ namespace BackTestingPlatform.Utilities
         private static string _appRootPath = null;
 
        
+        public static string GetCacheDataDirPath()
+        {
+            return ConfigurationManager.AppSettings["CacheData.RootPath"];
+        }
         /// <summary>
         /// 根据key获取路径配置，列出所有匹配的文件路径，按文件名倒序排列
         /// </summary>
@@ -55,8 +59,6 @@ namespace BackTestingPlatform.Utilities
         /// <returns>例如TradeDays_20160803.txt</returns>
         public static string GetCacheDataFilePath(string key, DateTime timestamp)
         {
-
-
             return ConfigurationManager.AppSettings["CacheData.RootPath"]
                 + ConfigurationManager.AppSettings[key].Replace("{0}", timestamp.ToString("yyyyMMdd"));
         }
