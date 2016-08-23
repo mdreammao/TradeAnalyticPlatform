@@ -42,8 +42,8 @@ namespace BackTestingPlatform.DataAccess.Common
         {
             DataTable dt = CsvFileUtils.ReadFromCsvFile(path);
             if (dt == null) return null;
-            T tmp2 = toEntityFromCsv(dt.Rows[0]);
-            List<T> tmp= dt.AsEnumerable().Select(toEntityFromCsv).ToList();
+            //T tmp2 = toEntityFromCsv(dt.Rows[0]);
+            //List<T> tmp= dt.AsEnumerable().Select(toEntityFromCsv).ToList();
             return dt.AsEnumerable().Select(toEntityFromCsv).ToList();
         }
 
@@ -125,11 +125,17 @@ namespace BackTestingPlatform.DataAccess.Common
                 }
 
             }
-
-            //加载到内存缓存
-            Caches.put(tag, data);
-            Console.WriteLine("已将{0}加载到内存缓存.", tag);
-            Console.WriteLine("获取{0}数据列表成功.共{1}行.", tag, data.Count);
+            if (data != null)
+            {
+                //加载到内存缓存
+                Caches.put(tag, data);
+                Console.WriteLine("已将{0}加载到内存缓存.", tag);
+                Console.WriteLine("获取{0}数据列表成功.共{1}行.", tag, data.Count);
+            }else
+            {
+                Console.WriteLine("没有任何内容可以缓存！");
+            }
+          
             return data;
         }
 

@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="TestBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\GenericTypeTests.cs" />
     <Compile Include="Tests\test1.cs" />
     <Compile Include="Tests\DateUtilsTests.cs" />
     <Compile Include="Tests\KitTests.cs" />

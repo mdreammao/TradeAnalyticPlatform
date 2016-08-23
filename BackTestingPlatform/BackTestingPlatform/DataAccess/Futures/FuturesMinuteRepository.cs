@@ -9,7 +9,7 @@ using WAPIWrapperCSharp;
 
 namespace BackTestingPlatform.DataAccess.Futures
 {
-    public class FuturesMinuteRepository : SequentialDataRepository<FuturesMinute>
+    public class FuturesMinuteRepository : SequentialByDayRepository<FuturesMinute>
     {
         protected override List<FuturesMinute> readFromDefaultMssql(string code, DateTime date)
         {

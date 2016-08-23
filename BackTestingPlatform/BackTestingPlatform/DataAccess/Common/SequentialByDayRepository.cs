@@ -10,9 +10,14 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess
 {
-    public abstract class SequentialDataRepository<T> where T : Sequential, new()
+    /// <summary>
+    /// 按每天存取时间序列数据的Repository
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class SequentialByDayRepository<T> where T : Sequential, new()
     {
-        const string PATH_KEY = "CacheData.Path.Sequential";
+        const string PATH_KEY = "CacheData.Path.SequentialByDay";
 
         /// <summary>
         /// 由DataTable中的行向实体类的转换函数的默认实现。

@@ -10,7 +10,7 @@ using WAPIWrapperCSharp;
 
 namespace BackTestingPlatform.DataAccess.Stock
 {
-    public class TickRepository : SequentialDataRepository<Tick>
+    public class TickRepository : SequentialByDayRepository<Tick>
     {
         protected override List<Tick> readFromDefaultMssql(string code, DateTime date)
         {

@@ -12,7 +12,7 @@ using WAPIWrapperCSharp;
 namespace BackTestingPlatform.DataAccess
 {
 
-    public class StockTickRepository : SequentialDataRepository<StockTickFromMssql>
+    public class StockTickRepository : SequentialByDayRepository<StockTickFromMssql>
     {
 
 

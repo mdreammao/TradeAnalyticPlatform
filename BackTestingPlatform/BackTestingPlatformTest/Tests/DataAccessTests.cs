@@ -16,7 +16,7 @@ namespace BackTestingPlatformTest.Tests
         public static void testOptionDailyRepo()
         {
             var repo = Platforms.container.Resolve<OptionDailyRepository>();
-            repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
+            var rr=repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
         }
 
         public static void testTickRepo()
@@ -25,7 +25,12 @@ namespace BackTestingPlatformTest.Tests
             var rrr = repo2.fetchFromLocalCsvOrMssqlAndSave("510050.SH", Kit.ToDate("20160811"));
             Console.WriteLine(rrr.Count);
         }
-
+        public static void test1()
+        {
+            var repo = Platforms.container.Resolve<OptionInfoRepository>();
+            //var OptionInfoList = repo.readFromWind();
+            var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
+        }
         public static void testStockMinuteKLineRepo()
         {
             var repo3 = Platforms.container.Resolve<StockMinuteRepository>();

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.DataAccess.Option
 {
-    class OptionTickRepository : SequentialDataRepository<OptionTickFromMssql>
+    class OptionTickRepository : SequentialByDayRepository<OptionTickFromMssql>
     {
         protected override List<OptionTickFromMssql> readFromDefaultMssql(string code, DateTime date)
         {

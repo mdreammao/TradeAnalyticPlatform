@@ -9,7 +9,7 @@ using WAPIWrapperCSharp;
 
 namespace BackTestingPlatform.DataAccess.Option
 {
-    class OptionMinuteRepository : SequentialDataRepository<OptionMinute>
+    class OptionMinuteRepository : SequentialByDayRepository<OptionMinute>
     {
         protected override List<OptionMinute> readFromDefaultMssql(string code, DateTime date)
         {
