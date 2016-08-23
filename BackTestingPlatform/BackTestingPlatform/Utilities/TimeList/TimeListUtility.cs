@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Utilities.Stock
+namespace BackTestingPlatform.Utilities.TimeList
 {
     public static class TimeListUtility
     {

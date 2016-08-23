@@ -131,7 +131,8 @@
     <Compile Include="Core\Platforms.cs" />
     <Compile Include="Strategies\Stock\SingleMA.cs" />
     <Compile Include="Utilities\Common\DateUtils.cs" />
-    <Compile Include="Utilities\Stock\TimeListUtility.cs" />
+    <Compile Include="Utilities\TimeList\Alignment.cs" />
+    <Compile Include="Utilities\TimeList\TimeListUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -142,6 +143,7 @@
   <ItemGroup>
     <Folder Include="Positions\" />
     <Folder Include="Service\_old_\" />
+    <Folder Include="Utilities\Stock\" />
     <Folder Include="Utilities\Transaction\" />
   </ItemGroup>
   <ItemGroup>
