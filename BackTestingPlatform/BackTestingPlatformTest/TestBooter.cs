@@ -16,13 +16,14 @@ namespace BackTestingPlatform.Test
             //ToolKits.readFile();
             //LinqSqlTest.testDataSet();
 
-            KitTests.test1();
+            //KitTests.test1();
             //OptionDailyRepositoryTests.test();
             DateUtilsTests.test1();
-            DataAccessTests.testOptionDailyRepo();
-            DataAccessTests.testStockMinuteKLineRepo();
-            GenericTypeTests.test1();
-            DataAccessTests.test1();
+            //DataAccessTests.testOptionDailyRepo();
+            //DataAccessTests.testStockMinuteKLineRepo();
+            //GenericTypeTests.test1();
+            DataAccessTests.testStockDailyRepo();
+
             Console.ReadKey();
         }
     }

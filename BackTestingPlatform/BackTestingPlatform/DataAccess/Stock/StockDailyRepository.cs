@@ -10,19 +10,17 @@ using WAPIWrapperCSharp;
 
 namespace BackTestingPlatform.DataAccess.Stock
 {
-    class StockDailyRepository : BasicDataRepository<StockDaily>
+    public class StockDailyRepository : SequentialByYearRepository<StockDaily>
     {
-        protected override List<StockDaily> readFromWind()
+        protected override List<StockDaily> readFromDefaultMssql(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
             throw new NotImplementedException();
         }
 
-
-       
-        public List<StockDaily> readFromWind(string code,DateTime startDate,DateTime endDate)
+        protected override List<StockDaily> readFromWind(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
             WindAPI w = Platforms.GetWindAPI();
-            WindData wd = w.wsd(code, "open,high,low,close,volume,amt", startDate,endDate, "Fill=Previous");
+            WindData wd = w.wsd(code, "open,high,low,close,volume,amt", dateStart, dateEnd, "Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
 
@@ -49,4 +47,6 @@ namespace BackTestingPlatform.DataAccess.Stock
             return items;
         }
     }
+
+
 }

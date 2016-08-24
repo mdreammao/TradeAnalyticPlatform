@@ -16,20 +16,10 @@ namespace BackTestingPlatform.DataAccess
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class SequentialByDayRepository<T> where T : Sequential, new()
+    public abstract class SequentialByDayRepository<T> : SequentialRepository<T> where T : Sequential, new()
     {
         const string PATH_KEY = "CacheData.Path.SequentialByDay";
         Logger log = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
-        /// 由DataTable中的行向实体类的转换函数的默认实现。
-        /// </summary>
-        /// <param name="row"></param>
-        /// <returns></returns>
-        public virtual T toEntityFromCsv(DataRow row)
-        {
-            return DataTableUtils.CreateItemFromRow<T>(row);
-        }
 
         /// <summary>
         ///  尝试从Wind获取数据,可能会抛出异常
@@ -50,25 +40,22 @@ namespace BackTestingPlatform.DataAccess
         /// <summary>
         ///  尝试从本地csv文件获取数据,可能会抛出异常
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <returns></returns>
         public List<T> readFromLocalCsv(string code, DateTime date, string tag = null)
         {
-            if (tag == null) tag = typeof(T).ToString();
-            var filePath = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date.ToString("yyyyMMdd"));
-            DataTable dt = CsvFileUtils.ReadFromCsvFile(filePath);
-            if (dt == null) return null;
-            return dt.AsEnumerable().Select(toEntityFromCsv).ToList();
+            var path = _buildCacheDataFilePath(code, date, tag);
+            return readFromLocalCsv(path);
         }
 
         /// <summary>
         /// 尝试从本地csv文件，Wind获取数据。
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <returns></returns>
         public List<T> fetchFromLocalCsv(string code, DateTime date, string tag = null)
         {
@@ -78,9 +65,9 @@ namespace BackTestingPlatform.DataAccess
         /// <summary>
         /// 尝试从Wind获取数据。
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <returns></returns>
         public List<T> fetchFromWind(string code, DateTime date, string tag = null)
         {
@@ -90,9 +77,9 @@ namespace BackTestingPlatform.DataAccess
         /// <summary>
         /// 尝试从默认MSSQL源获取数据。
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <returns></returns>
         public List<T> fetchFromMssql(string code, DateTime date, string tag = null)
         {
@@ -102,9 +89,9 @@ namespace BackTestingPlatform.DataAccess
         /// <summary>
         /// 先后尝试从本地csv文件，Wind获取数据。若无本地csv，则保存到CacheData文件夹。
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <returns></returns>
         public List<T> fetchFromLocalCsvOrWindAndSave(string code, DateTime date, string tag = null)
         {
@@ -113,9 +100,9 @@ namespace BackTestingPlatform.DataAccess
         /// <summary>
         /// 先后尝试从本地csv文件，默认MSSQL数据库源获取数据。
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <returns></returns>
         public List<T> fetchFromLocalCsvOrMssql(string code, DateTime date, string tag = null)
         {
@@ -125,9 +112,9 @@ namespace BackTestingPlatform.DataAccess
         /// <summary>
         /// 先后尝试从本地csv文件，默认MSSQL数据库源获取数据。若无本地csv，则保存到CacheData文件夹。
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <returns></returns>
         public List<T> fetchFromLocalCsvOrMssqlAndSave(string code, DateTime date, string tag = null)
         {
@@ -137,9 +124,9 @@ namespace BackTestingPlatform.DataAccess
         /// <summary>
         /// 尝试Wind获取数据。然后将数据覆盖保存到CacheData文件夹
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <returns></returns>
         public List<T> fetchFromWindAndSave(string code, DateTime date, string tag = null)
         {
@@ -151,11 +138,11 @@ namespace BackTestingPlatform.DataAccess
             if (tag == null) tag = typeof(T).ToString();
             List<T> result = null;
             bool csvHasData = false;
-
+            log.Debug("正在获取{0}数据列表...", tag);
             if (tryCsv)
             {
                 //尝试从csv获取
-                log.Info("尝试从csv获取...");
+                log.Debug("尝试从csv获取...");
                 try
                 {
                     result = readFromLocalCsv(code, date, tag);
@@ -169,7 +156,7 @@ namespace BackTestingPlatform.DataAccess
             if (result == null && tryWind)
             {
                 //尝试从Wind获取
-                log.Info("尝试从Wind获取...");
+                log.Debug("尝试从Wind获取...");
                 try
                 {
                     result = readFromWind(code, date);
@@ -184,7 +171,7 @@ namespace BackTestingPlatform.DataAccess
                 try
                 {
                     //尝试从默认MSSQL源获取
-                    log.Info("尝试从默认MSSQL源获取...");
+                    log.Debug("尝试从默认MSSQL源获取...");
                     result = readFromDefaultMssql(code, date);
                 }
                 catch (Exception e)
@@ -196,42 +183,38 @@ namespace BackTestingPlatform.DataAccess
             if (!csvHasData && result != null && saveToCsv)
             {
                 //如果数据不是从csv获取的，可保存至本地，存为csv文件
-                log.Info("正在保存到本地csv文件...");
-                saveToLocalCsvFile(result, code, date, tag);
+                log.Debug("正在保存到本地csv文件...");
+                saveToLocalCsv(result, code, date, tag);
             }
-            log.Info("获取{0}数据列表成功.共{1}行.", tag, result.Count);
+            log.Info("获取数据列表{0}(date={1})成功.共{2}行.", tag, date, result.Count);
             return result;
         }
+
+
 
         /// <summary>
         /// 将数据以csv文件的形式保存到CacheData文件夹下的预定路径
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="code"></param>
-        /// <param name="date"></param>
-        /// <param name="tag"></param>
-        public void saveToLocalCsvFile(IList<T> data, string code, DateTime date, string tag = null)
+        /// <param name="data">要保存的数据</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
+        /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
+        public void saveToLocalCsv(IList<T> data, string code, DateTime date, string tag = null, bool appendMode = false)
+        {
+            var path = _buildCacheDataFilePath(code, date, tag);
+            saveToLocalCsv(path, data, appendMode);
+        }
+
+
+        private static string _buildCacheDataFilePath(string code, DateTime date, string tag)
         {
             if (tag == null) tag = typeof(T).ToString();
-            if (data == null || data.Count == 0)
+            return FileUtils.GetCacheDataFilePath(PATH_KEY, new Dictionary<string, string>
             {
-                log.Warn("没有任何内容可以保存到csv！");
-                return;
-            }
-            var dt = DataTableUtils.ToDataTable(data);
-            var path = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, code, date.ToString("yyyyMMdd"));
-            try
-            {
-                var s = (File.Exists(path)) ? "覆盖" : "新增";
-                CsvFileUtils.WriteToCsvFile(path, dt);
-                log.Info("文件已{0}：{1} ", s, path);
-            }
-            catch (Exception e)
-            {
-                log.Error(e, "保存到本地csv文件失败！");
-            }
-
-
+                ["{tag}"] = tag,
+                ["{code}"] = code,
+                ["{date}"] = date.ToString("yyyyMMdd")
+            });
         }
     }
 }

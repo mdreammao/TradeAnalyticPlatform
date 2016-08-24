@@ -60,6 +60,7 @@
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
+    <Compile Include="DataAccess\Common\SequentialRepository.cs" />
     <Compile Include="DataAccess\Common\SequentialByYearRepository.cs" />
     <Compile Include="DataAccess\Common\TradeDayRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesDailyRepository.cs" />
@@ -159,6 +160,9 @@
     <None Include="Task\TIPS.md" />
     <Content Include="Task\如何测试.txt" />
     <Content Include="Utilities\WAPIWrapperCSharp.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

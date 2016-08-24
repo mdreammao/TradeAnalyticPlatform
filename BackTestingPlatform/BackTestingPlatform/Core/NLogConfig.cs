@@ -13,13 +13,15 @@ namespace BackTestingPlatform.Core
 {
     public class MyNLogConfig
     {
-        public static void Apply()
-        {
+        static string rootDir = ConfigurationManager.AppSettings["Log.RootPath"];
+        const string conLayout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${message}";
+        const string conLayout1 = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger:shortName=true}: ${message}";
+        const string fileLayout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger}: ${message}";
+
+        public static void Apply()        {
             // Step 1. Create configuration object 
             var config = new LoggingConfiguration();
-            var rootDir = ConfigurationManager.AppSettings["Log.RootPath"];            
-            var layout0 = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger:shortName=true}: ${message}";
-            var layout1 = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger}: ${message}";
+          
             if (rootDir == null) rootDir = "${basedir}";
             // Step 2. Create targets and add them to the configuration 
             var con = new ColoredConsoleTarget();   
@@ -31,11 +33,11 @@ namespace BackTestingPlatform.Core
 
             // Step 3. Set target properties 
             
-            con.Layout = layout0;
+            con.Layout = conLayout;
             f1.FileName = rootDir + "/all.${shortdate}.log";
-            f1.Layout = layout1;
+            f1.Layout = fileLayout;
             f2.FileName = rootDir + "/error.${shortdate}.log";
-            f2.Layout = layout1;
+            f2.Layout = fileLayout;
 
             // Step 4. Define rules            
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, con));
