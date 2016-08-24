@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.Utilities;
 using NLog;
+using NLog.Conditions;
 using NLog.Config;
 using NLog.Targets;
 using System;
@@ -18,13 +19,33 @@ namespace BackTestingPlatform.Core
         const string conLayout1 = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger:shortName=true}: ${message}";
         const string fileLayout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger}: ${message}";
 
+        public static object Condition { get; private set; }
+
         public static void Apply()        {
             // Step 1. Create configuration object 
             var config = new LoggingConfiguration();
           
             if (rootDir == null) rootDir = "${basedir}";
             // Step 2. Create targets and add them to the configuration 
-            var con = new ColoredConsoleTarget();   
+            var con = new ColoredConsoleTarget();
+
+         
+            con.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
+                ConditionParser.ParseExpression("level == LogLevel.Debug"),
+                ConsoleOutputColor.DarkGray, ConsoleOutputColor.NoChange));
+
+            con.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
+               ConditionParser.ParseExpression("level == LogLevel.Info"),
+               ConsoleOutputColor.Gray, ConsoleOutputColor.NoChange));
+
+            con.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
+                ConditionParser.ParseExpression("level == LogLevel.Warn"),
+                ConsoleOutputColor.DarkYellow, ConsoleOutputColor.NoChange));
+
+            con.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
+                ConditionParser.ParseExpression("level == LogLevel.Error"),
+                ConsoleOutputColor.Red, ConsoleOutputColor.NoChange));
+
             var f1 = new FileTarget();
             var f2 = new FileTarget();
             config.AddTarget("console", con);
@@ -48,7 +69,6 @@ namespace BackTestingPlatform.Core
             // Step 5. Activate the configuration
             LogManager.Configuration = config;
 
-           
         }
     }
 }

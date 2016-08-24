@@ -3,6 +3,7 @@ using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.DataAccess.Stock;
 using BackTestingPlatform.Utilities;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,11 @@ namespace BackTestingPlatformTest.Tests
             var repo = Platforms.container.Resolve<OptionInfoRepository>();
             //var OptionInfoList = repo.readFromWind();
             var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
+
+
+            Logger log = LogManager.GetLogger("ssss");
+            log.Error("ssss");
+
         }
         public static void testStockMinuteKLineRepo()
         {

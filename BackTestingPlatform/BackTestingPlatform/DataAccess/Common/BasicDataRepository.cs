@@ -95,14 +95,14 @@ namespace BackTestingPlatform.DataAccess.Common
                     if (lastestFilePath == null)
                     {   //新增                        
                         saveToLocalCsvFile(data, todayFilePath, appendMode, tag);
-                        log.Info("文件{0}已保存.", todayFilePath);
+                        log.Debug("文件{0}已保存.", todayFilePath);
                     }
                     else
                     {   //修改
                         saveToLocalCsvFile(data, lastestFilePath, appendMode, tag);
                         //重命名为最新日期
                         File.Move(lastestFilePath, todayFilePath);
-                        log.Info("文件重命名为{0}", todayFilePath);
+                        log.Debug("文件重命名为{0}", todayFilePath);
                     }
                 }
                 catch (Exception e)

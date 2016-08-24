@@ -37,7 +37,7 @@ namespace BackTestingPlatform.Utilities
             if (ttime < 0 || ttime > 240000)
                 return DateTime.MinValue;
             return new DateTime(y, m, d,
-                 ttime / 10000, (ttime % 10000) / 100, ttime % 100,millisecond);
+                 ttime / 10000, (ttime % 10000) / 100, ttime % 100, millisecond);
         }
         public static DateTime ToDateTime(string tdate, string ttime)
         {
@@ -175,7 +175,7 @@ namespace BackTestingPlatform.Utilities
         /// <returns></returns>
         public static int ToInt_HHmmssfff(DateTime t)
         {
-            return t.Hour * 10000000 + t.Minute * 100000 + t.Second*1000+t.Millisecond;
+            return t.Hour * 10000000 + t.Minute * 100000 + t.Second * 1000 + t.Millisecond;
         }
 
         /// <summary>
@@ -304,6 +304,12 @@ namespace BackTestingPlatform.Utilities
             if (type == typeof(long))
                 return Kit.ToLong(arg);
             return arg;
+        }
+
+        public static string ToShortName(string text)
+        {
+            int x = text.LastIndexOf('.');
+            return text.Substring(x + 1);
         }
 
     }

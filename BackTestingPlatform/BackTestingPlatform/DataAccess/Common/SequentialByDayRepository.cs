@@ -138,7 +138,7 @@ namespace BackTestingPlatform.DataAccess
             if (tag == null) tag = typeof(T).ToString();
             List<T> result = null;
             bool csvHasData = false;
-            log.Debug("正在获取{0}数据列表...", tag);
+            log.Debug("正在获取{0}数据列表...", Kit.ToShortName(tag));
             if (tryCsv)
             {
                 //尝试从csv获取
@@ -186,7 +186,7 @@ namespace BackTestingPlatform.DataAccess
                 log.Debug("正在保存到本地csv文件...");
                 saveToLocalCsv(result, code, date, tag);
             }
-            log.Info("获取数据列表{0}(date={1})成功.共{2}行.", tag, date, result.Count);
+            log.Info("获取数据列表{0}(date={1})成功.共{2}行.", Kit.ToShortName(tag), date, result.Count);
             return result;
         }
 

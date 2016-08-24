@@ -169,7 +169,7 @@ namespace BackTestingPlatform.DataAccess
             bool csvHasData = false;
             var date1 = new DateTime(year, 1, 1);
             var date2 = new DateTime(year, 12, 31);
-            log.Debug("正在获取{0}数据列表...", tag);
+            log.Debug("正在获取{0}数据列表...", Kit.ToShortName(tag));
             if (tryCsv)
             {
                 //尝试从csv获取
@@ -217,7 +217,7 @@ namespace BackTestingPlatform.DataAccess
                 log.Debug("正在保存到本地csv文件...");
                 saveToLocalCsv(result, code, date1, date2, tag);
             }
-            log.Info("获取数据列表{0}(year={1})成功.共{2}行.", tag, year, result.Count);
+            log.Info("获取数据列表{0}(year={1})成功.共{2}行.", Kit.ToShortName(tag), year, result.Count);
             return result;
         }
 
