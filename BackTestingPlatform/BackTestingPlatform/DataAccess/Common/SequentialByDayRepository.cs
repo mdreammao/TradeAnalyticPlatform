@@ -19,7 +19,7 @@ namespace BackTestingPlatform.DataAccess
     public abstract class SequentialByDayRepository<T> : SequentialRepository<T> where T : Sequential, new()
     {
         const string PATH_KEY = "CacheData.Path.SequentialByDay";
-        Logger log = LogManager.GetCurrentClassLogger();
+        static Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         ///  尝试从Wind获取数据,可能会抛出异常

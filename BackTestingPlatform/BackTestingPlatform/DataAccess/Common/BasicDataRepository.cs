@@ -14,7 +14,7 @@ namespace BackTestingPlatform.DataAccess.Common
     public abstract class BasicDataRepository<T> where T : new()
     {
         const string PATH_KEY = "CacheData.Path.Basic";
-        Logger log = LogManager.GetCurrentClassLogger();
+        static Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// 由DataTable中的行向实体类的转换函数的默认实现。
@@ -66,8 +66,8 @@ namespace BackTestingPlatform.DataAccess.Common
 
             if (tag == null) tag = typeof(T).Name;
             List<T> data = null;
-            var filePathPattern = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, "*");
-            var todayFilePath = FileUtils.GetCacheDataFilePath(PATH_KEY, tag, DateTime.Now.ToString("yyyyMMdd"));
+            var filePathPattern = _buildCacheDataFilePath(tag, "*");
+            var todayFilePath = _buildCacheDataFilePath(tag, DateTime.Now.ToString("yyyyMMdd"));
             var dirPath = Path.GetDirectoryName(filePathPattern);
             var fileNamePattern = Path.GetFileName(filePathPattern);
             var allFilePaths = Directory.EnumerateFiles(dirPath, fileNamePattern)
@@ -85,8 +85,8 @@ namespace BackTestingPlatform.DataAccess.Common
                 }
                 catch (Exception e)
                 {
-                    log.Error(e,"从Wind读取数据失败！");
-                    
+                    log.Error(e, "从Wind读取数据失败！");
+
                 }
 
                 log.Info("正在保存新数据到本地...");
@@ -113,14 +113,14 @@ namespace BackTestingPlatform.DataAccess.Common
             }
             else
             {   //CacheData不是太旧，直接读取
-                log.Info("从本地csv文件{0}读取数据... ", lastestFilePath);
+                log.Info("正在从本地csv文件{0}读取数据... ", lastestFilePath);
                 try
                 {
 
                     data = readFromLocalCsv(lastestFilePath);
                 }
                 catch (Exception e)
-                {                   
+                {
                     log.Error(e, "从本地csv文件读取数据失败！");
                 }
 
@@ -131,11 +131,12 @@ namespace BackTestingPlatform.DataAccess.Common
                 Caches.put(tag, data);
                 log.Info("已将{0}加载到内存缓存.", tag);
                 log.Info("获取{0}数据列表成功.共{1}行.", tag, data.Count);
-            }else
+            }
+            else
             {
                 log.Warn("没有任何内容可以缓存！");
             }
-          
+
             return data;
         }
 
@@ -160,11 +161,23 @@ namespace BackTestingPlatform.DataAccess.Common
             }
             catch (Exception e)
             {
-                log.Error(e,"保存到本地csv文件失败！");
-               
+                log.Error(e, "保存到本地csv文件失败！");
+
             }
 
 
         }
+
+        private static string _buildCacheDataFilePath(string tag, string date)
+        {
+            if (tag == null) tag = typeof(T).ToString();
+            return FileUtils.GetCacheDataFilePath(PATH_KEY, new Dictionary<string, string>
+            {
+                ["{tag}"] = tag,
+                ["{date}"] = date
+            });
+        }
+
+
     }
 }
