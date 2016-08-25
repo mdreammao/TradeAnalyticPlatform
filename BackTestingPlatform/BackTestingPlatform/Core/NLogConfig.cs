@@ -16,8 +16,8 @@ namespace BackTestingPlatform.Core
     {
         static string rootDir = ConfigurationManager.AppSettings["Log.RootPath"];
         const string conLayout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${message}";
-        const string conLayout1 = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger:shortName=true}: ${message}";
-        const string fileLayout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger}: ${message}";
+        const string conLayout1 = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger:shortName=false}: ${message}";
+        const string fileLayout = @"${date:format=yyyy-MM-dd HH\:mm\:ss} [${pad:padding=5:inner=${level:uppercase=true}}] ${logger:shortName=true}: ${message}";
 
         public static object Condition { get; private set; }
 
@@ -27,9 +27,11 @@ namespace BackTestingPlatform.Core
           
             if (rootDir == null) rootDir = "${basedir}";
             // Step 2. Create targets and add them to the configuration 
-            var con = new ColoredConsoleTarget();
+            var con = new ColoredConsoleTarget();   //控制台
+            var f1 = new FileTarget();      //当天日志文件（所有消息）
+            var f2 = new FileTarget();      //当天日志文件（错误消息）
 
-         
+            //con.WordHighlightingRules.Add(new ConsoleWordHighlightingRule("------",ConsoleOutputColor.Green, ConsoleOutputColor.Green));
             con.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
                 ConditionParser.ParseExpression("level == LogLevel.Debug"),
                 ConsoleOutputColor.DarkGray, ConsoleOutputColor.NoChange));
@@ -46,8 +48,7 @@ namespace BackTestingPlatform.Core
                 ConditionParser.ParseExpression("level == LogLevel.Error"),
                 ConsoleOutputColor.Red, ConsoleOutputColor.NoChange));
 
-            var f1 = new FileTarget();
-            var f2 = new FileTarget();
+            
             config.AddTarget("console", con);
             config.AddTarget("f1", f1);
             config.AddTarget("f2", f2);

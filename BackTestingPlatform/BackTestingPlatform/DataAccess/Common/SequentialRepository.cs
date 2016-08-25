@@ -36,11 +36,11 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="data">要保存的数据</param>
         /// <param name="path">读写文件路径</param>
         /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
-        public virtual void saveToLocalCsv(string path,IList<T> data, bool appendMode = false)
-        {            
-            if (data == null || data.Count == 0)
+        public virtual void saveToLocalCsv(string path, IList<T> data, bool appendMode = false)
+        {
+            if (data == null)
             {
-                log.Warn("没有任何内容可以保存到csv！");
+                log.Error("没有任何内容可以保存到csv！");
                 return;
             }
             var dt = DataTableUtils.ToDataTable(data);
@@ -48,20 +48,21 @@ namespace BackTestingPlatform.DataAccess
             {
                 var s = (File.Exists(path)) ? "覆盖" : "新增";
                 CsvFileUtils.WriteToCsvFile(path, dt, appendMode);
-                log.Debug("文件已{0}：{1} ", s, path);
+                log.Debug("文件已{0}：{1}. 共{2}行数据.", s, path, data.Count);
             }
             catch (Exception e)
             {
-                log.Error(e, "保存到本地csv文件失败！({0})",path);
+                log.Error(e, "保存到本地csv文件失败！({0})", path);
             }
-            
+
         }
 
         /// <summary>
-        ///  尝试从本地csv文件获取数据,可能会抛出异常
+        ///  尝试从本地csv文件获取数据,可能会抛出异常。
+        ///  返回空集表示本地csv文件中没有数据，null表示本地csv不存在
         /// </summary>
         /// <param name="path">读写文件路径</param>
-        /// <returns></returns>
+        /// <returns>空集表示本地csv文件中没有数据，null表示本地csv不存在</returns>
         public virtual List<T> readFromLocalCsv(string path)
         {
             if (!File.Exists(path))

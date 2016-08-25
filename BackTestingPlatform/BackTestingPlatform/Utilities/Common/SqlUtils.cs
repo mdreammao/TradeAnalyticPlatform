@@ -12,6 +12,7 @@ namespace BackTestingPlatform.Utilities
     using System.Configuration;
     using System.Data;
     using System.Data.SqlClient;
+    using NLog;
 
     /// <summary>
     /// 
@@ -20,6 +21,9 @@ namespace BackTestingPlatform.Utilities
     /// </summary>
     public class SqlUtils
     {
+
+        static Logger log = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// 获取app.config里配置的ConnectionString
         /// 如果以“server=”开头，则原样返回

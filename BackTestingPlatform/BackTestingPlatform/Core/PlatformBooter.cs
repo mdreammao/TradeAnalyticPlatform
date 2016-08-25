@@ -15,13 +15,12 @@ namespace BackTestingPlatform
     class PlatformBooter
     {
         static void Main(string[] args)
-        {          
+        {
+            var t1 = DateTime.Now;
+            Platforms.Initialize(); //初始化          
+            Platforms.ShutDown();  //关闭
+            var te = DateTime.Now - t1;
             
-            Platforms.Initialize(); //初始化
-          
-
-
-            Platforms.ShutDown();   //关闭
         }
     }
 }

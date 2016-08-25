@@ -18,7 +18,7 @@ namespace BackTestingPlatform.DataAccess
     public abstract class SequentialByYearRepository<T> : SequentialRepository<T> where T : Sequential, new()
     {
         const string PATH_KEY = "CacheData.Path.SequentialByYear";
-        Logger log = LogManager.GetCurrentClassLogger();
+        static Logger log = LogManager.GetCurrentClassLogger();
 
 
         /// <summary>
@@ -176,6 +176,7 @@ namespace BackTestingPlatform.DataAccess
                 log.Debug("尝试从csv获取...");
                 try
                 {
+                    //result返回空集表示本地csv文件中没有数据，null表示本地csv不存在
                     result = readFromLocalCsv(code, date1, date2, tag, options);
                 }
                 catch (Exception e)
@@ -189,7 +190,7 @@ namespace BackTestingPlatform.DataAccess
                 //尝试从Wind获取
                 log.Debug("尝试从Wind获取...");
                 try
-                {
+                {                    
                     result = readFromWind(code, date1, date2, tag, options);
                 }
                 catch (Exception e)

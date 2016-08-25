@@ -2,6 +2,7 @@
 using BackTestingPlatform.DataAccess;
 using BackTestingPlatform.DataAccess.Common;
 using BackTestingPlatform.Service.Common;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -21,13 +22,14 @@ namespace BackTestingPlatform.Core
     {
         //Autofac容器
         public static IContainer container;
-        
+        static Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// 整个应用的全局初始化
         /// </summary>
         public static void Initialize()
         {
+            log.Info("平台正在初始化中...");
             //初始化Autofac核心 - container
             ContainerBuilder builder = new ContainerBuilder();
 
@@ -46,6 +48,7 @@ namespace BackTestingPlatform.Core
             TradeDaysService tradeDaysService = container.Resolve<TradeDaysService>();
             tradeDaysService.fetchFromLocalCsvOrWindAndSaveAndCache();
 
+            log.Info("------ Platform初始化完成. ------");
         }
         /// <summary>
         /// 整个应用的终止
@@ -59,6 +62,8 @@ namespace BackTestingPlatform.Core
                     _windAPI.stop();
                 }
             }
+
+            log.Info("------ Platform已关闭. ------");
         }
 
 

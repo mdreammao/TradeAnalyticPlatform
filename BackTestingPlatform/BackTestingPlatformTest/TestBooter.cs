@@ -23,7 +23,7 @@ namespace BackTestingPlatform.Test
             DataAccessTests.testStockMinuteKLineRepo();
             //GenericTypeTests.test1();
             DataAccessTests.testStockDailyRepo();
-
+            Platforms.ShutDown();
             Console.ReadKey();
         }
     }

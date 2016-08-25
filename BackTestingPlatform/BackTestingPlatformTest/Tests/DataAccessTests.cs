@@ -25,9 +25,9 @@ namespace BackTestingPlatformTest.Tests
             var repo = Platforms.container.Resolve<StockDailyRepository>();
             for (int y = 2005; y < 2016; y++)
             {
-                //var rr = repo.fetchFromLocalCsvOrWindAndSave("000977.SH", y);
+                var rr = repo.fetchFromLocalCsvOrWindAndSave("000977.SH", y);
             }
-            var xx=repo.fetchFromWind("000977.SH", 2010);
+            //var xx=repo.fetchFromWind("000977.SH", 2010);
                 
         }
         public static void testTickRepo()
