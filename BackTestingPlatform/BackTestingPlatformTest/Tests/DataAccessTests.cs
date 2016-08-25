@@ -17,19 +17,19 @@ namespace BackTestingPlatformTest.Tests
         public static void testOptionDailyRepo()
         {
             var repo = Platforms.container.Resolve<OptionDailyRepository>();
-            var rr=repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
+           
         }
 
         public static void testStockDailyRepo()
         {
             var repo = Platforms.container.Resolve<StockDailyRepository>();
-            for (int y = 2005; y < 2016; y++)
-            {
-                var rr = repo.fetchFromLocalCsvOrWindAndSave("000977.SH", y);
-            }
+            //var rr = repo.fetchFromLocalCsvOrWindAndSave("000001.SH", new DateTime(2015, 5, 1), new DateTime(2017, 6, 1));
+            var rr2 = repo.fetchFromLocalCsvOrWindAndSave(
+                 "000001.SH", new DateTime(1990,2, 1), new DateTime(2016, 6, 1));
             //var xx=repo.fetchFromWind("000977.SH", 2010);
-                
+
         }
+
         public static void testTickRepo()
         {
             var repo2 = Platforms.container.Resolve<TickRepository>();
