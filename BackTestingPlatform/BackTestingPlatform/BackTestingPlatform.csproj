@@ -67,6 +67,7 @@
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
+    <Compile Include="DataAccess\Common\SequentialRepository.cs" />
     <Compile Include="DataAccess\Common\SequentialByYearRepository.cs" />
     <Compile Include="DataAccess\Common\TradeDayRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesDailyRepository.cs" />

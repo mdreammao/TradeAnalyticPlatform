@@ -3,6 +3,7 @@ using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.DataAccess.Stock;
 using BackTestingPlatform.Utilities;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,16 @@ namespace BackTestingPlatformTest.Tests
             var rr=repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
         }
 
+        public static void testStockDailyRepo()
+        {
+            var repo = Platforms.container.Resolve<StockDailyRepository>();
+            for (int y = 2005; y < 2016; y++)
+            {
+                //var rr = repo.fetchFromLocalCsvOrWindAndSave("000977.SH", y);
+            }
+            var xx=repo.fetchFromWind("000977.SH", 2010);
+                
+        }
         public static void testTickRepo()
         {
             var repo2 = Platforms.container.Resolve<TickRepository>();
@@ -30,6 +41,11 @@ namespace BackTestingPlatformTest.Tests
             var repo = Platforms.container.Resolve<OptionInfoRepository>();
             //var OptionInfoList = repo.readFromWind();
             var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
+
+
+            Logger log = LogManager.GetLogger("ssss");
+            log.Error("ssss");
+
         }
         public static void testStockMinuteKLineRepo()
         {

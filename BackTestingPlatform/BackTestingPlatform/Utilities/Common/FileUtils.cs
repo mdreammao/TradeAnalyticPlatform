@@ -81,6 +81,7 @@ namespace BackTestingPlatform.Utilities
 
         }
 
+        [Obsolete]
         public static string GetCacheDataFilePath(string appKey,string tag,string date = "*")
         {
             return GetCacheDataFilePath(appKey, new Dictionary<string, string>
@@ -89,6 +90,7 @@ namespace BackTestingPlatform.Utilities
                 ["{date}"] = date
             });
         }
+        [Obsolete]
         public static string GetCacheDataFilePath(string appKey, string tag, string code, string date)
         {
             return GetCacheDataFilePath(appKey, new Dictionary<string, string>
