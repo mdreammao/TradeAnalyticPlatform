@@ -35,37 +35,37 @@ namespace BackTestingPlatform.Strategies.Option
             var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
             Caches.put("OptionInfo", OptionInfoList);
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startdate, endDate);
-            var ETFDaily = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", 2015);
+            var ETFDaily = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", Kit.ToDate(20150101),Kit.ToDate(20160731));
             foreach (var day in tradeDays)
             {
                 Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
                 var list = OptionUtilities.getOptionListByDate(OptionInfoList, Kit.ToInt_yyyyMMdd(day));
-                var ETFtoday = Platforms.container.Resolve<StockMinuteRepository>().fetchFromWind("510050.SH", day);
+                var ETFtoday = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", day);
                 data.Add("510050.SH", ETFtoday.Cast<KLine>().ToList());
                 foreach (var info in list)
                 {
                     string IHCode = OptionUtilities.getCorrespondingIHCode(info, Kit.ToInt_yyyyMMdd(day));
-                    if (IHCode!=null)
+                    //if (IHCode!=null)
                     {
                         //Console.WriteLine("date: {0}, IH: {1}", Kit.ToInt_yyyyMMdd(day), IHCode);
-                        var repoIH = Platforms.container.Resolve<FuturesMinuteRepository>();
-                        var IHtoday = repoIH.fetchFromLocalCsvOrWindAndSave(IHCode, day);
+                        //var repoIH = Platforms.container.Resolve<FuturesMinuteRepository>();
+                        //var IHtoday = repoIH.fetchFromLocalCsvOrWindAndSave(IHCode, day);
                         //var IHtick = Platforms.container.Resolve<FuturesTickRepository>().fetchFromMssql(IHCode, day);
-                        if (data.ContainsKey(IHCode)==false)
-                        {
-                            data.Add(IHCode, IHtoday.Cast<KLine>().ToList());
-                        }
+                        //if (data.ContainsKey(IHCode)==false)
+                        //{
+                        //    data.Add(IHCode, IHtoday.Cast<KLine>().ToList());
+                        //}
                         var repoOption = Platforms.container.Resolve<OptionMinuteRepository>();
                         var optionToday = repoOption.fetchFromLocalCsvOrWindAndSave(info.optionCode, day);
                         //var optiontick = Platforms.container.Resolve<OptionTickRepository>().fetchFromMssql(info.optionCode, day);
-                        if (data.ContainsKey(info.optionCode)==false)
+                     //   if (data.ContainsKey(info.optionCode)==false)
                         {
                             data.Add(info.optionCode, optionToday.Cast<KLine>().ToList());
                         }
                     }
                 }
-                //int index = 0;
-                //Dictionary<string, List<BasicPositions>> positions = new Dictionary<string, List<BasicPositions>>();
+                int index = 0;
+                Dictionary<string, List<MinutePositions>> positions = new Dictionary<string, List<MinutePositions>>();
                 //while (index < 240)
                 //{
                 //    Dictionary<string, BasicSignal> signal = new Dictionary<string, BasicSignal>();

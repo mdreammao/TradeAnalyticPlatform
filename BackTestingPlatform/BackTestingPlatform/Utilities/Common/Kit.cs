@@ -49,7 +49,7 @@ namespace BackTestingPlatform.Utilities
                 return ToDateTime(d, t);
 
             }
-            return _tryParseToDateTime(tdate + ttime, "yyyy/M/d h:mm:ss");
+            return _tryParseToDateTime(tdate + ttime, "yyyy/MM/dd HH:mm:ss fff");
         }
 
         public static DateTime ToDateTime(object tdate, object ttime)
@@ -96,7 +96,7 @@ namespace BackTestingPlatform.Utilities
             {
                 return ToDateTime(x);
             }
-            return _tryParseToDateTime(arg, "yyyy/M/d h:mm:ss");
+            return _tryParseToDateTime(arg, new string[] { "yyyy/MM/dd HH:mm:ss fff", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd"});
         }
 
         public static DateTime ToDateTime(object arg)
@@ -142,11 +142,11 @@ namespace BackTestingPlatform.Utilities
             {
                 return ToDateTime(d, 0);
             }
-            return _tryParseToDateTime(arg, new string[] { "yyyy/M/d", "yyyy/M/d h:mm:ss", }).Date;
+            return _tryParseToDateTime(arg, new string[] { "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss","yyyy/MM/dd HH:mm:ss fff" }).Date;
         }
 
 
-        private static DateTime _tryParseToDateTime(string arg, string pattern = "yyyy/M/d h:mm:ss")
+        private static DateTime _tryParseToDateTime(string arg, string pattern = "yyyy/MM/dd HH:mm:ss fff")
         {
             return _tryParseToDateTime(arg, new string[] { pattern });
         }

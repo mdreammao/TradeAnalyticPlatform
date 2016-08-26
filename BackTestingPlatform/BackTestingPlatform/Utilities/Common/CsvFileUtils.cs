@@ -56,8 +56,7 @@ namespace BackTestingPlatform.Utilities
             }
             if (cell is DateTime)
             {
-                //return ((DateTime)cell).ToString("yyyyMMddHHmmssfff");
-                return ((DateTime)cell).ToString("yyyyMMdd");
+               return ((DateTime)cell).ToString("yyyy/MM/dd HH:mm:ss fff");
             }
             return cell.ToString();
         }
@@ -136,7 +135,7 @@ namespace BackTestingPlatform.Utilities
             {
                 var s = "";
                 if (val is DateTime)
-                    s = ((DateTime)val).ToString("yyyyMMddhhmmss");
+                    s = ((DateTime)val).ToString("yyyyMMddHHmmss");
                 s = val.ToString();
                 res.Append(s);
             }

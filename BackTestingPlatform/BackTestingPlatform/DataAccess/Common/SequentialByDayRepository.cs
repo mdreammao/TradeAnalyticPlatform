@@ -138,11 +138,11 @@ namespace BackTestingPlatform.DataAccess
             if (tag == null) tag = typeof(T).ToString();
             List<T> result = null;
             bool csvHasData = false;
-            log.Debug("正在获取{0}数据列表...", Kit.ToShortName(tag));
+            log.Debug("正在获取{0}数据列表{1}...", Kit.ToShortName(tag),code);
             if (tryCsv)
             {
                 //尝试从csv获取
-                log.Debug("尝试从csv获取...");
+                log.Debug("尝试从csv获取{0}...",code);
                 try
                 {
                     result = readFromLocalCsv(code, date, tag);
@@ -156,7 +156,7 @@ namespace BackTestingPlatform.DataAccess
             if (result == null && tryWind)
             {
                 //尝试从Wind获取
-                log.Debug("尝试从Wind获取...");
+                log.Debug("尝试从Wind获取{0}...",code);
                 try
                 {
                     result = readFromWind(code, date);
@@ -171,7 +171,7 @@ namespace BackTestingPlatform.DataAccess
                 try
                 {
                     //尝试从默认MSSQL源获取
-                    log.Debug("尝试从默认MSSQL源获取...");
+                    log.Debug("尝试从默认MSSQL源获取{0}...",code);
                     result = readFromDefaultMssql(code, date);
                 }
                 catch (Exception e)
@@ -186,7 +186,7 @@ namespace BackTestingPlatform.DataAccess
                 log.Debug("正在保存到本地csv文件...");
                 saveToLocalCsv(result, code, date, tag);
             }
-            log.Info("获取数据列表{0}(date={1})成功.共{2}行.", Kit.ToShortName(tag), date, result.Count);
+            log.Info("获取{3}数据{0}(date={1})成功.共{2}行.", Kit.ToShortName(tag), date, result.Count,code);
             return result;
         }
 
