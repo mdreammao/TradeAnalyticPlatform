@@ -35,7 +35,7 @@ namespace BackTestingPlatform.Strategies.Option
             var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
             Caches.put("OptionInfo", OptionInfoList);
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startdate, endDate);
-            var ETFDaily = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", 2015);
+            var ETFDaily = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", startdate, endDate);
             foreach (var day in tradeDays)
             {
                 Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
