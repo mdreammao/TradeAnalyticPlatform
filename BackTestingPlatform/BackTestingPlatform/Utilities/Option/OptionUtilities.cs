@@ -10,7 +10,48 @@ namespace BackTestingPlatform.Utilities.Option
     static class OptionUtilities
     {
 
-        public static double[] getDurationStructure(List<OptionInfo> list,DateTime today)
+        public static List<OptionInfo> getSpecifiedOption(List<OptionInfo>list,DateTime endDate,string type, double strike)
+        {
+            return list.FindAll(delegate (OptionInfo info)
+            {
+                if (info.optionType==type && info.strike==strike && info.endDate==endDate)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            });
+        }
+
+        public static List<DateTime> getDurationStructure(List<OptionInfo> list)
+        {
+            List<DateTime> durationList = new List<DateTime>();
+            foreach (var item in list)
+            {
+                if (durationList.Contains(item.endDate) == false)
+                {
+                    durationList.Add(item.endDate);
+                }
+            }
+            return durationList.OrderBy(x => x).ToList();
+        }
+
+        public static List<double> getStrikeStructure(List<OptionInfo> list)
+        {
+            List<double> durationList = new List<double>();
+            foreach (var item in list)
+            {
+                if (durationList.Contains(item.strike) == false)
+                {
+                    durationList.Add(item.strike);
+                }
+            }
+            return durationList.OrderBy(x => x).ToList();
+        }
+
+        public static List<double> getDurationStructure(List<OptionInfo> list,DateTime today)
         {
             List<double> durationList = new List<double>();
             foreach (var item in list)
@@ -21,7 +62,7 @@ namespace BackTestingPlatform.Utilities.Option
                     durationList.Add(duration);
                 }
             }
-            return durationList.OrderBy(x=>x).ToArray();
+            return durationList.OrderBy(x=>x).ToList();
         }
         public static string getCorrespondingIHCode(OptionInfo info,int date)
         {
