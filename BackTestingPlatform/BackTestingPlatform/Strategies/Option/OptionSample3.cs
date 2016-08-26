@@ -12,6 +12,7 @@ using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Transaction;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
+using BackTestingPlatform.Utilities.TimeList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,42 +41,32 @@ namespace BackTestingPlatform.Strategies.Option
             {
                 Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
                 var list = OptionUtilities.getOptionListByDate(OptionInfoList, Kit.ToInt_yyyyMMdd(day));
+                List<DateTime> durationArr = OptionUtilities.getDurationStructure(list);
                 var ETFtoday = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", day);
                 data.Add("510050.SH", ETFtoday.Cast<KLine>().ToList());
                 foreach (var info in list)
                 {
                     string IHCode = OptionUtilities.getCorrespondingIHCode(info, Kit.ToInt_yyyyMMdd(day));
-                    //if (IHCode!=null)
-                    {
-                        //Console.WriteLine("date: {0}, IH: {1}", Kit.ToInt_yyyyMMdd(day), IHCode);
-                        //var repoIH = Platforms.container.Resolve<FuturesMinuteRepository>();
-                        //var IHtoday = repoIH.fetchFromLocalCsvOrWindAndSave(IHCode, day);
-                        //var IHtick = Platforms.container.Resolve<FuturesTickRepository>().fetchFromMssql(IHCode, day);
-                        //if (data.ContainsKey(IHCode)==false)
-                        //{
-                        //    data.Add(IHCode, IHtoday.Cast<KLine>().ToList());
-                        //}
-                        var repoOption = Platforms.container.Resolve<OptionMinuteRepository>();
-                        var optionToday = repoOption.fetchFromLocalCsvOrWindAndSave(info.optionCode, day);
-                        //var optiontick = Platforms.container.Resolve<OptionTickRepository>().fetchFromMssql(info.optionCode, day);
-                     //   if (data.ContainsKey(info.optionCode)==false)
-                        {
-                            data.Add(info.optionCode, optionToday.Cast<KLine>().ToList());
-                        }
-                    }
+                    var repoOption = Platforms.container.Resolve<OptionMinuteRepository>();
+                    var optionToday = repoOption.fetchFromLocalCsvOrWindAndSave(info.optionCode, day);
+                    data.Add(info.optionCode, optionToday.Cast<KLine>().ToList());
                 }
                 int index = 0;
                 Dictionary<string, List<MinutePositions>> positions = new Dictionary<string, List<MinutePositions>>();
-                //while (index < 240)
-                //{
-                //    Dictionary<string, BasicSignal> signal = new Dictionary<string, BasicSignal>();
-                //    foreach (var item in data)
-                //    {
-
-                //    }
-                //    DateTime next = RawTransaction.computePositions(signal, data, ref positions);
-                //    index = index + 1;
-                //}
+                while (index < 240)
+                {
+                    Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
+                    double etfPrice = ETFtoday[index].close;
+                    List<double> strikeTodayArr = OptionUtilities.getStrikeStructure(list).OrderBy(x => Math.Abs(x - etfPrice)).ToList();
+                    OptionInfo callCandidate = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认购", strikeTodayArr[0])[0];
+                    OptionInfo putCandidate = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认沽", strikeTodayArr[0])[0];
+                    foreach (var item in data)
+                    {
+                     
+                    }
+                    //DateTime next = RawTransaction.computePositions(signal, data, ref positions);
+                    index = index + 1;
+                }
                 //print(positions);
             }
         }

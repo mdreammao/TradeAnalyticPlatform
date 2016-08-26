@@ -8,12 +8,60 @@ namespace BackTestingPlatform.Utilities.TimeList
 {
     public static class TimeListUtility
     {
+
+        /// <summary>
+        /// 将数组下标转化为DateTime格式的时间
+        /// </summary>
+        /// <param name="today">今日日期(yyyyMMdd格式)</param>
+        /// <param name="index">数组下标</param>
+        /// <returns></returns>
+        public static DateTime IndexToMinuteDateTime(int today,int index)
+        {
+            DateTime time = Kit.ToDate(today);
+            if (index<=1)
+            {
+                index = 1;
+            }
+            if (index>=240)
+            {
+                index = 240;
+            }
+            if (index<=120)
+            {
+                return time.AddMinutes(index - 1 + 570);
+            }
+            else
+            {
+                return time.AddMinutes(index - 1 + 570 + 90);
+            }
+            return time;    
+        }
+        
+        /// <summary>
+        /// 将时间变为数组下标。一天对应240个分钟数据。
+        /// </summary>
+        /// <param name="time">DateTime格式的时间</param>
+        /// <returns>数组下标</returns>
+        public static int MinuteToIndex(DateTime time)
+        {
+            int hour = time.Hour;
+            int minute = time.Minute;
+            if (hour<13)
+            {
+                return ((hour - 9) * 60 + (minute - 30) + 1)<0?0 :(hour - 9) * 60 + (minute - 30) + 1;
+            }
+            else
+            {
+                return ((hour - 13) * 60+ minute + 121)>240?240: (hour - 13) * 60 + minute + 121;
+            }
+        }
+
         /// <summary>
         /// 将时间变为数组下标。一天对应28802个tick数据，包含上午收盘和下午收盘的价格
         /// </summary>
         /// <param name="time">时间(int)</param>
         /// <returns></returns>
-        public static int ToTickIndex(int time)
+        public static int TickToIndex(int time)
         {
             int hour = time / 10000000;
             time = time % 10000000;
@@ -48,11 +96,11 @@ namespace BackTestingPlatform.Utilities.TimeList
         /// </summary>
         /// <param name="time">时间(DateTime)</param>
         /// <returns></returns>
-        public static int ToTickIndex(DateTime time)
+        public static int TickToIndex(DateTime time)
         {
 
             int t = time.Hour * 10000000 + time.Minute * 100000 + time.Second * 1000 + time.Millisecond;
-            return ToTickIndex(t);
+            return TickToIndex(t);
         }
 
     }
