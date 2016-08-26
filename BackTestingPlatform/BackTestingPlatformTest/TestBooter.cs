@@ -18,11 +18,12 @@ namespace BackTestingPlatform.Test
 
             //KitTests.test1();
             //OptionDailyRepositoryTests.test();
-            DateUtilsTests.test1();
-            DataAccessTests.testOptionDailyRepo();
-            DataAccessTests.testStockMinuteKLineRepo();
+            //DateUtilsTests.test1();
+            //DataAccessTests.testOptionDailyRepo();
+            //
             //GenericTypeTests.test1();
             DataAccessTests.testStockDailyRepo();
+            DataAccessTests.testStockMinuteKLineRepo();
             Platforms.ShutDown();
             Console.ReadKey();
         }

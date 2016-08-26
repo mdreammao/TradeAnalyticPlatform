@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.Common;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -64,94 +65,143 @@ namespace BackTestingPlatform.DataAccess
         /// 尝试从本地csv文件，Wind获取数据。
         /// </summary>
         /// <param name="code">代码，如股票代码，期权代码</param>
-        /// <param name="year">年份，默认获取从该年的1月1日到12月31日</param>      
+        /// <param name="dateStart">开始时间，包含本身</param> 
+        /// <param name="dateEnd">结束时间，包含本身</param>        
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="options">其他选项</param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsv(string code, int year, string tag = null, IDictionary<string, object> options = null)
+        public List<T> fetchFromLocalCsv(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
-            return fetch0(code, year, tag, options, true, false, false, false);
+            return fetch1(code, dateStart, dateEnd, tag, options, true, false, false, false);
         }
 
         /// <summary>
         /// 尝试从Wind获取数据。
         /// </summary>
         /// <param name="code">代码，如股票代码，期权代码</param>
-        /// <param name="year">年份，默认获取从该年的1月1日到12月31日</param>      
+        /// <param name="dateStart">开始时间，包含本身</param> 
+        /// <param name="dateEnd">结束时间，包含本身</param>        
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="options">其他选项</param>
         /// <returns></returns>
-        public List<T> fetchFromWind(string code, int year, string tag = null, IDictionary<string, object> options = null)
+        public List<T> fetchFromWind(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
-            return fetch0(code, year, tag, options, false, true, false, false);
+            return fetch1(code, dateStart, dateEnd, tag, options, false, true, false, false);
         }
 
         /// <summary>
         /// 尝试从默认MSSQL源获取数据。
         /// </summary>
         /// <param name="code">代码，如股票代码，期权代码</param>
-        /// <param name="year">年份，默认获取从该年的1月1日到12月31日</param>      
+        /// <param name="dateStart">开始时间，包含本身</param> 
+        /// <param name="dateEnd">结束时间，包含本身</param>        
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="options">其他选项</param>
         /// <returns></returns>
-        public List<T> fetchFromMssql(string code, int year, string tag = null, IDictionary<string, object> options = null)
+        public List<T> fetchFromMssql(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
-            return fetch0(code, year, tag, options, false, false, true, false);
+            return fetch1(code, dateStart, dateEnd, tag, options, false, false, true, false);
         }
 
         /// <summary>
         /// 先后尝试从本地csv文件，Wind获取数据。若无本地csv，则保存到CacheData文件夹。
         /// </summary>
         /// <param name="code">代码，如股票代码，期权代码</param>
-        /// <param name="year">年份，默认获取从该年的1月1日到12月31日</param>      
+        /// <param name="dateStart">开始时间，包含本身</param> 
+        /// <param name="dateEnd">结束时间，包含本身</param>        
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="options">其他选项</param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsvOrWindAndSave(string code, int year, string tag = null, IDictionary<string, object> options = null)
+        public List<T> fetchFromLocalCsvOrWindAndSave(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
-            return fetch0(code, year, tag, options, true, true, false, true);
+            return fetch1(code, dateStart, dateEnd, tag, options, true, true, false, true);
         }
         /// <summary>
         /// 先后尝试从本地csv文件，默认MSSQL数据库源获取数据。
         /// </summary>
         /// <param name="code">代码，如股票代码，期权代码</param>
-        /// <param name="year">年份，默认获取从该年的1月1日到12月31日</param>      
+        /// <param name="dateStart">开始时间，包含本身</param> 
+        /// <param name="dateEnd">结束时间，包含本身</param>        
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="options">其他选项</param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsvOrMssql(string code, int year, string tag = null, IDictionary<string, object> options = null)
+        public List<T> fetchFromLocalCsvOrMssql(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
-            return fetch0(code, year, tag, options, true, false, true, false);
+            return fetch1(code, dateStart, dateEnd, tag, options, true, false, true, false);
         }
 
         /// <summary>
         /// 先后尝试从本地csv文件，默认MSSQL数据库源获取数据。若无本地csv，则保存到CacheData文件夹。
         /// </summary>
         /// <param name="code">代码，如股票代码，期权代码</param>
-        /// <param name="year">年份，默认获取从该年的1月1日到12月31日</param>      
+        /// <param name="dateStart">开始时间，包含本身</param> 
+        /// <param name="dateEnd">结束时间，包含本身</param>        
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="options">其他选项</param>
         /// <returns></returns>
-        public List<T> fetchFromLocalCsvOrMssqlAndSave(string code, int year, string tag = null, IDictionary<string, object> options = null)
+        public List<T> fetchFromLocalCsvOrMssqlAndSave(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
-            return fetch0(code, year, tag, options, true, false, true, true);
+            return fetch1(code, dateStart, dateEnd, tag, options, true, false, true, true);
         }
 
         /// <summary>
-        /// 尝试Wind获取数据。然后将数据覆盖保存到CacheData文件夹
+        /// 尝试Wind获取数据。然后将数据覆盖保存到CacheData文件夹。
+        /// 采用逐年保存的方式，每年对应一个csv文件。
         /// </summary>
         /// <param name="code">代码，如股票代码，期权代码</param>
-        /// <param name="year">年份，默认获取从该年的1月1日到12月31日</param>      
+        /// <param name="dateStart">开始时间，包含本身</param> 
+        /// <param name="dateEnd">结束时间，包含本身</param>        
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="options">其他选项</param>
         /// <returns></returns>
-        public List<T> fetchFromWindAndSave(string code, int year, string tag = null, IDictionary<string, object> options = null)
+        public List<T> fetchFromWindAndSave(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
-            return fetch0(code, year, tag, options, false, true, false, true);
+            return fetch1(code, dateStart, dateEnd, tag, options, false, true, false, true);
         }
 
         /// <summary>
-        /// 内部函数
+        /// 获取某一时间段的所有数据，以及相关写操作。
+        /// 将时间段分割成整年的单位分别读取。
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="dateStart"></param>
+        /// <param name="dateEnd"></param>
+        /// <param name="tag"></param>
+        /// <param name="options"></param>
+        /// <param name="tryCsv"></param>
+        /// <param name="tryWind"></param>
+        /// <param name="tryMssql0"></param>
+        /// <param name="saveToCsv"></param>
+        /// <returns></returns>
+        private List<T> fetch1(string code, DateTime dateStart, DateTime dateEnd, string tag, IDictionary<string, object> options, bool tryCsv, bool tryWind, bool tryMssql0, bool saveToCsv)
+        {
+            int year0 = dateStart.Year, year2 = dateEnd.Year;            
+            List<T> result = new List<T>();
+            if (year0 < year2)
+            {
+                var year0_1231 = new DateTime(year0, 12, 31);
+                var year2_0101 = new DateTime(year2, 1, 1);
+                var year0all = fetch0(code, year0, tag, options, tryCsv, tryWind, tryMssql0, saveToCsv);
+                result.AddRange(SequentialUtils.GetRange(year0all, dateStart, year0_1231));
+
+                for (int y = year0 + 1; y < year2; y++)
+                {
+                    var year1all = fetch0(code, y, tag, options, tryCsv, tryWind, tryMssql0, saveToCsv);
+                    result.AddRange(year1all);
+                }
+                var year2all = fetch0(code, year2, tag, options, tryCsv, tryWind, tryMssql0, saveToCsv);
+                result.AddRange(SequentialUtils.GetRange(year2all, year2_0101, dateEnd));
+            }else
+            {
+                var year0all = fetch0(code, year0, tag, options, tryCsv, tryWind, tryMssql0, saveToCsv);
+                return SequentialUtils.GetRange(year0all, dateStart, dateEnd);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取某一整年（1月1日-12月31日）的数据，以及相关写操作
         /// </summary>
         /// <param name="code"></param>
         /// <param name="year"></param>
@@ -190,7 +240,7 @@ namespace BackTestingPlatform.DataAccess
                 //尝试从Wind获取
                 log.Debug("尝试从Wind获取...");
                 try
-                {                    
+                {
                     result = readFromWind(code, date1, date2, tag, options);
                 }
                 catch (Exception e)
@@ -216,7 +266,7 @@ namespace BackTestingPlatform.DataAccess
             {
                 //如果数据不是从csv获取的，可保存至本地，存为csv文件
                 log.Debug("正在保存到本地csv文件...");
-                saveToLocalCsv(result, code, date1, date2, tag);
+                saveToLocalCsv(result, code, year, tag);
             }
             log.Info("获取数据列表{0}(year={1})成功.共{2}行.", Kit.ToShortName(tag), year, result.Count);
             return result;
@@ -224,19 +274,44 @@ namespace BackTestingPlatform.DataAccess
 
 
         /// <summary>
-        /// 将数据以csv文件的形式保存到CacheData文件夹下的预定路径
+        /// 将数据以csv文件的形式保存到CacheData文件夹下的预定路径。
+        /// 默认不可以保存今年的数据，因为可能数据不全。
         /// </summary>
         /// <param name="data">要保存的数据</param>
+        /// <param name="code">代码</param>
         /// <param name="date1">开始时间，包含本身</param>
         /// <param name="date2">结束时间，包含本身</param>
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
-        public void saveToLocalCsv(IList<T> data, string code, DateTime date1, DateTime date2, string tag = null, bool appendMode = false)
+        /// <param name="canSaveThisYear">是否可以保存今年的数据，默认不可以</param>
+        public void saveToLocalCsv(IList<T> data, string code, int year, string tag = null, bool appendMode = false, bool canSaveThisYear = false)
+        {
+            if (!canSaveThisYear && year >= DateTime.Now.Year)
+            {
+                log.Debug("今年的{0}数据不保存，请在今年后保存。", Kit.ToShortName(tag));
+                return;
+            }
+            var path = _buildCacheDataFilePath(code, new DateTime(year, 1, 1), new DateTime(year, 12, 31), tag);
+            saveToLocalCsv(path, data, appendMode);
+        }
+
+        /// <summary>
+        /// 此方法目前对外不可见
+        /// 将数据以csv文件的形式保存到CacheData文件夹下的预定路径。
+        /// 文件名类似20150203_20160825.csv
+        /// </summary>
+        /// <param name="data">要保存的数据</param>
+        /// <param name="code">代码</param>
+        /// <param name="date1">开始时间，包含本身</param>
+        /// <param name="date2">结束时间，包含本身</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
+        /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
+        [Obsolete]
+        private void saveToLocalCsv(IList<T> data, string code, DateTime date1, DateTime date2, string tag = null, bool appendMode = false)
         {
             var path = _buildCacheDataFilePath(code, date1, date2, tag);
             saveToLocalCsv(path, data, appendMode);
         }
-
 
         private static string _buildCacheDataFilePath(string code, DateTime date1, DateTime date2, string tag)
         {
