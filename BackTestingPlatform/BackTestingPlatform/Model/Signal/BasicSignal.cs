@@ -14,4 +14,9 @@ namespace BackTestingPlatform.Model.Signal
         public double price { get; set; }
         public string type { get; set; }
     }
+
+    public class MinuteSignal : BasicSignal       
+    {
+        public int minuteIndex { get; set; }
+    }
 }

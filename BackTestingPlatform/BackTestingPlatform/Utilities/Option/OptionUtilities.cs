@@ -10,6 +10,19 @@ namespace BackTestingPlatform.Utilities.Option
     static class OptionUtilities
     {
 
+        public static double[] getDurationStructure(List<OptionInfo> list,DateTime today)
+        {
+            List<double> durationList = new List<double>();
+            foreach (var item in list)
+            {
+                double duration = DateUtils.GetSpanOfTradeDays(today,item.endDate);
+                if (durationList.Contains(duration)==false)
+                {
+                    durationList.Add(duration);
+                }
+            }
+            return durationList.OrderBy(x=>x).ToArray();
+        }
         public static string getCorrespondingIHCode(OptionInfo info,int date)
         {
             

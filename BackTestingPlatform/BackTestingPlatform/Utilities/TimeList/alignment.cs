@@ -14,7 +14,7 @@ namespace BackTestingPlatform.Utilities.TimeList
             T[] listAfterModified = new T[28802];
             foreach (var item in list)
             {
-                int index = TimeListUtility.ToTickIndex(item.time)-1;
+                int index = TimeListUtility.TickToIndex(item.time)-1;
                 listAfterModified[index] = item;
             }
             for (int i = 1; i < 28802; i++)
