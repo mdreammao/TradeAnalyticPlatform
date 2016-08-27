@@ -25,7 +25,7 @@ namespace BackTestingPlatform.Utilities.Option
             });
         }
 
-        public static List<DateTime> getDurationStructure(List<OptionInfo> list)
+        public static List<DateTime> getEnddateListByAscending(List<OptionInfo> list)
         {
             List<DateTime> durationList = new List<DateTime>();
             foreach (var item in list)
@@ -38,7 +38,7 @@ namespace BackTestingPlatform.Utilities.Option
             return durationList.OrderBy(x => x).ToList();
         }
 
-        public static List<double> getStrikeStructure(List<OptionInfo> list)
+        public static List<double> getStrikeListByAscending(List<OptionInfo> list)
         {
             List<double> durationList = new List<double>();
             foreach (var item in list)

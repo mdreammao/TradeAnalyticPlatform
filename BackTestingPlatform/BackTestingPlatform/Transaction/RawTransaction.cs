@@ -10,7 +10,7 @@ namespace BackTestingPlatform.Transaction
 {
     public static class RawTransaction
     {
-        public static DateTime computePositions(Dictionary<string,BasicSignal> signal,Dictionary<string,object> data,ref Dictionary<string,List<BasicPositions>> positions)
+        public static DateTime computeMinutePositions(Dictionary<string,BasicSignal> signal,Dictionary<string,object> data,ref Dictionary<string,List<BasicPositions>> positions)
         {
             DateTime next = new DateTime();
 
