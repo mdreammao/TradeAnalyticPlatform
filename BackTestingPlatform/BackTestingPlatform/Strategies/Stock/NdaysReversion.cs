@@ -1,79 +1,75 @@
 ﻿using Autofac;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess;
+using BackTestingPlatform.DataAccess.Futures;
+using BackTestingPlatform.DataAccess.Option;
+using BackTestingPlatform.DataAccess.Stock;
+using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Option;
+using BackTestingPlatform.Model.Positions;
+using BackTestingPlatform.Model.Signal;
+using BackTestingPlatform.Model.Stock;
+using BackTestingPlatform.Transaction;
+using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.Option;
+using BackTestingPlatform.Utilities.TimeList;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using BackTestingPlatform.Model;
-using BackTestingPlatform.Model.Positions;
+
 
 namespace BackTestingPlatform.Strategies.Stock
 {
     class NdaysReversion
     {
-        public double[] stg(DateTime startDate, DateTime nowDate, AccountInfo account)
+        private DateTime startdate, endDate;
+        public NdaysReversion(int start, int end)
         {
-            KLineRepository repo = Platforms.container.Resolve<KLineRepository>();
-
-            //策略参数
-            //---------------------------------
-            int minutePeriod = 1;
-            int Ndays= 6;//测试参数,1min数据NDays反转
-            int obsAtLeast = Ndays+1;//最少所需样本数，若少于该数，直接返回
-
-            //---------------------------------
-
-            var StockData = repo.fetchFromWind("000001.SH", startDate, nowDate);
-
-            int tradeSignal = 0;//交易信号，1为long，-1为short，无信号为0
-            int None = Constants.NONE;//空值
-            double[] tradeInfo = new double[3];//存放交易信号信息，用于返回
-            double[] priceSeries = new double[StockData.Count];
-            DateTime[] dateList = new DateTime[StockData.Count];
-            double[] index = new double[StockData.Count];
-
-            //tradeInfo初始化
-            tradeInfo[0] = tradeSignal;
-            tradeInfo[1] = None;
-            tradeInfo[2] = None;
-
-            //取出收盘价
-            for (int i = 0; i < StockData.Count; i++)
-            {
-                priceSeries[i] = StockData[i].close;
-                dateList[i] = StockData[i].time;
-            }
-
-            //若样本数少于最少所需数量，直接返回
-            if (priceSeries.Length < obsAtLeast)
-                return tradeInfo;
-
-            //指标计算
-            
-            
-
-
-            //生成交易信号
-            int dataLen = priceSeries.Length - 1;//最后一个数据的索引
-
-
-            Console.WriteLine("Time:{0},CP:{1,5:F3},Index:{2,5:F3}", dateList[dataLen], priceSeries[dataLen], index[dataLen]);
-
-            if (priceSeries[dataLen] > index[dataLen] && priceSeries[dataLen - 1] < index[dataLen - 1] && account.positionStatus == 0)
-                tradeSignal = 1;//金叉且空仓开多
-            else if (priceSeries[dataLen] < index[dataLen] && priceSeries[dataLen - 1] > index[dataLen - 1] && account.positionStatus == 1)
-                tradeSignal = -1;//死叉且持仓平多
-            else
-                tradeSignal = 0;
-
-            tradeInfo[0] = tradeSignal;//交易信号
-            tradeInfo[1] = priceSeries[dataLen];//返回实时行情           
-            tradeInfo[2] = 1;//初始以1手为基本交易量
-
-            return tradeInfo;
+            startdate = Kit.ToDate(start);
+            endDate = Kit.ToDate(end);
         }
-    }
+
+        public void stg()
+        {
+            var repo = Platforms.container.Resolve<OptionInfoRepository>();
+            var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
+            Caches.put("OptionInfo", OptionInfoList);
+            List<DateTime> tradeDays = DateUtils.GetTradeDays(startdate, endDate);
+            var ETFDaily = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", Kit.ToDate(20150101), Kit.ToDate(20160731));
+            foreach (var day in tradeDays)
+            {
+                Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
+                var list = OptionUtilities.getOptionListByDate(OptionInfoList, Kit.ToInt_yyyyMMdd(day));
+                List<DateTime> durationArr = OptionUtilities.getDurationStructure(list);
+                var ETFtoday = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", day);
+                data.Add("510050.SH", ETFtoday.Cast<KLine>().ToList());
+                foreach (var info in list)
+                {
+                    string IHCode = OptionUtilities.getCorrespondingIHCode(info, Kit.ToInt_yyyyMMdd(day));
+                    var repoOption = Platforms.container.Resolve<OptionMinuteRepository>();
+                    var optionToday = repoOption.fetchFromLocalCsvOrWindAndSave(info.optionCode, day);
+                    data.Add(info.optionCode, optionToday.Cast<KLine>().ToList());
+                }
+                int index = 0;
+                Dictionary<string, List<MinutePositions>> positions = new Dictionary<string, List<MinutePositions>>();
+                while (index < 240)
+                {
+                    Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
+                    double etfPrice = ETFtoday[index].close;
+                    List<double> strikeTodayArr = OptionUtilities.getStrikeStructure(list).OrderBy(x => Math.Abs(x - etfPrice)).ToList();
+                    OptionInfo callCandidate = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认购", strikeTodayArr[0])[0];
+                    OptionInfo putCandidate = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认沽", strikeTodayArr[0])[0];
+                    foreach (var item in data)
+                    {
+
+                    }
+                    //DateTime next = RawTransaction.computePositions(signal, data, ref positions);
+                    index = index + 1;
+                }
+                //print(positions);
+            }
+            }
+        }
 }
