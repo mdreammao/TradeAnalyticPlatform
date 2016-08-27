@@ -10,6 +10,7 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Transaction;
+using BackTestingPlatform.Transaction.TransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TimeList;
@@ -55,6 +56,7 @@ namespace BackTestingPlatform.Strategies.Option
                 SortedDictionary<DateTime, Dictionary<string, MinutePositions>> positions = new SortedDictionary<DateTime, Dictionary<string, MinutePositions>>();
                 while (index < 240)
                 {
+                    int nextIndex = index+1;
                     DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(day), index);
                     Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                     double etfPrice = ETFtoday[index].close;
@@ -69,18 +71,17 @@ namespace BackTestingPlatform.Strategies.Option
                         MinuteSignal putFront = new MinuteSignal() { code = putCandidateFront.optionCode, positions = -1, time = now, type = "raw", price = data[putCandidateFront.optionCode][index].close, minuteIndex = index };
                         MinuteSignal callNext = new MinuteSignal() { code = callCandidateNext.optionCode, positions = 1, time = now, type = "raw", price = data[callCandidateNext.optionCode][index].close, minuteIndex = index };
                         MinuteSignal putNext = new MinuteSignal() { code = putCandidateNext.optionCode, positions = 1, time = now, type = "raw", price = data[putCandidateNext.optionCode][index].close, minuteIndex = index };
-                      //  DateTime next = RawTransaction.computePositions(signal, data, ref positions);
+                        DateTime next = MinuteTransactionWithSlip.computeMinutePositions(signal, data, positions);
+                        nextIndex = TimeListUtility.MinuteToIndex(next);
                     }
                     catch (Exception)
                     {
 
                         throw;
                     }
-                    
-                    //
-                    index = index + 1;
+
+                    index = nextIndex;
                 }
-                //print(positions);
             }
         }
 
