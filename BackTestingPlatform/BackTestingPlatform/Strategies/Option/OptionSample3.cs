@@ -35,7 +35,7 @@ namespace BackTestingPlatform.Strategies.Option
 
       public void compute()
         {
-            log.Info("开始回测(回测期{0}到{1})", startdate,endDate);
+            log.Info("开始回测(回测期{0}到{1})", Kit.ToInt_yyyyMMdd(startdate),Kit.ToInt_yyyyMMdd(endDate));
             var repo = Platforms.container.Resolve<OptionInfoRepository>();
             var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
             Caches.put("OptionInfo", OptionInfoList);
@@ -74,8 +74,12 @@ namespace BackTestingPlatform.Strategies.Option
                         MinuteSignal putFront = new MinuteSignal() { code = putCandidateFront.optionCode, positions = -1, time = now, type = "option", price = data[putCandidateFront.optionCode][index].close, minuteIndex = index };
                         MinuteSignal callNext = new MinuteSignal() { code = callCandidateNext.optionCode, positions = 1, time = now, type = "option", price = data[callCandidateNext.optionCode][index].close, minuteIndex = index };
                         MinuteSignal putNext = new MinuteSignal() { code = putCandidateNext.optionCode, positions = 1, time = now, type = "option", price = data[putCandidateNext.optionCode][index].close, minuteIndex = index };
-                        DateTime next = MinuteTransactionWithSlip.computeMinutePositions(signal, data, positions,slipPoint:0.01,now:now);
-                        nextIndex = TimeListUtility.MinuteToIndex(next);
+                        signal.Add(callFront.code, callFront);
+                        signal.Add(putFront.code, putFront);
+                        signal.Add(callNext.code, callNext);
+                        signal.Add(putNext.code, putNext);
+                        DateTime next = MinuteTransactionWithSlip.computeMinutePositions(signal, data, ref positions,slipPoint:0.01,now:now);
+                        nextIndex =Math.Max(nextIndex,TimeListUtility.MinuteToIndex(next));
                     }
                     catch (Exception)
                     {

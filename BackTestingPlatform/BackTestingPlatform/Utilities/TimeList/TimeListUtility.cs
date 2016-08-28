@@ -13,10 +13,11 @@ namespace BackTestingPlatform.Utilities.TimeList
         /// 将数组下标转化为DateTime格式的时间
         /// </summary>
         /// <param name="today">今日日期(yyyyMMdd格式)</param>
-        /// <param name="index">数组下标</param>
+        /// <param name="index">数组下标(0-239)</param>
         /// <returns></returns>
         public static DateTime IndexToMinuteDateTime(int today,int index)
         {
+            index = index + 1;
             DateTime time = Kit.ToDate(today);
             if (index<=1)
             {
@@ -38,7 +39,7 @@ namespace BackTestingPlatform.Utilities.TimeList
         }
         
         /// <summary>
-        /// 将时间变为数组下标。一天对应240个分钟数据。
+        /// 将时间变为数组下标。一天对应240个分钟,分别对应0到239。
         /// </summary>
         /// <param name="time">DateTime格式的时间</param>
         /// <returns>数组下标</returns>
@@ -48,11 +49,11 @@ namespace BackTestingPlatform.Utilities.TimeList
             int minute = time.Minute;
             if (hour<13)
             {
-                return ((hour - 9) * 60 + (minute - 30) + 1)<0?0 :(hour - 9) * 60 + (minute - 30) + 1;
+                return (((hour - 9) * 60 + (minute - 30) + 1)<0?0 :(hour - 9) * 60 + (minute - 30) + 1)-1;
             }
             else
             {
-                return ((hour - 13) * 60+ minute + 121)>240?240: (hour - 13) * 60 + minute + 121;
+                return (((hour - 13) * 60+ minute + 121)>240?240: (hour - 13) * 60 + minute + 121)-1;
             }
         }
 
