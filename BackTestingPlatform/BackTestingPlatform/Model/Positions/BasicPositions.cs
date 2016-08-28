@@ -13,6 +13,7 @@ namespace BackTestingPlatform.Model.Positions
         public double positions { get; set; }
         public double averageOpenPirce { get; set; }
         public double price { get; set; }
+        public double transactionFee { get; set; }
     }
 
     public class MinutePositions : BasicPositions

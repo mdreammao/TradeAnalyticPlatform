@@ -42,7 +42,7 @@ namespace BackTestingPlatform.Strategies.Stock
             {
                 Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
                 var list = OptionUtilities.getOptionListByDate(OptionInfoList, Kit.ToInt_yyyyMMdd(day));
-                List<DateTime> durationArr = OptionUtilities.getDurationStructure(list);
+                List<DateTime> durationArr = OptionUtilities.getEnddateListByAscending(list);
                 var ETFtoday = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", day);
                 data.Add("510050.SH", ETFtoday.Cast<KLine>().ToList());
                 foreach (var info in list)
@@ -58,7 +58,7 @@ namespace BackTestingPlatform.Strategies.Stock
                 {
                     Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                     double etfPrice = ETFtoday[index].close;
-                    List<double> strikeTodayArr = OptionUtilities.getStrikeStructure(list).OrderBy(x => Math.Abs(x - etfPrice)).ToList();
+                    List<double> strikeTodayArr = OptionUtilities.getStrikeListByAscending(list).OrderBy(x => Math.Abs(x - etfPrice)).ToList();
                     OptionInfo callCandidate = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认购", strikeTodayArr[0])[0];
                     OptionInfo putCandidate = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认沽", strikeTodayArr[0])[0];
                     foreach (var item in data)
