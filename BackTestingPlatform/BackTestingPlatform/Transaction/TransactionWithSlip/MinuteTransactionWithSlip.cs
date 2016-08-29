@@ -27,7 +27,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
 
             foreach (var signal0 in signal.Values)
             {
-                if (signal0.positions!=0)
+                if (signal0.volume!=0)
                 {
                     now = (signal0.time > now) ? signal0.time : now;
                     MinutePositions position0 = new MinutePositions();
@@ -35,14 +35,14 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     position0.code = signal0.code;
                     if (positionLast!=null && positionLast.ContainsKey(position0.code))
                     {
-                        position0.positions = positionLast[position0.code].positions + signal0.positions;
-                        position0.transactionFee = positionLast[position0.code].transactionFee + Math.Abs(signal0.positions * slipPoint * signal0.price);
+                        position0.volume = positionLast[position0.code].volume + signal0.volume;
+                        position0.transactionCost = positionLast[position0.code].transactionCost + Math.Abs(signal0.volume * slipPoint * signal0.price);
 
                     }
                     else
                     {
-                        position0.positions = signal0.positions;
-                        position0.transactionFee = Math.Abs(signal0.positions * slipPoint * signal0.price);
+                        position0.volume = signal0.volume;
+                        position0.transactionCost = Math.Abs(signal0.volume * slipPoint * signal0.price);
                     }
                     position0.time = now;
                     position0.price = signal0.price;

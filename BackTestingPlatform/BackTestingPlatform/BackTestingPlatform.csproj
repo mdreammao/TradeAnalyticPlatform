@@ -98,8 +98,14 @@
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
+    <Compile Include="Model\Positions\BasicAccount.cs" />
     <Compile Include="Model\Positions\BasicPositions.cs" />
+    <Compile Include="Model\Positions\MinutePositions.cs" />
+    <Compile Include="Model\Positions\PositionDetail.cs" />
+    <Compile Include="Model\Positions\PositionsWithDetail.cs" />
+    <Compile Include="Model\Positions\TransactionRecord.cs" />
     <Compile Include="Model\Signal\BasicSignal.cs" />
+    <Compile Include="Model\Signal\MinuteSignal.cs" />
     <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
     <Compile Include="Model\_old_\Contstants.cs" />
@@ -107,7 +113,7 @@
     <Compile Include="Model\Option\OptionTick.cs" />
     <Compile Include="Model\Option\OptionMinute.cs" />
     <Compile Include="Model\Option\OptionDaily.cs" />
-    <Compile Include="Model\Positions\AccountInfo.cs" />
+    <Compile Include="Model\_old_\AccountInfo.cs" />
     <Compile Include="Model\_old_\AdjFactor.cs" />
     <Compile Include="Model\_old_\Stock.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />

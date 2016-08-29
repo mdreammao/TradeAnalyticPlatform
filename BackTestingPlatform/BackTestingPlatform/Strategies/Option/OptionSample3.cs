@@ -70,10 +70,10 @@ namespace BackTestingPlatform.Strategies.Option
                         OptionInfo putCandidateFront = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认沽", strikeTodayArr[0])[0];
                         OptionInfo callCandidateNext = OptionUtilities.getSpecifiedOption(list, durationArr[1], "认购", strikeTodayArr[0])[0];
                         OptionInfo putCandidateNext = OptionUtilities.getSpecifiedOption(list, durationArr[1], "认沽", strikeTodayArr[0])[0];
-                        MinuteSignal callFront = new MinuteSignal() { code = callCandidateFront.optionCode, positions = -1, time = now, type = "option", price = data[callCandidateFront.optionCode][index].close, minuteIndex = index };
-                        MinuteSignal putFront = new MinuteSignal() { code = putCandidateFront.optionCode, positions = -1, time = now, type = "option", price = data[putCandidateFront.optionCode][index].close, minuteIndex = index };
-                        MinuteSignal callNext = new MinuteSignal() { code = callCandidateNext.optionCode, positions = 1, time = now, type = "option", price = data[callCandidateNext.optionCode][index].close, minuteIndex = index };
-                        MinuteSignal putNext = new MinuteSignal() { code = putCandidateNext.optionCode, positions = 1, time = now, type = "option", price = data[putCandidateNext.optionCode][index].close, minuteIndex = index };
+                        MinuteSignal callFront = new MinuteSignal() { code = callCandidateFront.optionCode, volume = -1, time = now, tradingVarieties = "option", price = data[callCandidateFront.optionCode][index].close, minuteIndex = index };
+                        MinuteSignal putFront = new MinuteSignal() { code = putCandidateFront.optionCode, volume = -1, time = now, tradingVarieties = "option", price = data[putCandidateFront.optionCode][index].close, minuteIndex = index };
+                        MinuteSignal callNext = new MinuteSignal() { code = callCandidateNext.optionCode, volume = 1, time = now, tradingVarieties = "option", price = data[callCandidateNext.optionCode][index].close, minuteIndex = index };
+                        MinuteSignal putNext = new MinuteSignal() { code = putCandidateNext.optionCode, volume = 1, time = now, tradingVarieties = "option", price = data[putCandidateNext.optionCode][index].close, minuteIndex = index };
                         signal.Add(callFront.code, callFront);
                         signal.Add(putFront.code, putFront);
                         signal.Add(callNext.code, callNext);

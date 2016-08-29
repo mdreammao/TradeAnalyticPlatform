@@ -10,13 +10,10 @@ namespace BackTestingPlatform.Model.Signal
     {
         public DateTime time { get; set; }
         public string code { get; set; }
-        public double positions { get; set; }
+        public double volume { get; set; }
         public double price { get; set; }
-        public string type { get; set; }
+        public string tradingVarieties { get; set; }
     }
 
-    public class MinuteSignal : BasicSignal       
-    {
-        public int minuteIndex { get; set; }
-    }
+ 
 }
