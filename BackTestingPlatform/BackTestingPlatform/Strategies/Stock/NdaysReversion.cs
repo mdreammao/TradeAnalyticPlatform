@@ -63,7 +63,7 @@ namespace BackTestingPlatform.Strategies.Stock
                     OptionInfo putCandidate = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认沽", strikeTodayArr[0])[0];
                     foreach (var item in data)
                     {
-
+                            
                     }
                     //DateTime next = RawTransaction.computePositions(signal, data, ref positions);
                     index = index + 1;
