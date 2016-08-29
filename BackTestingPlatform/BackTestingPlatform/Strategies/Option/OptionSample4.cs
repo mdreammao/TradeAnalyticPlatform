@@ -23,23 +23,23 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Strategies.Option
 {
-    public class OptionSample3
+    public class OptionSample4
     {
         static Logger log = LogManager.GetCurrentClassLogger();
-        private DateTime startdate,endDate;
-        public OptionSample3(int start,int end)
+        private DateTime startdate, endDate;
+        public OptionSample4(int start, int end)
         {
             startdate = Kit.ToDate(start);
             endDate = Kit.ToDate(end);
         }
 
-      public void compute()
+        public void compute()
         {
-            log.Info("开始回测(回测期{0}到{1})", Kit.ToInt_yyyyMMdd(startdate),Kit.ToInt_yyyyMMdd(endDate));
+            log.Info("开始回测(回测期{0}到{1})", Kit.ToInt_yyyyMMdd(startdate), Kit.ToInt_yyyyMMdd(endDate));
             var repo = Platforms.container.Resolve<OptionInfoRepository>();
             var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
             Caches.put("OptionInfo", OptionInfoList);
-            List<DateTime> tradeDays = DateUtils.GetTradeDays(startdate, endDate);      
+            List<DateTime> tradeDays = DateUtils.GetTradeDays(startdate, endDate);
             //var ETFDaily = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", Kit.ToDate(20150101),Kit.ToDate(20160731));
             foreach (var day in tradeDays)
             {
@@ -56,7 +56,9 @@ namespace BackTestingPlatform.Strategies.Option
                     data.Add(info.optionCode, optionToday.Cast<KLine>().ToList());
                 }
                 int index = 0;
-                SortedDictionary<DateTime, Dictionary<string, MinutePositions>> positions = new SortedDictionary<DateTime, Dictionary<string, MinutePositions>>();
+                //初始化position及Account信息
+                SortedDictionary<DateTime, Dictionary<string, BasicPositions>> positions = new SortedDictionary<DateTime, Dictionary<string, BasicPositions>>();
+                BasicAccount myAccount = new BasicAccount();
                 while (index < 240)
                 {
                     int nextIndex = index + 1;
@@ -78,8 +80,8 @@ namespace BackTestingPlatform.Strategies.Option
                         signal.Add(putFront.code, putFront);
                         signal.Add(callNext.code, callNext);
                         signal.Add(putNext.code, putNext);
-                        DateTime next = MinuteTransactionWithSlip.computeMinutePositions(signal, data, ref positions,ref BasicAccount,slipPoint:0.01,now:now);
-                        nextIndex =Math.Max(nextIndex,TimeListUtility.MinuteToIndex(next));
+                        DateTime next = MinuteTransactionWithSlip.computeMinutePositions(signal, data, ref positions, ref myAccount, slipPoint: 0.01, now: now);
+                        nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
                     }
                     catch (Exception)
                     {

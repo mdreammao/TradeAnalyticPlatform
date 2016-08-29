@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace BackTestingPlatform.Utilities.Common
 {
     /// <summary>
-    /// Sequential序列工具类
+    /// 时间序列相关的工具类
     /// </summary>
     public static class SequentialUtils
     {
