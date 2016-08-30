@@ -57,7 +57,7 @@ namespace BackTestingPlatform.Strategies.Option
                 }
                 int index = 0;
                 //初始化position及Account信息
-                SortedDictionary<DateTime, Dictionary<string, BasicPositions>> positions = new SortedDictionary<DateTime, Dictionary<string, BasicPositions>>();
+                SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions = new SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>>();
                 BasicAccount myAccount = new BasicAccount();
                 while (index < 240)
                 {
@@ -80,7 +80,7 @@ namespace BackTestingPlatform.Strategies.Option
                         signal.Add(putFront.code, putFront);
                         signal.Add(callNext.code, callNext);
                         signal.Add(putNext.code, putNext);
-                        DateTime next = MinuteTransactionWithSlip.computeMinutePositions(signal, data, ref positions, ref myAccount, slipPoint: 0.01, now: now);
+                        DateTime next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: 0.01, now: now);
                         nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
                     }
                     catch (Exception)

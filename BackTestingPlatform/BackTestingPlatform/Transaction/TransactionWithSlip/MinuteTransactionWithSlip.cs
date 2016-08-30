@@ -45,7 +45,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                         position0.transactionCost = Math.Abs(signal0.volume * slipPoint * signal0.price);
                     }
                     position0.time = now;
-                    position0.price = signal0.price;
+                    position0.currentPrice = signal0.price;
                     if (positionShot.ContainsKey(position0.code))
                     {
                         positionShot[position0.code] = position0;

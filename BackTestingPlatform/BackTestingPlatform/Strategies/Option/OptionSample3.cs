@@ -78,7 +78,7 @@ namespace BackTestingPlatform.Strategies.Option
                         signal.Add(putFront.code, putFront);
                         signal.Add(callNext.code, callNext);
                         signal.Add(putNext.code, putNext);
-                        DateTime next = MinuteTransactionWithSlip.computeMinutePositions(signal, data, ref positions,ref BasicAccount,slipPoint:0.01,now:now);
+                        DateTime next = MinuteTransactionWithSlip.computeMinutePositions(signal, data, ref positions,slipPoint:0.01,now:now);
                         nextIndex =Math.Max(nextIndex,TimeListUtility.MinuteToIndex(next));
                     }
                     catch (Exception)
