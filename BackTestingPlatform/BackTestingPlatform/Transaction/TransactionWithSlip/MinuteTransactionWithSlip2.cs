@@ -100,7 +100,6 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                                     position0.ShortPosition.averagePrice = transactionPrice;
                                     position0.ShortPosition.volume = transactionVolume;
                                     position0.ShortPosition.totalCost = position0.ShortPosition.averagePrice * position0.ShortPosition.volume;
-
                                 }
                             }
                         }
@@ -132,7 +131,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                                     position0.ShortPosition.averagePrice = 0;
                                     position0.ShortPosition.volume = 0;
                                     position0.ShortPosition.totalCost = 0;
-                                    transactionVolume += position0.ShortPosition.volume ;
+                                    transactionVolume += position0.ShortPosition.volume;
                                     //多头头寸更新，开多头
                                     position0.LongPosition.averagePrice = transactionPrice;
                                     position0.LongPosition.volume = transactionVolume;
@@ -140,7 +139,6 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                                 }
                             }
                         }
-
                     }
                     //当前无证券持仓
                     else
@@ -159,7 +157,6 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                             position0.ShortPosition.volume = transactionVolume;
                             position0.ShortPosition.totalCost = position0.ShortPosition.averagePrice * position0.ShortPosition.averagePrice;
                         }
-               
                     }
                     //持仓汇总信息记录
                     //当前时间
@@ -174,21 +171,29 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //手续费计算
                     if (signal0.tradingVarieties.Equals("option"))
                         //合约张数 * 手续费
-                        nowTransactionCost =Math.Abs ( transactionVolume / optionContractTimes * nowBrokerFeeRatio );
+                        nowTransactionCost = Math.Abs(transactionVolume / optionContractTimes * nowBrokerFeeRatio);
                     else if (signal0.tradingVarieties.Equals("stock"))
                         //成交金额 * 手续费率
-                        nowTransactionCost =Math.Abs( transactionPrice * transactionVolume * nowBrokerFeeRatio );
+                        nowTransactionCost = Math.Abs(transactionPrice * transactionVolume * nowBrokerFeeRatio);
                     else if (signal0.tradingVarieties.Equals("futures"))
                         //成交金额 * 手续费率
-                        nowTransactionCost =Math.Abs( transactionPrice * transactionVolume * nowBrokerFeeRatio );
+                        nowTransactionCost = Math.Abs(transactionPrice * transactionVolume * nowBrokerFeeRatio);
 
                     //总手续费、持仓成本更新  
                     //手续费，持续累加
                     position0.transactionCost += nowTransactionCost;
-                    //当前持仓总成本:头寸总结价值+当前手续费
-                    position0.totalCost = position0.volume > 0 ? position0.LongPosition.totalCost : position0.ShortPosition.totalCost + nowTransactionCost;  
-                    
-                    //记录当前持仓信息
+                    //当前持仓总成本:头寸总价值+当前手续费
+                    position0.totalCost = (position0.volume > 0 ? position0.LongPosition.totalCost : position0.ShortPosition.totalCost) + nowTransactionCost;
+                    //当前持仓均价
+                    position0.averageCost = position0.totalCost / position0.volume;
+                    //交易记录添加
+                    position0.record.Add(new TransactionRecord
+                    {
+                        time = now,
+                        volume = transactionVolume,
+                        price = transactionPrice
+                    });
+                    //存储当前持仓信息
                     if (positionShot.ContainsKey(position0.code))
                     {
                         positionShot[position0.code] = position0;
@@ -197,10 +202,15 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                }
-            }
+                    //账户信息更新
+                    //根据当前交易记录和持仓情况更新账户
+                    AccountUpdating.computeAccountUpdating(ref myAccount, position0, nowTransactionCost, now);
 
+                }
+
+            }
             positions.Add(now, positionShot);
+
             return now.AddMinutes(1);
         }
     }

@@ -16,7 +16,7 @@ namespace BackTestingPlatform.Model.Positions
         public double transactionCost { get; set; }
         public double totalCost { get; set; }
         //平均持仓成本，盈亏累积计入此价格
-        public double averagePricce { get; set; }
+        public double averageCost { get; set; }
         //实时总权益
         public double totalAmt { get; set; }
     }
