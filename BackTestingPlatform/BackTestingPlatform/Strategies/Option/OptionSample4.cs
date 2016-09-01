@@ -68,6 +68,7 @@ namespace BackTestingPlatform.Strategies.Option
                     List<double> strikeTodayArr = OptionUtilities.getStrikeListByAscending(list).OrderBy(x => Math.Abs(x - etfPrice)).ToList();
                     try
                     {
+                       // Console.ReadKey();
                         OptionInfo callCandidateFront = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认购", strikeTodayArr[0])[0];
                         OptionInfo putCandidateFront = OptionUtilities.getSpecifiedOption(list, durationArr[0], "认沽", strikeTodayArr[0])[0];
                         OptionInfo callCandidateNext = OptionUtilities.getSpecifiedOption(list, durationArr[1], "认购", strikeTodayArr[0])[0];
@@ -85,14 +86,11 @@ namespace BackTestingPlatform.Strategies.Option
                     }
                     catch (Exception)
                     {
-
                         throw;
                     }
-
                     index = nextIndex;
                 }
             }
         }
-
     }
 }

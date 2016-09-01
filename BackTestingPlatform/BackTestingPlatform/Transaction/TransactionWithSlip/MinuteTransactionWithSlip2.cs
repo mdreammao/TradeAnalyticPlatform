@@ -56,7 +56,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     int longShortFlag = (signal0.volume > 0) ? 1 : -1;
                     //当前信号证券代码
                     position0.code = signal0.code;
-                    //当前成交价，信号价格加滑点
+                    //当前成交价，信号价格加滑点---注：此模型下信号价格即为现价
                     transactionPrice = signal0.price * (1 + slipPoint * longShortFlag);
                     //当前可成交量
                     transactionVolume = signal0.volume;
@@ -143,6 +143,11 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //当前无证券持仓
                     else
                     {
+                        PositionDetail intialPosition = new PositionDetail();
+
+                        //多空持仓初始化
+                        position0.LongPosition = intialPosition;
+                        position0.ShortPosition = intialPosition;
                         //若为多头开仓，更新多头头寸
                         if (longShortFlag > 0)
                         {
@@ -150,7 +155,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                             position0.LongPosition.volume = transactionVolume;
                             position0.LongPosition.totalCost = position0.LongPosition.averagePrice * position0.LongPosition.averagePrice;
                         }
-                        //若为空头开仓，更新多头头寸
+                        //若为空头开仓，更新空头头寸
                         else
                         {
                             position0.ShortPosition.averagePrice = transactionPrice;
@@ -168,17 +173,43 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //当前权益（实时）
                     position0.totalAmt = position0.currentPrice * position0.volume;
                     //手续费
-                    //手续费计算
+                    //手续费计算,期权
                     if (signal0.tradingVarieties.Equals("option"))
-                        //合约张数 * 手续费
-                        nowTransactionCost = Math.Abs(transactionVolume / optionContractTimes * nowBrokerFeeRatio);
+                    {
+                        //若为short信号，开空的部分手续费为0
+                        //若信号为short，且调整持仓后交易总量大于等于空头持仓量,说明是先平多再开空，只收取平多部分手续费
+                        if (longShortFlag < 0 && Math.Abs(transactionVolume) >= Math.Abs(position0.ShortPosition.volume))
+                            //平多合约张数 * 手续费
+                            nowTransactionCost = Math.Abs((transactionVolume - position0.ShortPosition.volume) / optionContractTimes * nowBrokerFeeRatio);
+                        //若信号为short，且调整持仓后交易总量小于空头持仓量,说明是继续开空，无手续费
+                        else if (longShortFlag < 0 && Math.Abs(transactionVolume) < Math.Abs(position0.ShortPosition.volume))
+                            nowTransactionCost = 0;
+                        //若信号为long，正常收取手续费
+                        else
+                            //合约张数 * 手续费
+                            nowTransactionCost = Math.Abs(transactionVolume / optionContractTimes * nowBrokerFeeRatio);
+                    }
                     else if (signal0.tradingVarieties.Equals("stock"))
-                        //成交金额 * 手续费率
-                        nowTransactionCost = Math.Abs(transactionPrice * transactionVolume * nowBrokerFeeRatio);
+                    {
+                        //若信号为short，正常收取手续费
+                        if (longShortFlag < 0)
+                            //成交金额 * 手续费率
+                            nowTransactionCost = Math.Abs(transactionPrice * transactionVolume * nowBrokerFeeRatio);
+                        //若信号为long，无手续费
+                        else
+                            nowTransactionCost = 0;
+                    }
+                    //实际中不同期货品种手续费差异大，有的按手有的按成交额比率，有的单边有的双边，此处简单处理按单边
                     else if (signal0.tradingVarieties.Equals("futures"))
-                        //成交金额 * 手续费率
-                        nowTransactionCost = Math.Abs(transactionPrice * transactionVolume * nowBrokerFeeRatio);
-
+                    {
+                        //若信号为short，正常收取手续费
+                        if (longShortFlag < 0)
+                            //成交金额 * 手续费率
+                            nowTransactionCost = Math.Abs(transactionPrice * transactionVolume * nowBrokerFeeRatio);
+                        //若信号为long，无手续费
+                        else
+                            nowTransactionCost = 0;
+                    }
                     //总手续费、持仓成本更新  
                     //手续费，持续累加
                     position0.transactionCost += nowTransactionCost;
@@ -202,9 +233,12 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
+                    //计算本次交易的现金流，若进行开仓操作，支出现价，现金流为负，若进行平仓操作则反之
+                    //现金流 = 开仓现金流 + 平仓现金流 + 保证金 +手续费
+       //             double nowCashFlow = - transactionPrice * transactionVolume + nowTransactionCost;
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
-                    AccountUpdating.computeAccountUpdating(ref myAccount, position0, nowTransactionCost, now);
+    //                AccountUpdating.computeAccountUpdating(ref myAccount, position0, nowTransactionCost, now, ref data);
 
                 }
 

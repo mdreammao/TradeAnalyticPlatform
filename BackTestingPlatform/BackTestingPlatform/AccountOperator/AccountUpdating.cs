@@ -17,10 +17,13 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// </summary>
         /// <param name="myAccount"></param>当前账户
         /// <param name="nowPosition"></param>当前持仓，用于计算保证金及持仓价值
-        /// <param name="nowTransactionCost"></param>当前交易费用
+        /// <param name="nowCashFlow"></param>当前产生的现金流，若进行开仓操作，支出现价，现金流为负，若进行平仓操作则反之
         /// <param name="now"></param>当前时间
-        public static void computeAccountUpdating(ref BasicAccount myAccount, PositionsWithDetail nowPosition, double nowTransactionCost, DateTime now)
+        /// <param name="data"></param>当天行情数据
+
+        public static void computeAccountUpdating(ref BasicAccount myAccount, PositionsWithDetail nowPosition, double nowCashFlow, DateTime now, ref Dictionary<string, List<KLine>> data)
         {
+            
             
             
              
