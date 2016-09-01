@@ -8,7 +8,62 @@ namespace BackTestingPlatform.Utilities.TimeList
 {
     public static class TimeListUtility
     {
+        public static DateTime IndexToTickDateTime(int today,int index,List<int> benchmark)
+        {
+            if (index <= 0)
+            {
+                index = 0;
+            }
+            if (index >= 28801)
+            {
+                index = 28801;
+            }
+            int moment = benchmark[index];
+            return Kit.ToDate(today * 1000000000 + moment);
+        }
+        public static int TickToIndex(DateTime time, List<int> benchmark)
+        {
+            int index = benchmark.Count() - 1;
+            int now = Convert.ToInt32(time.ToString("HHmmssfff"));
+            for (int i = 0; i < benchmark.Count(); i++)
+            {
+                if (now <= benchmark[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
 
+        public static DateTime IndexToMinuteDateTime(int today,int index,List<int> benchmark)
+        {
+            if (index <= 0)
+            {
+                index = 0;
+            }
+            if (index >= 239)
+            {
+                index = 239;
+            }
+            int moment = benchmark[index];
+            return Kit.ToDate(today*1000000+moment);
+        }
+
+        public static int MinuteToIndex(DateTime time,List<int> benchmark)
+        {
+            int index = benchmark.Count()-1;
+            int now =Convert.ToInt32(time.ToString("HHmmss"));
+            for (int i = 0; i < benchmark.Count(); i++)
+            {
+                if (now<=benchmark[i])
+                {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
         /// <summary>
         /// 将数组下标转化为DateTime格式的时间
         /// </summary>
