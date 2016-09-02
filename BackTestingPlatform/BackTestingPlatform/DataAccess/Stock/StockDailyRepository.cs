@@ -20,7 +20,7 @@ namespace BackTestingPlatform.DataAccess.Stock
         protected override List<StockDaily> readFromWind(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
             WindAPI w = Platforms.GetWindAPI();
-            WindData wd = w.wsd(code, "open,high,low,close,volume,amt", dateStart, dateEnd, "Fill=Previous");
+            WindData wd = w.wsd(code, "open,high,low,close,volume,amt,adjfactor,settle,pre_close,pre_settle", dateStart, dateEnd, "Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
 
@@ -34,12 +34,16 @@ namespace BackTestingPlatform.DataAccess.Stock
                     items.Add(new StockDaily
                     {
                         time = timeList[k],
-                        open = (double)dataList[k * fieldLen + 0],
-                        high = (double)dataList[k * fieldLen + 1],
-                        low = (double)dataList[k * fieldLen + 2],
-                        close = (double)dataList[k * fieldLen + 3],
-                        volume = (double)dataList[k * fieldLen + 4],
-                        amount = (double)dataList[k * fieldLen + 5]
+                        open = dataList[k * fieldLen + 0],
+                        high = dataList[k * fieldLen + 1],
+                        low = dataList[k * fieldLen + 2],
+                        close = dataList[k * fieldLen + 3],
+                        volume = dataList[k * fieldLen + 4],
+                        amount = dataList[k * fieldLen + 5],
+                        adjustFactor= dataList[k * fieldLen + 6],
+                        settle=dataList[k*fieldLen+7],
+                        preClose=dataList[k*fieldLen+8],
+                        preSettle=dataList[k*fieldLen+9]
                     });
                 }
             }
