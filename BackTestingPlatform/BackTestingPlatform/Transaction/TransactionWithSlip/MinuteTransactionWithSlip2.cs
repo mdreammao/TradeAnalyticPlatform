@@ -52,6 +52,9 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     now = (signal0.time > now) ? signal0.time : now;
                     //当前临时头寸
                     PositionsWithDetail position0 = new PositionsWithDetail();
+                    //多空持仓初始化
+                    position0.LongPosition = new PositionDetail();
+                    position0.ShortPosition = new PositionDetail();
                     //当前信号多空标志，
                     int longShortFlag = (signal0.volume > 0) ? 1 : -1;
                     //当前信号证券代码
@@ -143,11 +146,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //当前无证券持仓
                     else
                     {
-                        PositionDetail intialPosition = new PositionDetail();
 
-                        //多空持仓初始化
-                        position0.LongPosition = intialPosition;
-                        position0.ShortPosition = intialPosition;
                         //若为多头开仓，更新多头头寸
                         if (longShortFlag > 0)
                         {
@@ -166,6 +165,8 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //持仓汇总信息记录
                     //当前时间
                     position0.time = now;
+                    //当前品种
+                    position0.tradingVarieties = signal0.tradingVarieties;
                     //当前价
                     position0.currentPrice = signal0.price;
                     //当前持仓量
@@ -214,10 +215,9 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //手续费，持续累加
                     position0.transactionCost += nowTransactionCost;
                     //当前持仓总成本:头寸总价值+当前手续费
-                    position0.totalCost = (position0.volume > 0 ? position0.LongPosition.totalCost : position0.ShortPosition.totalCost) + nowTransactionCost;
-                    //当前持仓均价
-                    position0.averageCost = position0.totalCost / position0.volume;
+                    position0.totalCost += (position0.volume > 0 ? position0.LongPosition.totalCost : position0.ShortPosition.totalCost) + nowTransactionCost;
                     //交易记录添加
+                    position0.record = new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
                     {
                         time = now,
@@ -233,13 +233,9 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                    //计算本次交易的现金流，若进行开仓操作，支出现价，现金流为负，若进行平仓操作则反之
-                    //现金流 = 开仓现金流 + 平仓现金流 + 保证金 +手续费
-       //             double nowCashFlow = - transactionPrice * transactionVolume + nowTransactionCost;
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
-    //                AccountUpdating.computeAccountUpdating(ref myAccount, position0, nowTransactionCost, now, ref data);
-
+                    AccountUpdating.computeAccountUpdating(ref myAccount, positionShot, now, ref data);
                 }
 
             }

@@ -41,6 +41,8 @@ namespace BackTestingPlatform.Strategies.Option
             Caches.put("OptionInfo", OptionInfoList);
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startdate, endDate);
             //var ETFDaily = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", Kit.ToDate(20150101),Kit.ToDate(20160731));
+            //记录历史账户信息
+            List<BasicAccount> accountHistory = new List<BasicAccount>();
             foreach (var day in tradeDays)
             {
                 Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
@@ -83,6 +85,8 @@ namespace BackTestingPlatform.Strategies.Option
                         signal.Add(putNext.code, putNext);
                         DateTime next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: 0.01, now: now);
                         nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
+                        //账户信息更新
+                        AccountUpdating.computeAccountUpdating(ref myAccount, positions[positions.Keys.Last()], now, ref data);
                     }
                     catch (Exception)
                     {
@@ -90,6 +94,8 @@ namespace BackTestingPlatform.Strategies.Option
                     }
                     index = nextIndex;
                 }
+
+                accountHistory.Add(myAccount);
             }
         }
     }
