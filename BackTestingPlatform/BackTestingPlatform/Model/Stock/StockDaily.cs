@@ -17,6 +17,9 @@ namespace BackTestingPlatform.Model.Stock
 
     public class StockDaily : KLine
     {
-
+        public double settle { get; set; }
+        public double preSettle { get; set; }
+        public double preClose { get; set; }
+        public double adjustFactor { get; set; }
     }
 }
