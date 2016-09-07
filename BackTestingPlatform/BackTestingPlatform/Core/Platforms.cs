@@ -57,6 +57,7 @@ namespace BackTestingPlatform.Core
         {
             if (_windAPI != null)
             {
+                log.Debug("正在关闭Wind API...");
                 if (_windAPI.isconnected())
                 {
                     _windAPI.stop();

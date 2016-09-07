@@ -65,9 +65,9 @@ namespace BackTestingPlatform.DataAccess
         /// <returns>空集表示本地csv文件中没有数据，null表示本地csv不存在</returns>
         public virtual List<T> readFromLocalCsv(string path)
         {
-            if (!File.Exists(path))
+            if (path==null || !File.Exists(path))
             {
-                log.Debug("文件路径{0}不存在，无法读取！", path);
+                log.Debug("未找到文件{0}！", path);
                 return null;
             }
             DataTable dt = CsvFileUtils.ReadFromCsvFile(path);

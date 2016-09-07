@@ -79,18 +79,14 @@
     <Compile Include="DataAccess\Option\OptionMinuteRepository.cs" />
     <Compile Include="DataAccess\Option\OptionTickRepository.cs" />
     <Compile Include="DataAccess\Stock\StockDailyRepository.cs" />
-    <Compile Include="DataAccess\_old_\OptionMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Common\SequentialByDayRepository.cs" />
     <Compile Include="DataAccess\_old_\AdjFactorRepository.cs" />
-    <Compile Include="DataAccess\_old_\ASharesInfoRepository.cs" />
     <Compile Include="DataAccess\_old_\FuturesRepository.cs" />
     <Compile Include="DataAccess\_old_\OptionInfoRepository0.cs" />
     <Compile Include="DataAccess\Stock\StockInfoRepository.cs" />
-    <Compile Include="DataAccess\_old_\StockMinuteDataRepository.cs" />
     <Compile Include="DataAccess\Stock\StockMinuteRepository.cs" />
     <Compile Include="DataAccess\Stock\StockTickRepository.cs" />
     <Compile Include="Model\Common\KLine.cs" />
-    <Compile Include="DataAccess\_old_\TickRepository.cs" />
     <Compile Include="Model\Common\Position.cs" />
     <Compile Include="Model\Common\Sequential.cs" />
     <Compile Include="Model\Common\Tick.cs" />
@@ -116,7 +112,6 @@
     <Compile Include="Model\Option\OptionDaily.cs" />
     <Compile Include="Model\_old_\AccountInfo.cs" />
     <Compile Include="Model\_old_\AdjFactor.cs" />
-    <Compile Include="Model\_old_\Stock.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
     <Compile Include="Model\_old_\TALibrary\TA_MA.cs" />
@@ -148,7 +143,6 @@
     <Compile Include="Utilities\Common\Kit.cs" />
     <Compile Include="Utilities\Common\FileUtils.cs" />
     <Compile Include="Utilities\Common\SqlUtils.cs" />
-    <Compile Include="DataAccess\_old_\StockKLineRepository.cs" />
     <Compile Include="Model\_old_\ImpvSurface.cs" />
     <Compile Include="Core\PlatformBooter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -169,7 +163,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Positions\" />
-    <Folder Include="Service\_old_\" />
     <Folder Include="Utilities\Stock\" />
     <Folder Include="Utilities\Transaction\" />
   </ItemGroup>

@@ -175,12 +175,13 @@ namespace BackTestingPlatform.DataAccess
         /// <returns></returns>
         private List<T> fetch1(string code, DateTime dateStart, DateTime dateEnd, string tag, IDictionary<string, object> options, bool tryCsv, bool tryWind, bool tryMssql0, bool saveToCsv)
         {
-            int year0 = dateStart.Year, year2 = dateEnd.Year;            
+            int year0 = dateStart.Year, year2 = dateEnd.Year;
             List<T> result = new List<T>();
             if (year0 < year2)
             {
                 var year0_1231 = new DateTime(year0, 12, 31);
                 var year2_0101 = new DateTime(year2, 1, 1);
+
                 var year0all = fetch0(code, year0, tag, options, tryCsv, tryWind, tryMssql0, saveToCsv);
                 result.AddRange(SequentialUtils.GetRange(year0all, dateStart, year0_1231));
 
@@ -189,9 +190,11 @@ namespace BackTestingPlatform.DataAccess
                     var year1all = fetch0(code, y, tag, options, tryCsv, tryWind, tryMssql0, saveToCsv);
                     result.AddRange(year1all);
                 }
+
                 var year2all = fetch0(code, year2, tag, options, tryCsv, tryWind, tryMssql0, saveToCsv);
                 result.AddRange(SequentialUtils.GetRange(year2all, year2_0101, dateEnd));
-            }else
+            }
+            else
             {
                 var year0all = fetch0(code, year0, tag, options, tryCsv, tryWind, tryMssql0, saveToCsv);
                 return SequentialUtils.GetRange(year0all, dateStart, dateEnd);
@@ -219,26 +222,40 @@ namespace BackTestingPlatform.DataAccess
             bool csvHasData = false;
             var date1 = new DateTime(year, 1, 1);
             var date2 = new DateTime(year, 12, 31);
-            log.Debug("正在获取{0}数据列表{1}...", Kit.ToShortName(tag),code);
+
+            log.Debug("正在获取{0}数据列表(code={1},year={2})...", Kit.ToShortName(tag), code,year);
             if (tryCsv)
             {
-                //尝试从csv获取
-                log.Debug("尝试从csv获取{0}...",code);
+                //尝试从csv获取                
+                string pathThisYear;
+                if (year == DateTime.Now.Year)
+                {
+                    //如果year为今年，可读取的文件路径不固定
+                    var path = _buildCacheDataFilePath(code, year + "0101", year + "*", tag);
+                    var dirPath = Path.GetDirectoryName(path);
+                    var fileName = Path.GetFileName(path);
+                    pathThisYear = Directory.EnumerateFiles(dirPath, fileName).FirstOrDefault();
+                }
+                else
+                {
+                    pathThisYear = _buildCacheDataFilePath(code, date1, date2, tag);
+                }
                 try
                 {
+                    log.Debug("尝试从csv文件{1}获取{0}...", code, Kit.ToShortName(pathThisYear));
                     //result返回空集表示本地csv文件中没有数据，null表示本地csv不存在
-                    result = readFromLocalCsv(code, date1, date2, tag, options);
+                    result = readFromLocalCsv(pathThisYear);
                 }
                 catch (Exception e)
                 {
-                    log.Error(e, "尝试从csv获取失败！");
+                    log.Error(e, "尝试从csv文件{0}获取失败！", Kit.ToShortName(pathThisYear));
                 }
                 if (result != null) csvHasData = true;
             }
             if (result == null && tryWind)
             {
                 //尝试从Wind获取
-                log.Debug("尝试从Wind获取{0}...",code);
+                log.Debug("尝试从Wind获取{0}...", code);
                 try
                 {
                     result = readFromWind(code, date1, date2, tag, options);
@@ -253,7 +270,7 @@ namespace BackTestingPlatform.DataAccess
                 try
                 {
                     //尝试从默认MSSQL源获取
-                    log.Debug("尝试从默认MSSQL源获取{0}...",code);
+                    log.Debug("尝试从默认MSSQL源获取{0}...", code);
                     result = readFromDefaultMssql(code, date1, date2, tag, options);
                 }
                 catch (Exception e)
@@ -262,28 +279,52 @@ namespace BackTestingPlatform.DataAccess
                 }
 
             }
-            if (!csvHasData && result != null && saveToCsv)
-            {
-                //如果数据不是从csv获取的，可保存至本地，存为csv文件
-                log.Debug("正在保存到本地csv文件...");
-                saveToLocalCsv(result, code, year, tag);
+            if (saveToCsv)
+            {  
+
+                if (!csvHasData && result != null)
+                {   //如果数据不是从csv获取的，可保存至本地，存为csv文件
+
+                    //删除所有非完整年度数据的csv文件（非1231结尾的文件名）
+                    var path = _buildCacheDataFilePath(code, year + "0101", year + "*", tag);
+                    var dirPath = Path.GetDirectoryName(path);
+                    var fileName = Path.GetFileName(path);
+                    if (Directory.Exists(dirPath))
+                    {
+                        var pathsToDel = Directory.EnumerateFiles(dirPath, fileName).Where(fn => !fn.EndsWith("1231.csv"));
+                        foreach (var p in pathsToDel)
+                        {
+                            File.Delete(p);
+                            log.Info("删除了文件:{0}", Kit.ToShortName(p));
+                        }
+                    }
+                    
+
+                    //如果是year为今年，csv文件的取名以今天为结尾，表示非完整年度数据
+                    var d2 = (year == DateTime.Now.Year) ? DateTime.Now : date2;
+                    var pathToSave = _buildCacheDataFilePath(code, date1, d2, tag);
+                    log.Debug("正在保存到本地csv文件...");
+                    saveToLocalCsv(pathToSave, result);
+
+                }
             }
-            log.Info("获取{3}数据{0}(year={1})成功.共{2}行.", Kit.ToShortName(tag), year, result.Count,code);
+            log.Info("获取{3}数据{0}(year={1})成功.共{2}行.", Kit.ToShortName(tag), year, result.Count, code);
             return result;
         }
 
 
         /// <summary>
         /// 将数据以csv文件的形式保存到CacheData文件夹下的预定路径。
+        /// 保存一整年的数据（1月1日-12月31日）。
         /// 默认不可以保存今年的数据，因为可能数据不全。
         /// </summary>
         /// <param name="data">要保存的数据</param>
         /// <param name="code">代码</param>
-        /// <param name="date1">开始时间，包含本身</param>
-        /// <param name="date2">结束时间，包含本身</param>
+        /// <param name="year">年</param>
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
         /// <param name="canSaveThisYear">是否可以保存今年的数据，默认不可以</param>
+        [Obsolete]
         public void saveToLocalCsv(IList<T> data, string code, int year, string tag = null, bool appendMode = false, bool canSaveThisYear = false)
         {
             if (!canSaveThisYear && year >= DateTime.Now.Year)
@@ -296,9 +337,8 @@ namespace BackTestingPlatform.DataAccess
         }
 
         /// <summary>
-        /// 此方法目前对外不可见
         /// 将数据以csv文件的形式保存到CacheData文件夹下的预定路径。
-        /// 文件名类似20150203_20160825.csv
+        /// 保存指定时间段的数据到同一个CSV文件。
         /// </summary>
         /// <param name="data">要保存的数据</param>
         /// <param name="code">代码</param>
@@ -306,6 +346,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="date2">结束时间，包含本身</param>
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
+        /// <param name="canSaveThisYear">是否可以保存今年的数据，默认不可以</param>
         [Obsolete]
         private void saveToLocalCsv(IList<T> data, string code, DateTime date1, DateTime date2, string tag = null, bool appendMode = false)
         {
@@ -313,15 +354,22 @@ namespace BackTestingPlatform.DataAccess
             saveToLocalCsv(path, data, appendMode);
         }
 
+   
+
         private static string _buildCacheDataFilePath(string code, DateTime date1, DateTime date2, string tag)
+        {
+            return _buildCacheDataFilePath(code, date1.ToString("yyyyMMdd"), date2.ToString("yyyyMMdd"), tag);
+        }
+
+        private static string _buildCacheDataFilePath(string code, string date1, string date2, string tag)
         {
             if (tag == null) tag = typeof(T).ToString();
             return FileUtils.GetCacheDataFilePath(PATH_KEY, new Dictionary<string, string>
             {
                 ["{tag}"] = tag,
                 ["{code}"] = code,
-                ["{date1}"] = date1.ToString("yyyyMMdd"),
-                ["{date2}"] = date2.ToString("yyyyMMdd")
+                ["{date1}"] = date1,
+                ["{date2}"] = date2
             });
         }
     }

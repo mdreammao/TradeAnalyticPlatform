@@ -25,17 +25,12 @@ namespace BackTestingPlatformTest.Tests
             var repo = Platforms.container.Resolve<StockDailyRepository>();
             //var rr = repo.fetchFromLocalCsvOrWindAndSave("000001.SH", new DateTime(2015, 5, 1), new DateTime(2017, 6, 1));
             var rr2 = repo.fetchFromLocalCsvOrWindAndSave(
-                 "000001.SH", new DateTime(1990,2, 1), new DateTime(2016, 6, 1));
+                 "600876.SH", new DateTime(1990,2, 1), new DateTime(2016, 6, 1));
             //var xx=repo.fetchFromWind("000977.SH", 2010);
 
         }
 
-        public static void testTickRepo()
-        {
-            var repo2 = Platforms.container.Resolve<TickRepository>();
-            var rrr = repo2.fetchFromLocalCsvOrMssqlAndSave("510050.SH", Kit.ToDate("20160811"));
-            Console.WriteLine(rrr.Count);
-        }
+      
         public static void test1()
         {
             var repo = Platforms.container.Resolve<OptionInfoRepository>();

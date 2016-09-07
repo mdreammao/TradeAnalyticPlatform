@@ -308,6 +308,7 @@ namespace BackTestingPlatform.Utilities
 
         public static string ToShortName(string text)
         {
+            if (text == null) return null;
             int x = text.LastIndexOf('.');
             return text.Substring(x + 1);
         }

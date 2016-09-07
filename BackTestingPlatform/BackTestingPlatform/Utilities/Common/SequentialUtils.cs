@@ -77,5 +77,20 @@ namespace BackTestingPlatform.Utilities.Common
             }
             return true;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="src"></param>
+        /// <param name="timeline">HHmmssfff格式</param>
+        /// <returns></returns>
+        public static List<T> Resample<T>(IList<T> src,IList<DateTime> timeline) where T : Sequential
+        {
+
+            return null;
+        }
+
+       
     }
 }
