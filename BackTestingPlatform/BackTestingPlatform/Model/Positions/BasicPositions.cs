@@ -19,5 +19,6 @@ namespace BackTestingPlatform.Model.Positions
         public double totalAmt { get; set; }
         //交易品种
         public string tradingVarieties { get; set; }
+        
     }
 }

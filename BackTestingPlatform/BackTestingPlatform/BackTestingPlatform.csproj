@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountOperator\QueryPositons.cs" />
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
@@ -133,7 +134,7 @@
     <Compile Include="Strategies\Stock\NdaysReversion.cs" />
     <Compile Include="System\GlobalizationDateTimeFormatInfo.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
+    <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositonsWithSlip.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip2.cs" />
     <Compile Include="Utilities\Common\FreqTransferUtils.cs" />

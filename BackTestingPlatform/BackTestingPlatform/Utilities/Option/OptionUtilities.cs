@@ -25,17 +25,17 @@ namespace BackTestingPlatform.Utilities.Option
             });
         }
 
-        public static List<DateTime> getEnddateListByAscending(List<OptionInfo> list)
+        public static List<DateTime> getEndDateListByAscending(List<OptionInfo> list)
         {
-            List<DateTime> durationList = new List<DateTime>();
+            List<DateTime> endDateList = new List<DateTime>();
             foreach (var item in list)
             {
-                if (durationList.Contains(item.endDate) == false)
+                if (endDateList.Contains(item.endDate) == false)
                 {
-                    durationList.Add(item.endDate);
+                    endDateList.Add(item.endDate);
                 }
             }
-            return durationList.OrderBy(x => x).ToList();
+            return endDateList.OrderBy(x => x).ToList();
         }
 
         public static List<double> getStrikeListByAscending(List<OptionInfo> list)
