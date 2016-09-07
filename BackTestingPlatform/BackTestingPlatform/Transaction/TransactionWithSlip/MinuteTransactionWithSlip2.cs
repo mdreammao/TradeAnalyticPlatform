@@ -237,13 +237,14 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                    //账户信息更新
-                    //根据当前交易记录和持仓情况更新账户
-                    AccountUpdating.computeAccountUpdating(ref myAccount, positionShot, now, ref data);
                 }
 
             }
             positions.Add(now, positionShot);
+            //账户信息更新
+            //根据当前交易记录和持仓情况更新账户
+            AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+
 
             return now.AddMinutes(1);
         }

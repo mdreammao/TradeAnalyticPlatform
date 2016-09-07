@@ -137,8 +137,8 @@ namespace BackTestingPlatform.Strategies.Option
                             {
                                 //全部平仓
                                 DateTime next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
-                                //当天可再开仓
-                                          openingOn = false;
+                                //当天不可再开仓
+                                 openingOn = false;
                             }
                         }
                         //若当前无持仓 且 允许开仓 
@@ -182,7 +182,7 @@ namespace BackTestingPlatform.Strategies.Option
                             }
                         }
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, positions[positions.Keys.Last()], now, ref data);
+                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
 
                     catch (Exception e)

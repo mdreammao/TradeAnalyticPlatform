@@ -22,9 +22,11 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="nowPosition"></param>当前持仓，用于计算保证金及持仓价值
         /// <param name="now"></param>当前时间
         /// <param name="data"></param>当天行情数据
-        public static void computeAccountUpdating(ref BasicAccount myAccount, Dictionary<string, PositionsWithDetail> nowPosition, DateTime now, ref Dictionary<string, List<KLine>> data)
+        public static void computeAccountUpdating(ref BasicAccount myAccount, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, ref Dictionary<string, List<KLine>> data)
         {
 
+            Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();
+            nowPosition = positions[positions.Keys.Last()];
             //计算保证金
             double totalMargin = CalculateMargin.calculateMargin(nowPosition, now, ref data);
             //计算剩余可用资金
