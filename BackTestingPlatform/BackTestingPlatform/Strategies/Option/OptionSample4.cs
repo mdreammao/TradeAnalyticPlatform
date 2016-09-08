@@ -178,11 +178,12 @@ namespace BackTestingPlatform.Strategies.Option
                                 signal.Add(putNext.code, putNext);
                                 DateTime next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                                 nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
+                                AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
 
                             }
                         }
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                       // AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
 
                     catch (Exception e)
