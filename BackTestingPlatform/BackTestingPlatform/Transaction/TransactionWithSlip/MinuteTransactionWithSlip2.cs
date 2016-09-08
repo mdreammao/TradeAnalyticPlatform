@@ -160,14 +160,14 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                         {
                             position0.LongPosition.averagePrice = transactionPrice;
                             position0.LongPosition.volume = transactionVolume;
-                            position0.LongPosition.totalCost = position0.LongPosition.averagePrice * position0.LongPosition.volume;
+                            position0.LongPosition.totalCost = position0.LongPosition.averagePrice * position0.LongPosition.averagePrice;
                         }
                         //若为空头开仓，更新空头头寸
                         else
                         {
                             position0.ShortPosition.averagePrice = transactionPrice;
                             position0.ShortPosition.volume = transactionVolume;
-                            position0.ShortPosition.totalCost = position0.ShortPosition.averagePrice * position0.ShortPosition.volume;
+                            position0.ShortPosition.totalCost = position0.ShortPosition.averagePrice * position0.ShortPosition.averagePrice;
                         }
                     }
                     //持仓汇总信息记录
@@ -222,8 +222,8 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //总手续费、持仓成本更新  
                     //手续费，持续累加
                     position0.transactionCost += nowTransactionCost;
-                    //当前品种总现金流，包含历史现金流，若未持仓该品种，则记录持仓盈亏，若有持仓，则为历史现金流 + 当前现金流（即 -开仓成本）。该指标用于计算freeCash
-                    position0.totalCashFlow += (position0.volume > 0 ? -position0.LongPosition.totalCost : -position0.ShortPosition.totalCost) - nowTransactionCost;
+                    //当前持仓总成本:头寸总价值+当前手续费
+                    position0.totalCost += (position0.volume > 0 ? position0.LongPosition.totalCost : position0.ShortPosition.totalCost) + nowTransactionCost;
                     //交易记录添加
                     position0.record = new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
@@ -249,7 +249,9 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
 
             }
             positions.Add(now, positionShot);
-
+            //账户信息更新
+            //根据当前交易记录和持仓情况更新账户
+            AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
 
 
             return now.AddMinutes(1);
