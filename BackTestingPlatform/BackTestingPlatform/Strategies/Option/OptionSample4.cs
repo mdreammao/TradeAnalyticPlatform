@@ -15,6 +15,7 @@ using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TimeList;
 using NLog;
+using NLog.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,18 +169,11 @@ namespace BackTestingPlatform.Strategies.Option
             }
 
             //将accountHistory输出到csv
-            /*
-            var resultPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
-            FileStream fs = new FileStream(resultPath, FileMode.Append);
-            StreamWriter sw = new StreamWriter(fs, Encoding.Default);
-            //    File.WriteAllLines(@"D:\PAT\xx.txt", lines, Encoding.Default);
             
-                foreach (var account in accountHistory)
-                    File.WriteAllLines(@"D:\xx.csv", account.totalAssets, Encoding.Default);
+            var resultPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
 
-                sw.Close();
-                fs.Close();
-                */
+
+            //遍历输出到console   
             foreach (var account in accountHistory)
                 Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time, account.totalAssets / initialCapital);
 
