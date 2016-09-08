@@ -42,8 +42,8 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             foreach (var position0 in nowPosition.Values)
             {
                 //累加持仓现金流
-                //position0.totalCost记录的是带头寸方向的总成本，因此正数为支出cash建立多头，负数为收取cash，支出保证金建立空头
-                totalCashFlow += -position0.totalCost;
+                //position0.totalCashFlow记录的个股上的cashFlow（不考虑保证金）
+                totalCashFlow += position0.volume < 0 ? position0.totalCashFlow - Math.Abs(position0.ShortPosition.totalCost) : position0.totalCashFlow;
                 //累加持仓价值（实时）
                 //当前持仓成本价
                 double nowPositionAveragePrice = position0.volume > 0 ? position0.LongPosition.averagePrice : position0.ShortPosition.averagePrice;
@@ -52,8 +52,9 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                 //空头开仓价值加总
                 openShortValue += position0.volume > 0 ? 0 : nowPositionAveragePrice * position0.volume;
             }
-            //剩余可用资金 = 初始资本 + 持仓的资金流加总（开仓、手续费支出为负，平仓为正）- 保证金
-            double freeCash = intialCapital + totalCashFlow - totalMargin;
+            totalCashFlow -= totalMargin;
+            //剩余可用资金 = 初始资本 + 持仓的资金流加总（开仓、手续费、保证金支出为负，平仓为正）
+            double freeCash = intialCapital + totalCashFlow;
             myAccount.freeCash = freeCash;
             myAccount.margin = totalMargin;
             myAccount.positionValue = totalPositionValue;

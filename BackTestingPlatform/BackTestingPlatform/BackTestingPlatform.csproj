@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountOperator\CalculateOnesMargin.cs" />
     <Compile Include="AccountOperator\QueryPositons.cs" />
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
@@ -97,7 +98,7 @@
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
     <Compile Include="Model\Positions\BasicPositions.cs" />
-    <Compile Include="AccountOperator\CalculateMargin.cs" />
+    <Compile Include="AccountOperator\CalculatePositionsMargin.cs" />
     <Compile Include="Model\Positions\MinutePositions.cs" />
     <Compile Include="Model\Positions\PositionDetail.cs" />
     <Compile Include="Model\Positions\PositionsWithDetail.cs" />

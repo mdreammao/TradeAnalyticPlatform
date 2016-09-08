@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Positions
 {
-    public static class CalculateMargin
+    public static class CalculatePositionsMargin
     {
         /// <summary>
         /// 根据当前持仓计算保证金，

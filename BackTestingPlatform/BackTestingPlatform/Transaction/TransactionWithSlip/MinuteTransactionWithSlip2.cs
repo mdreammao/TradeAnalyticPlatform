@@ -1,4 +1,5 @@
-﻿using BackTestingPlatform.Model.Common;
+﻿using BackTestingPlatform.AccountOperator;
+using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Utilities.TimeList;
