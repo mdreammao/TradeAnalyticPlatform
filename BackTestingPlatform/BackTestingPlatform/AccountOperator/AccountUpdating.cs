@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TicTacTec.TA.Library;
 
 namespace BackTestingPlatform.Transaction.TransactionWithSlip
 {
@@ -29,7 +28,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();
             nowPosition = positions[positions.Keys.Last()];
             //计算保证金
-            double totalMargin = CalculateMargin.calculateMargin(nowPosition, now, ref data);
+            double totalMargin = CalculatePositionsMargin.calculateMargin(nowPosition, now, ref data);
             //计算剩余可用资金
             //持仓的资金流加总
             double totalCashFlow = 0;

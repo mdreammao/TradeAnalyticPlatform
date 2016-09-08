@@ -178,15 +178,14 @@ namespace BackTestingPlatform.Strategies.Option
                                 signal.Add(putNext.code, putNext);
                                 DateTime next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                                 nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
-                                //账户信息更新
-                                if (positions.Count != 0)
-                                    AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                                AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
 
                             }
                         }
                         //账户信息更新
                         AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
+
                     catch (Exception e)
                     {
                         throw;
@@ -203,7 +202,7 @@ namespace BackTestingPlatform.Strategies.Option
                 tempAccount.totalAssets = myAccount.totalAssets;
                 accountHistory.Add(tempAccount);
             }
-
+            
             //将accountHistory输出到csv
             /*
             var resultPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
@@ -216,7 +215,7 @@ namespace BackTestingPlatform.Strategies.Option
 */
             //遍历输出到console   
             foreach (var account in accountHistory)
-                Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time, account.totalAssets / initialCapital);
+                Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time,account.totalAssets/initialCapital);
 
             Console.ReadKey();
         }
