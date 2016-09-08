@@ -41,8 +41,14 @@ TradeDaysRepository tradeDaysRepository = Platforms.container.Resolve<TradeDaysR
 ## 集合常用操作
 ```
 aList.OrderBy(x=>x.time).ThenBy(x=>x.amount).toList();	//对aList依次按time,amount字段排序得到的新list
-
   double x=arr.GetRange(96,5).Select(d => d.close).Average();
+
+
 ```
 
+## 把List<MyModel>保存到csv文件
+```
+ var dt = DataTableUtils.ToDataTable(list);			// List<MyModel> -> DataTable
+ CsvFileUtils.WriteToCsvFile(path, dt, appendMode);	// DataTable -> CSV File
 
+ ```
