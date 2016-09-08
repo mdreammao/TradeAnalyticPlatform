@@ -1,4 +1,5 @@
 ﻿using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Stock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,18 +80,47 @@ namespace BackTestingPlatform.Utilities.Common
         }
 
         /// <summary>
+        /// 根据给定的时间序列作为采样点对原始Sequential列表重新筛选，
+        /// 筛选后的结果列表数量和采样序点列timeline的数量一致。
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="src"></param>
-        /// <param name="timeline">HHmmssfff格式</param>
+        /// <param name="src">必须是按时间递增的序列</param>
+        /// <param name="timeline">时间采样点序列</param>
         /// <returns></returns>
-        public static List<T> Resample<T>(IList<T> src,IList<DateTime> timeline) where T : Sequential
+        public static List<T> Resample<T>(IList<T> src, TimeLine timeline) where T : Sequential,ICloneable
         {
+            if (src== null || timeline == null)
+                return null;
+            var times=timeline.toListOfMillis();
+            List<T> res=new List<T>(times.Count);
+            int t;
+            int i, j=0;
+            //将src筛选,到res
+            for (i = 0; i < src.Count; i++)
+            {
+                t = (int)src[i].time.TimeOfDay.TotalMilliseconds;
+                if (t <= times[j])
+                {
+                    res[j] = src[i];
+                }else
+                {
+                    j++;
+                }              
 
+            }
+
+            //重新校正时间，让res与timeline对齐
+            for (j = 0; j < times.Count; j++)
+            {
+                res[j] = (T) res[j].Clone();
+ 
+              
+                //var tt=res[j]. = TimeSpan.FromMilliseconds(times[i]);
+            }
             return null;
         }
 
-       
+
     }
 }

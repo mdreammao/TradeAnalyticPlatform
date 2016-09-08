@@ -17,8 +17,6 @@ using BackTestingPlatform.Utilities.TimeList;
 using NLog;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,45 +32,22 @@ namespace BackTestingPlatform.Strategies.Option
             startdate = Kit.ToDate(start);
             endDate = Kit.ToDate(end);
         }
-        //回测参数设置
-        private double initialCapital = 10000000;
-        private double slipPoint = 0.005;
-        public int optionContractTimes = 10000;
 
-        /// <summary>
-        /// 策略回测部分，期权时间价值策略
-        /// 在日循环上判断（1）选择操作标的（2）是否开平仓，在分钟循环上进行具体操作
-        /// 分钟上的操作：（1）开仓（2）到期平仓（3）调仓平值期权（4）止盈止损
-        /// （1）若直接开平仓，在开盘15分钟时进行操作（2）若判断止盈止损，在收盘15分钟时进行操作
-        /// </summary>
         public void compute()
         {
             log.Info("开始回测(回测期{0}到{1})", Kit.ToInt_yyyyMMdd(startdate), Kit.ToInt_yyyyMMdd(endDate));
             var repo = Platforms.container.Resolve<OptionInfoRepository>();
-            var optionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
-            Caches.put("OptionInfo", optionInfoList);
+            var OptionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
+            Caches.put("OptionInfo", OptionInfoList);
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startdate, endDate);
             //var ETFDaily = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", Kit.ToDate(20150101),Kit.ToDate(20160731));
-
-            ///账户初始化
-            //初始化position
-            SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions = new SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>>();
-            //初始化Account信息
-            BasicAccount myAccount = new BasicAccount();
-            myAccount.totalAssets = initialCapital;
-            myAccount.freeCash = myAccount.totalAssets;
             //记录历史账户信息
             List<BasicAccount> accountHistory = new List<BasicAccount>();
-
-            ///回测循环
-            //回测循环--By Day
             foreach (var day in tradeDays)
             {
-
-                //日内数据准备
                 Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
-                var list = OptionUtilities.getOptionListByDate(optionInfoList, Kit.ToInt_yyyyMMdd(day));
-                List<DateTime> endDate = OptionUtilities.getEndDateListByAscending(list);
+                var list = OptionUtilities.getOptionListByDate(OptionInfoList, Kit.ToInt_yyyyMMdd(day));
+                List<DateTime> durationArr = OptionUtilities.getEnddateListByAscending(list);
                 var ETFtoday = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", day);
                 data.Add("510050.SH", ETFtoday.Cast<KLine>().ToList());
                 foreach (var info in list)
@@ -83,27 +58,15 @@ namespace BackTestingPlatform.Strategies.Option
                     data.Add(info.optionCode, optionToday.Cast<KLine>().ToList());
                 }
                 int index = 0;
-                //交易开关设置，控制day级的交易开关
-                bool tradingOn = true;//总交易开关
-                bool openingOn = true;//开仓开关
-                bool closingOn = true;//平仓开关
-
-                //是否为交割日
-                bool isExpiredDay = day.Equals(endDate[0]);
-                //是否为回测最后一天
-                bool isLastDayOfBackTesting = day.Equals(endDate);
-
-                //回测循环 -- By Minute
-                //不允许在同一根1minBar上开平仓
+                //初始化position及Account信息
+                SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions = new SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>>();
+                BasicAccount myAccount = new BasicAccount();
                 while (index < 240)
                 {
-                    //        if (positions.Count == 2)
-                    //                Console.ReadKey();
                     int nextIndex = index + 1;
                     DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(day), index);
                     Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                     double etfPrice = ETFtoday[index].close;
-                    //按strike price与etf价格的接近程度排序
                     List<double> strikeTodayArr = OptionUtilities.getStrikeListByAscending(list).OrderBy(x => Math.Abs(x - etfPrice)).ToList();
                     try
                     {
@@ -185,13 +148,12 @@ namespace BackTestingPlatform.Strategies.Option
                             }
                         }
                         //账户信息更新
-                        // AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdating.computeAccountUpdating(ref myAccount, positions[positions.Keys.Last()], now, ref data);
                     }
                     catch (Exception e)
                     {
                         throw;
                     }
-
                     index = nextIndex;
                 }
                 //账户信息记录By Day            

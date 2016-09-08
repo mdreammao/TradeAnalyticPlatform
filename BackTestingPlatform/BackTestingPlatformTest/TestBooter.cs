@@ -27,7 +27,7 @@ namespace BackTestingPlatform.Test
             //DataAccessTests.testStockMinuteKLineRepo();
             int n = 130000;double x1=0;
             var xa = new DateTime();
-            int ss = System.Runtime.InteropServices.Marshal.SizeOf(typeof(DateTime));
+            //int ss = System.Runtime.InteropServices.Marshal.SizeOf(typeof(DateTime));
             var s = new List<DateTime>(n);
             for (int i = 0; i < n; i++)
             {
