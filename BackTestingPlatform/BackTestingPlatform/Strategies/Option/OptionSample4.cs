@@ -185,7 +185,7 @@ namespace BackTestingPlatform.Strategies.Option
                             }
                         }
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, positions[positions.Keys.Last()], now, ref data);
+                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
                     catch (Exception e)
                     {
@@ -213,7 +213,7 @@ namespace BackTestingPlatform.Strategies.Option
             
                 foreach (var account in accountHistory)
                     File.WriteAllLines(@"D:\xx.csv", account.totalAssets, Encoding.Default);
-
+*/
             //遍历输出到console   
             foreach (var account in accountHistory)
                 Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time, account.totalAssets / initialCapital);

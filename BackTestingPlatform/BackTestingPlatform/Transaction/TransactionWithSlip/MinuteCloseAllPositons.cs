@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Transaction.TransactionWithSlip
 {
-    public class MinuteCloseAllPositons
+    public class MinuteCloseAllPositonsWithSlip
     {
         /// <summary>
         /// 清空当前所有持仓，对所有的持仓生成平仓信号（等量反向）

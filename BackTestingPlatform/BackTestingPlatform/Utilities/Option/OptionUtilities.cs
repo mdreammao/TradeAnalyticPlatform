@@ -25,7 +25,7 @@ namespace BackTestingPlatform.Utilities.Option
             });
         }
 
-        public static List<DateTime> getEnddateListByAscending(List<OptionInfo> list)
+        public static List<DateTime> getEndDateListByAscending(List<OptionInfo> list)
         {
             List<DateTime> durationList = new List<DateTime>();
             foreach (var item in list)
