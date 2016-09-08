@@ -62,35 +62,39 @@ namespace BackTestingPlatform.Utilities
             return getTradeDays().BinarySearch(today) >= 0;
         }
 
-        static int _IndexOfPreviousTradeDay(DateTime today)
+        static int _IndexOfPreviousTradeDay(DateTime today, int num)
         {
             int x = getTradeDays().BinarySearch(today);
-            return x < 0 ? -x - 2 : x - 1;
+            return x < 0 ? -x - 1 - num : x - num;
         }
-        static int _IndexOfNextTradeDay(DateTime today)
+        static int _IndexOfNextTradeDay(DateTime today, int num)
         {
             int x = getTradeDays().BinarySearch(today);
-            return x < 0 ? -x - 1 : x + 1;
+            return x < 0 ? -x - 2 + num : x + num;
         }
 
         /// <summary>
-        /// 给出上一交易日,即比当前天早的交易日中最晚的一个
+        /// 给出向前数第N交易日,即比当前天早的交易日中第N个晚的那个。
+        /// N=1时，给出上一个交易日，即比当前天早的交易日中最晚的那个。
         /// </summary>
         /// <param name="today">当前日</param>
+        /// <param name="num">迭代次数N</param>
         /// <returns>返回前一交易日</returns>
-        public static DateTime PreviousTradeDay(DateTime today)
+        public static DateTime PreviousTradeDay(DateTime today, int num = 1)
         {
-            return getTradeDay(_IndexOfPreviousTradeDay(today));
+            return getTradeDay(_IndexOfPreviousTradeDay(today, num));
         }
 
         /// <summary>
-        /// 给出下一交易日,即比当前天晚的交易日中最早的一个
+        /// 给出向后数第N交易日,即比当前天晚的交易日中第N个早的那个。
+        /// N=1时，给出下一交易日,即比当前天晚的交易日中最早的一个
         /// </summary>
         /// <param name="today">当前日</param>
+        /// <param name="num">迭代次数N</param>
         /// <returns>下一交易日</returns>
-        public static DateTime NextTradeDay(DateTime today)
+        public static DateTime NextTradeDay(DateTime today, int num = 1)
         {
-            return getTradeDay(_IndexOfNextTradeDay(today));
+            return getTradeDay(_IndexOfNextTradeDay(today, num));
         }
 
         /// <summary>

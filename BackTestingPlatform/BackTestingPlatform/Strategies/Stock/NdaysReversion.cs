@@ -42,7 +42,7 @@ namespace BackTestingPlatform.Strategies.Stock
             {
                 Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
                 var list = OptionUtilities.getOptionListByDate(OptionInfoList, Kit.ToInt_yyyyMMdd(day));
-                List<DateTime> durationArr = OptionUtilities.getEndDateListByAscending(list);
+                List<DateTime> durationArr = OptionUtilities.getEnddateListByAscending(list);
                 var ETFtoday = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", day);
                 data.Add("510050.SH", ETFtoday.Cast<KLine>().ToList());
                 foreach (var info in list)

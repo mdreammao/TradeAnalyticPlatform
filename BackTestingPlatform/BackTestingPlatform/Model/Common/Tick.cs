@@ -15,7 +15,7 @@ namespace BackTestingPlatform.Model.Common
         public Position[] ask { get; set; }
         public Position[] bid { get; set; }
        
-
+       
     }
 
     public class TickFromMssql : Tick

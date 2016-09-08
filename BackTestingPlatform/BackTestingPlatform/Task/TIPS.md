@@ -8,7 +8,7 @@ string value = System.Configuration.ConfigurationManager.AppSettings["myKey"];
 ## 字符串,数值，日期之间的转换
 ```
 //使用原生api,字符串转换为日期
-DateTime dt=DateTime.ParseExact(str, "yyyyMMddhhmmss", CultureInfo.InvariantCulture);
+DateTime dt=DateTime.ParseExact(str, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 
 //使用自定义函数，请参见Utilities下的Kit.cs,例如:
 DateTime dt=Kit.ToDateTime("20160805");			//字符串 -> 日期
@@ -41,6 +41,8 @@ TradeDaysRepository tradeDaysRepository = Platforms.container.Resolve<TradeDaysR
 ## 集合常用操作
 ```
 aList.OrderBy(x=>x.time).ThenBy(x=>x.amount).toList();	//对aList依次按time,amount字段排序得到的新list
+
+  double x=arr.GetRange(96,5).Select(d => d.close).Average();
 ```
 
 

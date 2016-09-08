@@ -59,8 +59,6 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     int longShortFlag = (signal0.volume > 0) ? 1 : -1;
                     //当前信号证券代码
                     position0.code = signal0.code;
-                    //将当前证券持仓情况赋给
-                    //  position0 = positionShot[position0.code];
                     //当前成交价，信号价格加滑点---注：此模型下信号价格即为现价
                     transactionPrice = signal0.price * (1 + slipPoint * longShortFlag);
                     //当前可成交量
@@ -72,8 +70,6 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
-                        //将当前证券持仓情况赋给临时持仓变量
-                        position0 = positionShot[position0.code];
                         //当前为多头持仓
                         if (position0.volume > 0)
                         {
@@ -237,14 +233,13 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
+                    //账户信息更新
+                    //根据当前交易记录和持仓情况更新账户
+                    AccountUpdating.computeAccountUpdating(ref myAccount, positionShot, now, ref data);
                 }
 
             }
             positions.Add(now, positionShot);
-            //账户信息更新
-            //根据当前交易记录和持仓情况更新账户
-            AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
-
 
             return now.AddMinutes(1);
         }

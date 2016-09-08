@@ -21,7 +21,7 @@ namespace BackTestingPlatform.Model.Positions
         public static double calculateMargin(Dictionary<string, PositionsWithDetail> nowPosition, DateTime now, ref Dictionary<string, List<KLine>> data)
         {
             double totalMargin = 0;
-            double marginRatio = 0.25;
+            
             foreach (var position0 in nowPosition.Values)
             {
                 //若当前持有空头头寸，则计算保证金
@@ -29,13 +29,13 @@ namespace BackTestingPlatform.Model.Positions
                 {
                     //若当前持仓品种为期权
                     if (position0.tradingVarieties.Equals("option"))
-                    {                       
-                        totalMargin += Math.Abs(position0.volume)*data[position0.code].First().close;
+                    {
+                        //粗略估计法，保证金为成交金额的25%
+                        totalMargin += Math.Abs(position0.volume);
                     }
                 }
             }
-            //粗略估计法，保证金为成交金额的25%
-            totalMargin *= marginRatio;
+            totalMargin *= 0.25;
 
             return totalMargin;
 

@@ -178,6 +178,7 @@ namespace BackTestingPlatform.Utilities
             return t.Hour * 10000000 + t.Minute * 100000 + t.Second * 1000 + t.Millisecond;
         }
 
+      
         /// <summary>
         /// 返回值类似2016080509
         /// </summary>
