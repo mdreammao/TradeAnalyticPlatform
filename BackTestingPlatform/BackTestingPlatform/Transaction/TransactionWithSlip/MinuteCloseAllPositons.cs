@@ -20,7 +20,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="positions"></param>
         /// <param name="myAccount"></param>
         /// <param name="now"></param>
-        public static DateTime closeAllPositions(Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now)
+        public static DateTime closeAllPositions(Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint)
         {
             Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
 
@@ -45,7 +45,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                 signal.Add(nowSignal.code, nowSignal);
             }
             //将清仓信号传给成交判断
-            DateTime next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: 0.01, now: now);
+            DateTime next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
             return next;
         }
 

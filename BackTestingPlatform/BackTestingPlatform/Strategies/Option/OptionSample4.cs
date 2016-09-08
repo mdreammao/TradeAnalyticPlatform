@@ -186,7 +186,7 @@ namespace BackTestingPlatform.Strategies.Option
                         AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
 
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         throw;
                     }
