@@ -18,7 +18,7 @@ namespace BackTestingPlatform.Model.Positions
         /// <param name="nowPosition"></param>
         /// <param name="now"></param>
         /// <returns></returns>
-        public static double calculateMargin(Dictionary<string, PositionsWithDetail> nowPosition, DateTime now, ref Dictionary<string, List<KLine>> data)
+        public static double calculatePositionsMargin(Dictionary<string, PositionsWithDetail> nowPosition, DateTime now, ref Dictionary<string, List<KLine>> data)
         {
             double totalMargin = 0;
             double marginRatio = 0.25;
@@ -30,7 +30,7 @@ namespace BackTestingPlatform.Model.Positions
                     //若当前持仓品种为期权
                     if (position0.tradingVarieties.Equals("option"))
                     {                       
-                        totalMargin += Math.Abs(position0.volume)*data[position0.code].First().close;
+                        totalMargin += Math.Abs(position0.volume)*data[position0.code].First().open;
                     }
                 }
             }

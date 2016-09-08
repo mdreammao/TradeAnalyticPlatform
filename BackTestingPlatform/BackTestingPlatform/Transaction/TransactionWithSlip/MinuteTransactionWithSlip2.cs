@@ -1,4 +1,5 @@
-﻿using BackTestingPlatform.Model.Common;
+﻿using BackTestingPlatform.AccountOperator;
+using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Utilities.TimeList;
@@ -47,9 +48,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             {
                 //当前信号委托数量不为0，需进行下单操作
                 if (signal0.volume != 0)
-                {
-                    //验资，检查当前剩余资金是否足够执行信号
-
+                {                  
                     //委托时间
                     now = (signal0.time > now) ? signal0.time : now;
                     //当前临时头寸
@@ -71,6 +70,13 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     nowTransactionCost = 0;
                     //获取当前品种手续费
                     nowBrokerFeeRatio = brokerFeeRatio[signal0.tradingVarieties];
+                    //-------------------------------------------------------------------                 
+                    //验资，检查当前剩余资金是否足够执行信号
+                    //计算当前信号占用资金
+                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMargin.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
+                    //若资金不足，则跳过当前信号（*需要记录）
+                    if (nowSignalCapitalOccupy > myAccount.freeCash)
+                        continue;                
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
@@ -241,7 +247,8 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     }
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
-                    AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                    if (positions.Count != 0)
+                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
 
             }

@@ -138,7 +138,7 @@ namespace BackTestingPlatform.Strategies.Option
                                 //全部平仓
                                 DateTime next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                                 //当天不可再开仓
-                                 openingOn = false;
+                                openingOn = false;
                             }
                         }
                         //若当前无持仓 且 允许开仓 
@@ -178,14 +178,15 @@ namespace BackTestingPlatform.Strategies.Option
                                 signal.Add(putNext.code, putNext);
                                 DateTime next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                                 nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
-                                AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                                //账户信息更新
+                                if (positions.Count != 0)
+                                    AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
 
                             }
                         }
                         //账户信息更新
-                       // AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        // AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
-
                     catch (Exception e)
                     {
                         throw;
@@ -203,7 +204,7 @@ namespace BackTestingPlatform.Strategies.Option
                 tempAccount.totalAssets = myAccount.totalAssets;
                 accountHistory.Add(tempAccount);
             }
-            
+
             //将accountHistory输出到csv
             /*
             var resultPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
@@ -218,7 +219,7 @@ namespace BackTestingPlatform.Strategies.Option
                 fs.Close();
                 */
             foreach (var account in accountHistory)
-                Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time,account.totalAssets/initialCapital);
+                Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time, account.totalAssets / initialCapital);
 
             Console.ReadKey();
         }
