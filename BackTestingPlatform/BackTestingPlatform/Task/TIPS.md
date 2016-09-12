@@ -45,4 +45,9 @@ aList.OrderBy(x=>x.time).ThenBy(x=>x.amount).toList();	//对aList依次按time,a
   double x=arr.GetRange(96,5).Select(d => d.close).Average();
 ```
 
+## 把List<MyModel>保存到csv文件
+```
+ var dt = DataTableUtils.ToDataTable(list);			// List<MyModel> -> DataTable
+ CsvFileUtils.WriteToCsvFile(path, dt, appendMode);	// DataTable -> CSV File
 
+ ```

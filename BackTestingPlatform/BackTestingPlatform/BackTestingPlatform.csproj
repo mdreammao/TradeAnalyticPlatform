@@ -126,8 +126,9 @@
     <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Option\OptionSample4.cs" />
-    <Compile Include="Strategies\Stock\AdjFactorTest.cs" />
-    <Compile Include="Strategies\Stock\NdaysReversion.cs" />
+    <Compile Include="Strategies\Stock\StockSample01.cs" />
+    <Compile Include="Strategies\_old_\AdjFactorTest.cs" />
+    <Compile Include="Strategies\_old_\NdaysReversion.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
@@ -150,7 +151,7 @@
     <Compile Include="Strategies\BackTestingFunc\DealJudge.cs" />
     <Compile Include="Strategies\BackTestingFunc\Strategy.cs" />
     <Compile Include="Core\Platforms.cs" />
-    <Compile Include="Strategies\Stock\SingleMA.cs" />
+    <Compile Include="Strategies\_old_\SingleMA.cs" />
     <Compile Include="Utilities\Common\DateUtils.cs" />
     <Compile Include="Utilities\TimeList\Alignment.cs" />
     <Compile Include="Utilities\TimeList\CreateTimeList.cs" />
