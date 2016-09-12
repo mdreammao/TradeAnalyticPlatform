@@ -34,13 +34,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.1.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.4.1.0\lib\net45\Autofac.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Autofac">
+      <HintPath>E:\TradeAnalyticPlatform\trunk\BackTestingPlatform\LocalTester\bin\Debug\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.7\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="NLog">
+      <HintPath>E:\TradeAnalyticPlatform\trunk\BackTestingPlatform\LocalTester\bin\Debug\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -126,8 +124,9 @@
     <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Option\OptionSample4.cs" />
-    <Compile Include="Strategies\Stock\AdjFactorTest.cs" />
-    <Compile Include="Strategies\Stock\NdaysReversion.cs" />
+    <Compile Include="Strategies\Stock\StockSample01.cs" />
+    <Compile Include="Strategies\_old_\AdjFactorTest.cs" />
+    <Compile Include="Strategies\_old_\NdaysReversion.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
@@ -150,7 +149,7 @@
     <Compile Include="Strategies\BackTestingFunc\DealJudge.cs" />
     <Compile Include="Strategies\BackTestingFunc\Strategy.cs" />
     <Compile Include="Core\Platforms.cs" />
-    <Compile Include="Strategies\Stock\SingleMA.cs" />
+    <Compile Include="Strategies\_old_\SingleMA.cs" />
     <Compile Include="Utilities\Common\DateUtils.cs" />
     <Compile Include="Utilities\TimeList\Alignment.cs" />
     <Compile Include="Utilities\TimeList\CreateTimeList.cs" />

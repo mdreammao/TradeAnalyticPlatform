@@ -43,7 +43,6 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             {
                 positionShot = new Dictionary<string, PositionsWithDetail>(positionLast);
             }
-
             foreach (var signal0 in signal.Values)
             {
                 //当前信号委托数量不为0，需进行下单操作
@@ -253,11 +252,6 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
 
             }
             positions.Add(now, positionShot);
-            //账户信息更新
-            //根据当前交易记录和持仓情况更新账户
-            AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
-
-
             return now.AddMinutes(1);
         }
     }

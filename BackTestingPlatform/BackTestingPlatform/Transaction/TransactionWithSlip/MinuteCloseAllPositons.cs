@@ -38,6 +38,9 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             //生成清仓信号
             foreach (var position0 in positionShot.Values)
             {
+                //若当前品种持仓量为0（仅用于记录历史持仓）
+                if (position0.volume == 0)
+                    continue;
                 //对所有的持仓，生成现价等量反向的交易信号
                 int index = TimeListUtility.MinuteToIndex(now);
                 MinuteSignal nowSignal = new MinuteSignal() { code = position0.code, volume = - position0.volume,
