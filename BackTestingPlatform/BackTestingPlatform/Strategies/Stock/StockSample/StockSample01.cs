@@ -22,8 +22,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BackTestingPlatform.Strategies.Stock.StockSample;
+using BackTestingPlatform.Strategies.Stock.StockSample01;
 
-namespace BackTestingPlatform.Strategies.Stock
+namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
     public class StockSample01
     {
@@ -40,7 +42,7 @@ namespace BackTestingPlatform.Strategies.Stock
 
         //策略参数设定
         private int NDays = 6;
-        private int lengthOfBackLooking = 120;
+        private int lengthOfBackLooking = 60;
 
         /// <summary>
         /// 50ETF择时策略测试，N-Days Reversion
@@ -78,7 +80,7 @@ namespace BackTestingPlatform.Strategies.Stock
             //（2）各级别高低拐点的位置（值）
             List<double> upReversionPoint = new List<double>();
             List<double> downReversionPoint = new List<double>();
-
+            upReversionPoint = ComputeReversionPoint.findUpReversionPoint(data["510050.SH"], NDays, lengthOfBackLooking);
 
             ///回测循环
             //回测循环--By Day

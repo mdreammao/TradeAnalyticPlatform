@@ -47,9 +47,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample01
                 else
                 {
                     KLine lowestPoint = new KLine();
-                    List<KLine> tempList = dataSeries.Where((item, index) => index <= i && index >= i - lengthOfBackLooking -1 ).ToList();
-                    var indexOfLP = tempList.Select((m, index) => new { index, m }).OrderByDescending(n => n.m.low).Take(1);
-
+                    var itemOfLowestPoint = dataSeries.Where((item, index) => index <= i && index >= i - lengthOfBackLooking - 1).Select((m, index) => new { index, m }).OrderByDescending(n => - n.m.low).Take(1).ToList();
+                    lowestPoint = itemOfLowestPoint[0].m;
+                    int indexOfLowestPoint = itemOfLowestPoint[0].index;
+                    indexList.Add(dataSeries[indexOfLowestPoint - Ndays].high);
                 }
 
             }
@@ -79,6 +80,6 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample01
 
         }
 
-        private static 
+       
     }
 }
