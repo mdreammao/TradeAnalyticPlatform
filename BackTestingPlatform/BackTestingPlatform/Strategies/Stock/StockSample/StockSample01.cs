@@ -38,6 +38,10 @@ namespace BackTestingPlatform.Strategies.Stock
         private double initialCapital = 10000000;
         private double slipPoint = 0.005;
 
+        //策略参数设定
+        private int NDays = 6;
+        private int lengthOfBackLooking = 120;
+
         /// <summary>
         /// 50ETF择时策略测试，N-Days Reversion
         /// </summary>
@@ -69,12 +73,22 @@ namespace BackTestingPlatform.Strategies.Stock
                     data["510050.SH"].AddRange(ETFData.Cast<KLine>().ToList());
             }
 
+            //计算需要指标
+            //（1）回看长度内的高低极值点（值）
+            //（2）各级别高低拐点的位置（值）
+            List<double> upReversionPoint = new List<double>();
+            List<double> downReversionPoint = new List<double>();
+
+
             ///回测循环
             //回测循环--By Day
             foreach (var day in tradeDays)
             {
                 //取出当天的数据
-                var dataToday = data["510050.SH"].FindAll(s => s.time.Day == day.Day);
+                var dataToday = data["510050.SH"].FindAll(s => s.time.Year == day.Year && s.time.Month == day.Month && s.time.Day == day.Day);
+
+                
+                
 
                 int index = 0;
                 //交易开关设置，控制day级的交易开关
@@ -127,11 +141,13 @@ namespace BackTestingPlatform.Strategies.Stock
             //遍历输出到console   
             foreach (var account in accountHistory)
                 Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time, account.totalAssets / initialCapital);
-
+            /*
             //将accountHistory输出到csv
             var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";
             var dt = DataTableUtils.ToDataTable(accountHistory);          // List<MyModel> -> DataTable
             CsvFileUtils.WriteToCsvFile(resultPath, dt);	// DataTable -> CSV File
+
+           */
             Console.ReadKey();
         }
     }

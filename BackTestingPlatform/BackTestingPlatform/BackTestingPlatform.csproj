@@ -58,6 +58,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TA-Lib-Core, Version=1.0.4998.21369, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TA-Lib.0.5.0.3\lib\TA-Lib-Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WAPIWrapperCSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\WAPIWrapperCSharp.dll</HintPath>
@@ -126,7 +130,8 @@
     <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Option\OptionSample4.cs" />
-    <Compile Include="Strategies\Stock\StockSample01.cs" />
+    <Compile Include="Strategies\Stock\StockSample\ComputeReversionPoint.cs" />
+    <Compile Include="Strategies\Stock\StockSample\StockSample01.cs" />
     <Compile Include="Strategies\_old_\AdjFactorTest.cs" />
     <Compile Include="Strategies\_old_\NdaysReversion.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />

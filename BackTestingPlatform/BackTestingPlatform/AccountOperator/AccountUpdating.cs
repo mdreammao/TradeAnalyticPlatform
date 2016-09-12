@@ -24,7 +24,9 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="data"></param>当天行情数据
         public static void computeAccountUpdating(ref BasicAccount myAccount, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, ref Dictionary<string, List<KLine>> data)
         {
-
+            //若position为null，直接跳过
+            if (positions.Count == 0)
+                return;
             Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();
             nowPosition = positions[positions.Keys.Last()];
             //计算保证金
