@@ -45,14 +45,14 @@ namespace BackTestingPlatform.Model.Common
         }
 
         /// <summary>
-        /// 直接用具体的时间序列构造的时间线
+        /// 直接用具体的时间序列（当天毫秒数）构造的时间线
         /// </summary>
         public TimeLine(IList<int> millis)
         {
             this.Millis = millis;
         }
         /// <summary>
-        /// 直接用具体的时间序列构造的时间线
+        /// 直接用具体的时间序列（DateTime）构造的时间线
         /// </summary>
         public TimeLine(IList<DateTime> times)
         {
@@ -62,7 +62,7 @@ namespace BackTestingPlatform.Model.Common
     }
 
     /// <summary>
-    /// 均匀的时间线段，表示采样点序列。由起始时间，结束时间，间隔毫秒数构成
+    /// 均匀的时间线段，表示均匀分布的采样点序列。主要参数由起始时间，结束时间，间隔毫秒数构成
     /// </summary>
     public struct TimeLineSection
     {

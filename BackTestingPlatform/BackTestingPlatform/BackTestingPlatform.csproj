@@ -86,6 +86,7 @@
     <Compile Include="DataAccess\Stock\StockInfoRepository.cs" />
     <Compile Include="DataAccess\Stock\StockMinuteRepository.cs" />
     <Compile Include="DataAccess\Stock\StockTickRepository.cs" />
+    <Compile Include="Model\Common\Constants.cs" />
     <Compile Include="Model\Common\KLine.cs" />
     <Compile Include="Model\Common\Position.cs" />
     <Compile Include="Model\Common\Sequential.cs" />

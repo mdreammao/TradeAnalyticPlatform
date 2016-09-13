@@ -42,10 +42,7 @@ namespace BackTestingPlatformTest.Tests
         public static void test2()
         {
             var repo = Platforms.container.Resolve<OptionTickRepository>();
-            var timeline = new TimeLine(
-                new TimeLineSection("09:30:00.000", "11:30:00.000", 5000),
-                new TimeLineSection("13:00:00.000", "15:00:00.000", 5000)
-                );
+            var timeline = Constants.timeline500ms;
             var r=repo.fetchFromLocalCsvOrMssqlAndResampleAndSave("600958.SH", new DateTime(2016, 7, 6), timeline);
 
         }

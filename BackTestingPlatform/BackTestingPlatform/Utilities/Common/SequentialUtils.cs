@@ -80,11 +80,11 @@ namespace BackTestingPlatform.Utilities.Common
         }
 
         /// <summary>
-        /// 根据给定的时间序列作为采样点对原始Sequential列表重新筛选，并将结果与timeline对齐
+        /// 根据给定的时间序列作为采样点对原始Sequential列表重新筛选，并将结果列表里每项的time字段与timeline对齐
         /// 筛选后的结果列表数量和采样序点列timeline的数量一致。
         /// 
         /// </summary>
-        /// <typeparam name="T">要是ICloneable</typeparam>
+        /// <typeparam name="T">Sequential且ICloneable</typeparam>
         /// <param name="src">必须是按时间递增的序列</param>
         /// <param name="timeline">时间采样点序列</param>
         ///  <param name="date">对齐的目标日期</param>
@@ -111,7 +111,7 @@ namespace BackTestingPlatform.Utilities.Common
         }
 
         /// <summary>
-        /// 根据给定的时间序列作为采样点对原始Sequential列表重新筛选，但对结果不去和timeline对齐
+        /// 根据给定的时间序列作为采样点对原始Sequential列表重新筛选，但对结果列表每项的time字段不去和timeline对齐
         /// 筛选后的结果列表数量和采样序点列timeline的数量一致。
         /// 
         /// </summary>

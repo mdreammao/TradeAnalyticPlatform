@@ -20,13 +20,13 @@ namespace BackTestingPlatform.DataAccess.Option
             var yyyyMMdd = date.ToString("yyyyMMdd");
             var codeStr = code.Replace('.', '_');
             var sql = String.Format(@"
-            SELECT * FROM [WindFullMarket{0}].[dbo].[MarketData_{1}] where tdate={2} ORDER BY tdate
+            SELECT * FROM [WindFullMarket{0}].[dbo].[MarketData_{1}] where tdate={2} ORDER BY ttime
             ", yyyyMM, codeStr, yyyyMMdd);
             if (Convert.ToInt32(yyyyMM) < 201511)
             {
                 connName = "corp217";
                 sql = String.Format(@"
-            SELECT * FROM [TradeMarket{0}].[dbo].[MarketData_{1}] where tdate={2} ORDER BY tdate
+            SELECT * FROM [TradeMarket{0}].[dbo].[MarketData_{1}] where tdate={2} ORDER BY ttime
             ", yyyyMM, codeStr, yyyyMMdd);
             }
 
