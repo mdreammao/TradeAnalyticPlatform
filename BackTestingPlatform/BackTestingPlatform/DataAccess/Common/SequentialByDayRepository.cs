@@ -85,6 +85,17 @@ namespace BackTestingPlatform.DataAccess
         {
             return fetch0(code, date, tag, false, false, true, false);
         }
+        /// <summary>
+        /// 先后尝试从本地csv文件，Wind获取数据。
+        /// </summary>
+        /// <param name="code">代码，如股票代码，期权代码</param>
+        /// <param name="date">指定的日期</param>
+        /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
+        /// <returns></returns>
+        public List<T> fetchFromLocalCsvOrWind(string code, DateTime date, string tag = null)
+        {
+            return fetch0(code, date, tag, true, true, false, false);
+        }
 
         /// <summary>
         /// 先后尝试从本地csv文件，Wind获取数据。若无本地csv，则保存到CacheData文件夹。
@@ -186,7 +197,10 @@ namespace BackTestingPlatform.DataAccess
                 log.Debug("正在保存到本地csv文件...");
                 saveToLocalCsv(result, code, date, tag);
             }
-            log.Info("获取{3}数据{0}(date={1})成功.共{2}行.", Kit.ToShortName(tag), date, result.Count,code);
+            if (result != null)
+            {
+                log.Info("获取{3}数据{0}(date={1})成功.共{2}行.", Kit.ToShortName(tag), date, result.Count, code);
+            }
             return result;
         }
 

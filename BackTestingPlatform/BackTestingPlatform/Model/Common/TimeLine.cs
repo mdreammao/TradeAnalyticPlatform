@@ -7,63 +7,85 @@ using System.Threading.Tasks;
 namespace BackTestingPlatform.Model.Common
 {
 
-    public abstract class TimeLine
-    {
-        public abstract List<int> toListOfMillis();
-    }
 
-    public class StandardTimeLine : TimeLine
+    /// <summary>
+    /// 时间线
+    /// </summary>
+    public class TimeLine
     {
-        IList<TimeLineSection> sections;
+        TimeLineSection[] sections;        
+        public IList<int> Millis { get; }  //毫秒序列
 
-        public override List<int> toListOfMillis()
+        /// <summary>
+        /// 用若干时间段拼接构造的时间线
+        /// </summary>
+        public TimeLine(params TimeLineSection[] sections)
         {
-            List<int> res = new List<int>();
+            this.sections = sections;
+            Millis = new List<int>();
             int i, k = -1;
-            for (i = 0; i < sections.Count; i++)
+            for (i = 0; i < sections.Count(); i++)
             {
                 var sect = sections[i];
                 if (k == sect.start) k += sect.interval;
                 for (k = sect.start; k <= sect.end; k += sect.interval)
                 {
-                    res.Add(k);
+                    Millis.Add(k);
                 }
             }
-            return res;
+
         }
-        public StandardTimeLine(IList<TimeLineSection> sections)
+
+        /// <summary>
+        /// 用一个时间段构造的时间线
+        /// </summary>
+        public TimeLine(TimeLineSection section):this(new TimeLineSection[1] { section })
         {
-            this.sections = sections;
+           
         }
+
+        /// <summary>
+        /// 直接用具体的时间序列构造的时间线
+        /// </summary>
+        public TimeLine(IList<int> millis)
+        {
+            this.Millis = millis;
+        }
+        /// <summary>
+        /// 直接用具体的时间序列构造的时间线
+        /// </summary>
+        public TimeLine(IList<DateTime> times)
+        {
+            Millis = times.Select(t => (int)t.TimeOfDay.TotalMilliseconds).ToList();
+        }
+
     }
 
-    public class SimpleTimeLine : TimeLine
-    {
-        IList<int> millis;
-        public override List<int> toListOfMillis()
-        {
-            return millis.ToList();
-        }
-        public SimpleTimeLine(IList<int> millis)
-        {
-            this.millis = millis;
-        }
-
-        public SimpleTimeLine(IList<DateTime> times)
-        {
-            millis = times.Select(t => (int)t.TimeOfDay.TotalMilliseconds).ToList();
-        }
-
-    }
-
+    /// <summary>
+    /// 均匀的时间线段，表示采样点序列。由起始时间，结束时间，间隔毫秒数构成
+    /// </summary>
     public struct TimeLineSection
     {
         public int start, end, interval; //millisecond values
 
-        public TimeLineSection(string TimeStart, string timeEnd, int millisInterval)
+        public TimeLineSection(int millisStart, int millisEnd, int millisInterval)
         {
-            start = ToIntOfMillis(TimeStart);
+            start = millisStart;
+            end = millisEnd;
+            interval = millisInterval;
+        }
+
+        public TimeLineSection(string timeStart, string timeEnd, int millisInterval)
+        {
+            start = ToIntOfMillis(timeStart);
             end = ToIntOfMillis(timeEnd);
+            interval = millisInterval;
+        }
+
+        public TimeLineSection(DateTime timeStart,DateTime timeEnd,int millisInterval)
+        {
+            start = (int)timeStart.TimeOfDay.TotalMilliseconds;
+            end = (int)timeEnd.TimeOfDay.TotalMilliseconds;
             interval = millisInterval;
         }
         public List<int> ToListOfMillis()

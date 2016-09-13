@@ -40,10 +40,15 @@ TradeDaysRepository tradeDaysRepository = Platforms.container.Resolve<TradeDaysR
 
 ## 集合常用操作
 ```
-aList.OrderBy(x=>x.time).ThenBy(x=>x.amount).toList();	//对aList依次按time,amount字段排序得到的新list
-  double x=arr.GetRange(96,5).Select(d => d.close).Average();
+//排序 （对aList依次按time,amount字段排序得到的新list）
+aList.OrderBy(x=>x.time).ThenBy(x=>x.amount).toList();	
 
+//按某属性求平均
+double x=arr.GetRange(96,5).Select(d => d.close).Average();
 
+//浅复制
+var aCopyOfList = aList.Cast<T>.ToList();
+var aCopyOfArr = anArray.Clone();
 ```
 
 ## 把List<MyModel>保存到csv文件

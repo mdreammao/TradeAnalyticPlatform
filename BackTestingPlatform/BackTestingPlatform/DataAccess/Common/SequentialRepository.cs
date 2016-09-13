@@ -74,5 +74,7 @@ namespace BackTestingPlatform.DataAccess
             if (dt == null) return null;
             return dt.AsEnumerable().Select(toEntityFromCsv).ToList();
         }
+
+
     }
 }

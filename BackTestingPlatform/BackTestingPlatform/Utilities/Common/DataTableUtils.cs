@@ -50,6 +50,7 @@ namespace BackTestingPlatform.Utilities
         public static object[] toRowValuesDefaultFunc<T>(T t)
         {
             var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            if (t == null) return new object[props.Length];
             var values = new object[props.Length];
             for (int i = 0; i < props.Length; i++)
             {
