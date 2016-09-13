@@ -47,10 +47,14 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample01
                 else
                 {
                     KLine lowestPoint = new KLine();
-                    var itemOfLowestPoint = dataSeries.Where((item, index) => index <= i && index >= i - lengthOfBackLooking - 1).Select((m, index) => new { index, m }).OrderByDescending(n => - n.m.low).Take(1).ToList();
+                    var itemOfLowestPoint = dataSeries.Where((item, index) => index <= i && index >= i - lengthOfBackLooking - 1).Select((m, index) => new { index, m }).OrderByDescending(n => -n.m.low).Take(1).ToList();
+
                     lowestPoint = itemOfLowestPoint[0].m;
-                    int indexOfLowestPoint = itemOfLowestPoint[0].index;
-                    indexList.Add(dataSeries[indexOfLowestPoint - Ndays].high);
+                    int indexOfLowestPoint = dataSeries.FindIndex(x => x.time == lowestPoint.time);
+                    if (indexOfLowestPoint - Ndays < 0)
+                        indexList.Add(0);//空值记为0
+                    else
+                        indexList.Add(dataSeries[indexOfLowestPoint - Ndays].high);
                 }
 
             }
@@ -69,9 +73,25 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample01
         public static List<double> findDownReversionPoint(List<KLine> dataSeries, int Ndays, int lengthOfBackLooking)
         {
             List<double> indexList = new List<double>();
-            foreach (var nowData in dataSeries)
+            for (int i = 0; i < dataSeries.Count; i++)
             {
+                if (i < lengthOfBackLooking - 1)
+                {
+                    indexList.Add(0);//空值记为0
+                    continue;
+                }
+                else
+                {
+                    KLine highestPoint = new KLine();
+                    var itemOfHighestPoint = dataSeries.Where((item, index) => index <= i && index >= i - lengthOfBackLooking - 1).Select((m, index) => new { index, m }).OrderByDescending(n => n.m.high).Take(1).ToList();
 
+                    highestPoint = itemOfHighestPoint[0].m;
+                    int indexOfHighestPoint = dataSeries.FindIndex(x => x.time == highestPoint.time);
+                    if (indexOfHighestPoint - Ndays < 0)
+                        indexList.Add(0);//空值记为0
+                    else
+                        indexList.Add(dataSeries[indexOfHighestPoint - Ndays].low);
+                }
 
             }
 
@@ -80,6 +100,6 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample01
 
         }
 
-       
+
     }
 }

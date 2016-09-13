@@ -16,8 +16,6 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         //佣金和手续费字典，品种字符对应手续费，期权单位为“x元/张”，股票及期货为成交金额的“x%”
         //实际交易每个品种都有差异，不同期货品种不同，此处暂定1%%
         public static Dictionary<string, double> brokerFeeRatio = new Dictionary<string, double> { { "option", 5 }, { "stock", 0.0005 }, { "futures", 0.0001 } };
-        //期权合约倍数
-        public static int optionContractTimes = 10000;
 
         //根据signal进行成交判断
         public static DateTime computeMinutePositions2(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
@@ -30,6 +28,8 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             //否则在信号价格上，朝不利方向加一个滑点成交
             Dictionary<string, PositionsWithDetail> positionShot = new Dictionary<string, PositionsWithDetail>();
             Dictionary<string, PositionsWithDetail> positionLast = (positions.Count == 0 ? null : positions[positions.Keys.Last()]);
+            //合约乘数初始化
+            int contractTimes = 100;
             //成交价初始化，在当前模式下为信号价格朝不利方向加一个滑点
             double transactionPrice = 0;
             //成交数量初始化，此方法下等于信号值（全部成交）
@@ -47,9 +47,14 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             {
                 //当前信号委托数量不为0，需进行下单操作
                 if (signal0.volume != 0)
-                {                  
+                {
                     //委托时间
                     now = (signal0.time > now) ? signal0.time : now;
+                    //合约乘数
+                    if (signal0.tradingVarieties == "stock")
+                        contractTimes = 100;
+                    else if (signal0.tradingVarieties == "option")
+                        contractTimes = 10000;
                     //当前临时头寸
                     PositionsWithDetail position0 = new PositionsWithDetail();
                     //多空持仓初始化
@@ -63,8 +68,8 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //  position0 = positionShot[position0.code];
                     //当前成交价，信号价格加滑点---注：此模型下信号价格即为现价
                     transactionPrice = signal0.price * (1 + slipPoint * longShortFlag);
-                    //当前可成交量
-                    transactionVolume = signal0.volume;
+                    //当前可成交量，若成交价因滑点而改变，成交量也会因此改变
+                    transactionVolume = Math.Truncate((signal0.volume * signal0.price) / transactionPrice / contractTimes) * contractTimes;
                     //当前成交成本（交易费+佣金）
                     nowTransactionCost = 0;
                     //获取当前品种手续费
@@ -75,7 +80,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMargin.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
                     //若资金不足，则跳过当前信号（*需要记录）
                     if (nowSignalCapitalOccupy > myAccount.freeCash)
-                        continue;                
+                        continue;
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
@@ -192,14 +197,14 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                         //若信号为short，且调整持仓后交易总量大于等于空头持仓量,说明是先平多再开空，只收取平多部分手续费
                         if (longShortFlag < 0 && Math.Abs(transactionVolume) >= Math.Abs(position0.ShortPosition.volume))
                             //平多合约张数 * 手续费
-                            nowTransactionCost = Math.Abs((transactionVolume - position0.ShortPosition.volume) / optionContractTimes * nowBrokerFeeRatio);
+                            nowTransactionCost = Math.Abs((transactionVolume - position0.ShortPosition.volume) / contractTimes * nowBrokerFeeRatio);
                         //若信号为short，且调整持仓后交易总量小于空头持仓量,说明是继续开空，无手续费
                         else if (longShortFlag < 0 && Math.Abs(transactionVolume) < Math.Abs(position0.ShortPosition.volume))
                             nowTransactionCost = 0;
                         //若信号为long，正常收取手续费
                         else
                             //合约张数 * 手续费
-                            nowTransactionCost = Math.Abs(transactionVolume / optionContractTimes * nowBrokerFeeRatio);
+                            nowTransactionCost = Math.Abs(transactionVolume / contractTimes * nowBrokerFeeRatio);
                     }
                     else if (signal0.tradingVarieties.Equals("stock"))
                     {

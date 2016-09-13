@@ -124,7 +124,8 @@
     <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Option\OptionSample4.cs" />
-    <Compile Include="Strategies\Stock\StockSample01.cs" />
+    <Compile Include="Strategies\Stock\StockSample\ComputeReversionPoint.cs" />
+    <Compile Include="Strategies\Stock\StockSample\StockSample01.cs" />
     <Compile Include="Strategies\_old_\AdjFactorTest.cs" />
     <Compile Include="Strategies\_old_\NdaysReversion.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />
