@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Positions
 {
-    public static class CalculateMargin
+    public static class CalculatePositionsMargin
     {
         /// <summary>
         /// 根据当前持仓计算保证金，
@@ -29,9 +29,8 @@ namespace BackTestingPlatform.Model.Positions
                 {
                     //若当前持仓品种为期权
                     if (position0.tradingVarieties.Equals("option"))
-                    {
-                        //粗略估计法，保证金为成交金额的25%
-                        totalMargin += Math.Abs(position0.volume);
+                    {                       
+                        totalMargin += Math.Abs(position0.volume)*data[position0.code].First().close;
                     }
                 }
             }

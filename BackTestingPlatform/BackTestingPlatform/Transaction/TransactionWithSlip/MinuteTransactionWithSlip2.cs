@@ -1,4 +1,5 @@
-﻿using BackTestingPlatform.Model.Common;
+﻿using BackTestingPlatform.AccountOperator;
+using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Utilities.TimeList;
@@ -42,12 +43,11 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             {
                 positionShot = new Dictionary<string, PositionsWithDetail>(positionLast);
             }
-
             foreach (var signal0 in signal.Values)
             {
                 //当前信号委托数量不为0，需进行下单操作
                 if (signal0.volume != 0)
-                {
+                {                  
                     //委托时间
                     now = (signal0.time > now) ? signal0.time : now;
                     //当前临时头寸
@@ -59,6 +59,8 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     int longShortFlag = (signal0.volume > 0) ? 1 : -1;
                     //当前信号证券代码
                     position0.code = signal0.code;
+                    //将当前证券持仓情况赋给
+                    //  position0 = positionShot[position0.code];
                     //当前成交价，信号价格加滑点---注：此模型下信号价格即为现价
                     transactionPrice = signal0.price * (1 + slipPoint * longShortFlag);
                     //当前可成交量
@@ -67,9 +69,18 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     nowTransactionCost = 0;
                     //获取当前品种手续费
                     nowBrokerFeeRatio = brokerFeeRatio[signal0.tradingVarieties];
+                    //-------------------------------------------------------------------                 
+                    //验资，检查当前剩余资金是否足够执行信号
+                    //计算当前信号占用资金
+                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMargin.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
+                    //若资金不足，则跳过当前信号（*需要记录）
+                    if (nowSignalCapitalOccupy > myAccount.freeCash)
+                        continue;                
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
+                        //将当前证券持仓情况赋给临时持仓变量
+                        position0 = positionShot[position0.code];
                         //当前为多头持仓
                         if (position0.volume > 0)
                         {
@@ -152,14 +163,14 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                         {
                             position0.LongPosition.averagePrice = transactionPrice;
                             position0.LongPosition.volume = transactionVolume;
-                            position0.LongPosition.totalCost = position0.LongPosition.averagePrice * position0.LongPosition.averagePrice;
+                            position0.LongPosition.totalCost = position0.LongPosition.averagePrice * position0.LongPosition.volume;
                         }
                         //若为空头开仓，更新空头头寸
                         else
                         {
                             position0.ShortPosition.averagePrice = transactionPrice;
                             position0.ShortPosition.volume = transactionVolume;
-                            position0.ShortPosition.totalCost = position0.ShortPosition.averagePrice * position0.ShortPosition.averagePrice;
+                            position0.ShortPosition.totalCost = position0.ShortPosition.averagePrice * position0.ShortPosition.volume;
                         }
                     }
                     //持仓汇总信息记录
@@ -214,8 +225,8 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //总手续费、持仓成本更新  
                     //手续费，持续累加
                     position0.transactionCost += nowTransactionCost;
-                    //当前持仓总成本:头寸总价值+当前手续费
-                    position0.totalCost += (position0.volume > 0 ? position0.LongPosition.totalCost : position0.ShortPosition.totalCost) + nowTransactionCost;
+                    //当前品种总现金流，包含历史现金流，若未持仓该品种，则记录持仓盈亏，若有持仓，则为历史现金流 + 当前现金流（即 -开仓成本）。该指标用于计算freeCash
+                    position0.totalCashFlow += (position0.volume > 0 ? -position0.LongPosition.totalCost : -position0.ShortPosition.totalCost) - nowTransactionCost;
                     //交易记录添加
                     position0.record = new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
@@ -235,12 +246,12 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     }
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
-                    AccountUpdating.computeAccountUpdating(ref myAccount, positionShot, now, ref data);
+                    if (positions.Count != 0)
+                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
 
             }
             positions.Add(now, positionShot);
-
             return now.AddMinutes(1);
         }
     }
