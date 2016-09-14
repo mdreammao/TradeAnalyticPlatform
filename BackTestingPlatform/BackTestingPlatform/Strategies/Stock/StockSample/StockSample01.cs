@@ -42,9 +42,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
         private static int contractTimes = 100;
 
         //策略参数设定
-        private int NDays = 6 * 5;//5分钟级别
-        private int lengthOfBackLooking = 120;//回看周期
-        private double toleranceDegree = 0.005;//容忍度，允许破位的幅度
+        private int period = 15;//应用周期
+        private int NDays = 6 * 15;//5分钟级别
+        private int lengthOfBackLooking = 240;//回看周期
+        private double toleranceDegree = 0.01;//容忍度，允许破位的幅度
         string targetVariety = "510050.SH";
 
         /// <summary>
@@ -90,8 +91,14 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             //回测循环--By Day
             foreach (var day in tradeDays)
             {
+
                 //取出当天的数据
-                var dataToday = data[targetVariety].FindAll(s => s.time.Year == day.Year && s.time.Month == day.Month && s.time.Day == day.Day);
+                Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>() ;
+                foreach (var variety in data)
+                {
+                   dataToday.Add(variety.Key,data[variety.Key].FindAll(s => s.time.Year == day.Year && s.time.Month == day.Month && s.time.Day == day.Day));
+                }
+               
 
                 int index = 0;
                 //交易开关设置，控制day级的交易开关
@@ -111,7 +118,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                     Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                     DateTime next = new DateTime();
                     int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
-                    double nowClose = data[targetVariety][indexOfNow].close;
+                    double nowClose = dataToday[targetVariety][index].close;
                     double nowUpReversionPoint = upReversionPoint[indexOfNow];
                     double nowDownReversionPoint = downReversionPoint[indexOfNow];
                     //实际操作从第一个回望期后开始
@@ -135,10 +142,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             /// （2）若当前下穿下反转点*（1-容忍度），平多                    
                             //（1）若当前为 回测结束日 或 tradingOn 为false，平仓
                             if (isLastDayOfBackTesting || tradingOn == false)
-                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                             //（2）若当前下穿下反转点*（1-容忍度），平多
                             else if (data[targetVariety][indexOfNow - 1].close >= nowDownReversionPoint * (1 - toleranceDegree) && nowClose < nowDownReversionPoint * (1 - toleranceDegree))
-                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                         }
                         //空仓 且可交易 可开仓
                         else if (isEmptyPosition && tradingOn && openingOn)
@@ -151,16 +158,16 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             //若剩余资金至少购买一手 且 出上反转信号 开仓
                             if (openVolume >= 1 && data[targetVariety][indexOfNow - 1].close <= nowUpReversionPoint * (1 + toleranceDegree) && nowClose > nowUpReversionPoint * (1 + toleranceDegree))
                             {
-                                MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = data[targetVariety][indexOfNow].close, minuteIndex = index };
+                                MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = dataToday[targetVariety][index].close, minuteIndex = index };
                                 signal.Add(targetVariety, openSignal);
-                                next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                                next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                                 //当天买入不可卖出
                                 closingOn = false;
                             }
                         }
                                                
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
                     }
 
                     catch (Exception)
@@ -179,11 +186,14 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 tempAccount.positionValue = myAccount.positionValue;
                 tempAccount.totalAssets = myAccount.totalAssets;
                 accountHistory.Add(tempAccount);
+
+                //显示当前信息
+                Console.WriteLine("Time:{0,-8:F},netWorth:{1,-8:F3}",day,myAccount.totalAssets/ initialCapital);
             }
 
             //遍历输出到console   
             foreach (var account in accountHistory)
-                Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time, account.totalAssets / initialCapital);
+                Console.WriteLine("time:{0,-8:F}, netWorth:{1,-8:F3}\n", account.time, account.totalAssets / initialCapital);
             /*
             //将accountHistory输出到csv
             var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";

@@ -69,9 +69,10 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //当前成交价，信号价格加滑点---注：此模型下信号价格即为现价
                     transactionPrice = signal0.price * (1 + slipPoint * longShortFlag);
                     //当前可成交量，若成交价因滑点而改变，成交量也会因此改变
-                    transactionVolume = Math.Truncate((signal0.volume * signal0.price) / transactionPrice / contractTimes) * contractTimes;
-                    //当前成交成本（交易费+佣金）
-                    nowTransactionCost = 0;
+                    // transactionVolume = Math.Truncate((signal0.volume * signal0.price) / transactionPrice / contractTimes) * contractTimes;
+                    transactionVolume = signal0.volume;
+                     //当前成交成本（交易费+佣金）
+                     nowTransactionCost = 0;
                     //获取当前品种手续费
                     nowBrokerFeeRatio = brokerFeeRatio[signal0.tradingVarieties];
                     //-------------------------------------------------------------------                 
@@ -79,8 +80,10 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //计算当前信号占用资金
                     double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMargin.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
                     //若资金不足，则跳过当前信号（*需要记录）
+                    /*
                     if (nowSignalCapitalOccupy > myAccount.freeCash)
                         continue;
+                        */
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
@@ -230,8 +233,10 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //总手续费、持仓成本更新  
                     //手续费，持续累加
                     position0.transactionCost += nowTransactionCost;
-                    //当前品种总现金流，包含历史现金流，若未持仓该品种，则记录持仓盈亏，若有持仓，则为历史现金流 + 当前现金流（即 -开仓成本）。该指标用于计算freeCash
-                    position0.totalCashFlow += (position0.volume > 0 ? -position0.LongPosition.totalCost : -position0.ShortPosition.totalCost) - nowTransactionCost;
+                    //当前品种总现金流，包含历史现金流，若未持仓该品种，则记录持仓盈亏，若有持仓，则为历史现金流 + 当前现金流。该指标用于计算freeCash
+                    // position0.totalCashFlow += (position0.volume > 0 ? -position0.LongPosition.totalCost : -position0.ShortPosition.totalCost) - nowTransactionCost;
+                    position0.totalCashFlow +=  -transactionPrice * transactionVolume  - nowTransactionCost;
+
                     //交易记录添加
                     position0.record = new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
