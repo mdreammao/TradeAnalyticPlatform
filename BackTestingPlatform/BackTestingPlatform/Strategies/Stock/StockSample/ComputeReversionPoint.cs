@@ -34,7 +34,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample01
         /// <param name="Ndays"></param>
         /// <param name="lengthOfBackLooking"></param>
         /// <returns></returns>
-        public static List<double> findUpReversionPoint(List<KLine> dataSeries, int Ndays, int lengthOfBackLooking)
+        public static List<double> findUpReversionPoint(List<KLine> dataSeries, int Ndays, int lengthOfBackLooking, int period)
         {
             List<double> indexList = new List<double>();
             for (int i = 0; i < dataSeries.Count; i++)
@@ -54,7 +54,12 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample01
                     if (indexOfLowestPoint - Ndays < 0)
                         indexList.Add(0);//空值记为0
                     else
+                    {
+                        //根据周期确定分钟k线上的起止索引，求起止区间的最大值
+                      //  int index1 = 
                         indexList.Add(dataSeries[indexOfLowestPoint - Ndays].high);
+                    }
+                        
                 }
 
             }
@@ -70,7 +75,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample01
         /// <param name="Ndays"></param>
         /// <param name="lengthOfBackLooking"></param>
         /// <returns></returns>
-        public static List<double> findDownReversionPoint(List<KLine> dataSeries, int Ndays, int lengthOfBackLooking)
+        public static List<double> findDownReversionPoint(List<KLine> dataSeries, int Ndays, int lengthOfBackLooking, int period)
         {
             List<double> indexList = new List<double>();
             for (int i = 0; i < dataSeries.Count; i++)
