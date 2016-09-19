@@ -124,9 +124,12 @@ namespace BackTestingPlatform.Strategies.Stock
                 accountHistory.Add(tempAccount);
             }
 
-            //遍历输出到console   
+            //遍历输出到console
             foreach (var account in accountHistory)
+            {
+                //这里当账户赋值为NULL时会无限循环
                 Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time, account.totalAssets / initialCapital);
+            }
 
             //将accountHistory输出到csv
             var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";

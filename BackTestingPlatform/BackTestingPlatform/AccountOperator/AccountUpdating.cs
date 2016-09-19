@@ -7,11 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
 
 namespace BackTestingPlatform.Transaction.TransactionWithSlip
 {
     public class AccountUpdating
     {
+        //初始化log组件
+        static Logger log = LogManager.GetCurrentClassLogger();
         //起始资金
         public static double intialCapital = 10000000;
 
@@ -26,7 +29,10 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         {
             //若position为null，直接跳过
             if (positions.Count == 0)
+            {
+                log.Info("初始持仓为空！");
                 return;
+            }
             Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();
             nowPosition = positions[positions.Keys.Last()];
             //计算保证金
