@@ -122,6 +122,7 @@
     <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip2.cs" />
+    <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip3.cs" />
     <Compile Include="Utilities\Common\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
     <Compile Include="Utilities\Common\SequentialUtils.cs" />
