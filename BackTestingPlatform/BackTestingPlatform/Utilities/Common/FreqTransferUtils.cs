@@ -51,10 +51,10 @@ namespace BackTestingPlatform.Utilities
             int startTime = 093100000;
             int endTime = 150100000;//实际不会有到15：01的数据，由于部分数据在15：00以后，故此处的截取点推后
             int freqSpan = freq * 100000;//周期时间跨度，Bar之间的时间距离（毫秒）
-
-            var newMinuteData = new List<KLine>();
-
-            int headIndex;//bar的起点时间
+                                                                                           
+            var newMinuteData = new List<KLine>();                                         
+                                                                                           
+            int headIndex;//bar的起点时间                                                  
             //int tailIndex = stockTickList.FindIndex(s => s.time >= startTime);//第一个bar的终点时间
 
             //for (int nowTick = 0; nowTick < stockTickList.Count;nowTick ++ )

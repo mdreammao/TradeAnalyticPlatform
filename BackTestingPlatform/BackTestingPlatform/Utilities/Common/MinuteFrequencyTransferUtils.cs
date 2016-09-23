@@ -32,6 +32,9 @@ namespace BackTestingPlatform.Utilities.Common
     /// 周期转换
     ///（1）分钟数据转换为其他任意更低频的数据（N小时线、N日线等等）
     ///（2）日线数据转换为其他任意更低频的数据（N周线、N月线、N季线、N年线等等）
+    /// minuteData数据要求：
+    /// （1）必须是以天为单位完整的minute数据，不接受起点终点不是日开始或结束的数据
+    /// 
     /// </summary>
     public static class MinuteFrequencyTransferUtils
     {
@@ -45,21 +48,21 @@ namespace BackTestingPlatform.Utilities.Common
         public static List<KLine> MinuteToNPeriods(List<KLine> minuteData, string period, int frequency)
         {
             List<KLine> newKLineData = new List<KLine>();
-            ///1分钟转化为N分钟K线
+            //1分钟转化为N分钟K线
             if (period.Equals("Minutely"))
             {
                 MinuteToNMinutes(minuteData, ref newKLineData, period, frequency);
             }
+            //1分钟转化为N日K线
             else if (period.Equals("Daily"))
             {
                 MinuteToNDays(minuteData, ref newKLineData, period, frequency);
             }
+            //1分钟转化为N月K线
             else if (period.Equals("Monthly"))
             {
                 MinuteToNMonths(minuteData, ref newKLineData, period, frequency);
-            }
-
-         
+            }   
             return newKLineData;
 
         }
@@ -73,6 +76,7 @@ namespace BackTestingPlatform.Utilities.Common
         /// <param name="frequency"></param>
         private static void MinuteToNMinutes(List<KLine> minuteData, ref List<KLine> newMinuteData,string period, int frequency)
         {
+
 
         }
 
