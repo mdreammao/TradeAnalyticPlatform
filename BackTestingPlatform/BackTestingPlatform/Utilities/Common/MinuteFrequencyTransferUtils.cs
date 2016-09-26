@@ -34,7 +34,10 @@ namespace BackTestingPlatform.Utilities.Common
     ///（2）日线数据转换为其他任意更低频的数据（N周线、N月线、N季线、N年线等等）
     /// minuteData数据要求：
     /// （1）必须是以天为单位完整的minute数据，不接受起点终点不是日开始或结束的数据
-    /// 
+    /// （2）暂不支持特定周期转特定周期，目前只支持1min转换为特定周期
+    /// （3）读入分钟数据时间标记为靠左，日开盘9:30，早收盘11:29，,午开盘13:00，午收盘14:59
+    /// （4）按习惯改为时间靠右标记，以五分钟为例，日开盘9:35，早收盘11:30，,午开盘13:05，午收盘15:00
+    /// （5）1分钟转N分钟，N要求小于等于120
     /// </summary>
     public static class MinuteFrequencyTransferUtils
     {
@@ -62,7 +65,7 @@ namespace BackTestingPlatform.Utilities.Common
             else if (period.Equals("Monthly"))
             {
                 MinuteToNMonths(minuteData, ref newKLineData, period, frequency);
-            }   
+            }
             return newKLineData;
 
         }
@@ -74,10 +77,44 @@ namespace BackTestingPlatform.Utilities.Common
         /// <param name="newMinuteData"></param>
         /// <param name="period"></param>
         /// <param name="frequency"></param>
-        private static void MinuteToNMinutes(List<KLine> minuteData, ref List<KLine> newMinuteData,string period, int frequency)
+        private static void MinuteToNMinutes(List<KLine> minuteData, ref List<KLine> newMinuteData, string period, int frequency)
         {
+            //每根bar的头尾索引
+            int headIndex = 0, tailIndex = 0;
+            //每根bar的头尾1分钟时间戳
+            DateTime headStamp, tailStamp;
+            for (int nowIndex = 0; nowIndex < minuteData.Count; nowIndex = tailIndex + 1)
+            {
+                DateTime nowTime = minuteData[nowIndex].time;
+                headStamp = nowTime;
+                //所有频率的每天第一根bar均包含0930，多一分钟      
+                if (nowTime.Hour == 9 && nowTime.Minute == 30 || nowTime.Hour == 13 && nowTime.Minute == 0)
+                    tailStamp = headStamp.AddMinutes(frequency);
+                else
+                    tailStamp = headStamp.AddMinutes(frequency - 1);
 
-
+                headIndex = nowIndex;
+                //在起止时间戳间的最后一根1分钟bar
+                tailIndex = minuteData.FindLastIndex(s => s.time >= headStamp && s.time <= tailStamp);
+                //记录新频率的k线
+                newMinuteData.Add(new KLine
+                {
+                    time = tailStamp,
+                    open = minuteData[headIndex].open,
+                    high = minuteData.Max(s => s.high),
+                    low = minuteData.Min(s => s.low),
+                    close = minuteData[tailIndex].close,
+                    volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
+                    amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
+                    openInterest = minuteData[tailIndex].openInterest
+                });
+            }
+            /*
+            foreach (var nowbar in newMinuteData)
+            {
+                Console.WriteLine("time:{0,8:F},close:{4,8:F3},volume:{5,8:F}\n", nowbar.time, nowbar.open, nowbar.high, nowbar.low, nowbar.close, nowbar.volume, nowbar.amount);
+            }
+            */
         }
 
         /// <summary>
@@ -89,6 +126,32 @@ namespace BackTestingPlatform.Utilities.Common
         /// <param name="frequency"></param>
         private static void MinuteToNDays(List<KLine> minuteData, ref List<KLine> newMinuteData, string period, int frequency)
         {
+            //
+            int headIndex = 0, tailIndex = 0;
+            //每根bar的头尾1分钟时间戳
+            DateTime headStamp = new DateTime();
+            DateTime tailStamp = new DateTime();
+            for (int nowIndex = 0; nowIndex < minuteData.Count; nowIndex = tailIndex + 1)
+            {
+                DateTime nowTime = minuteData[nowIndex].time;
+                headStamp = nowTime;
+                tailStamp = headStamp;
+                tailStamp = new DateTime(headStamp.Year, headStamp.Month, headStamp.Day, 15, 0, 0);
+                headIndex = nowIndex;
+                tailIndex = minuteData.FindLastIndex(s => s.time >= headStamp && s.time <= tailStamp);
+                //记录新频率的k线
+                newMinuteData.Add(new KLine
+                {
+                    time = tailStamp,
+                    open = minuteData[headIndex].open,
+                    high = minuteData.Max(s => s.high),
+                    low = minuteData.Min(s => s.low),
+                    close = minuteData[tailIndex].close,
+                    volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
+                    amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
+                    openInterest = minuteData[tailIndex].openInterest
+                });
+            }
 
         }
 

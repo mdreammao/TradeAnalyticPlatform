@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BackTestingPlatform.Strategies.Stock.StockSample;
 using BackTestingPlatform.Strategies.Stock.StockSample01;
+using BackTestingPlatform.Utilities.Common;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
@@ -78,6 +79,9 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 else
                     data[targetVariety].AddRange(ETFData.Cast<KLine>().ToList());
             }
+
+            //频率转换测试
+            //List<KLine> data_5min = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Minutely", 3);
 
             //计算需要指标
             //（1）回看长度内的高低极值点（值）
