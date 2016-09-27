@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BackTestingPlatform.Strategies.Stock.StockSample;
 using BackTestingPlatform.Strategies.Stock.StockSample01;
+using System.Globalization;
 
 namespace BackTestingPlatform.Utilities.Common
 {
@@ -32,6 +33,7 @@ namespace BackTestingPlatform.Utilities.Common
     /// 周期转换
     ///（1）分钟数据转换为其他任意更低频的数据（N小时线、N日线等等）
     ///（2）日线数据转换为其他任意更低频的数据（N周线、N月线、N季线、N年线等等）
+    ///（3）暂时只支持转化为1日、1月、1周k线
     /// minuteData数据要求：
     /// （1）必须是以天为单位完整的minute数据，不接受起点终点不是日开始或结束的数据
     /// （2）暂不支持特定周期转特定周期，目前只支持1min转换为特定周期
@@ -60,6 +62,11 @@ namespace BackTestingPlatform.Utilities.Common
             else if (period.Equals("Daily"))
             {
                 MinuteToNDays(minuteData, ref newKLineData, period, frequency);
+            }
+            //1分钟转化为N周K线
+            else if (period.Equals("Weekly"))
+            {
+                MinuteToNWeeks(minuteData, ref newKLineData, period, frequency);
             }
             //1分钟转化为N月K线
             else if (period.Equals("Monthly"))
@@ -126,7 +133,6 @@ namespace BackTestingPlatform.Utilities.Common
         /// <param name="frequency"></param>
         private static void MinuteToNDays(List<KLine> minuteData, ref List<KLine> newMinuteData, string period, int frequency)
         {
-            //
             int headIndex = 0, tailIndex = 0;
             //每根bar的头尾1分钟时间戳
             DateTime headStamp = new DateTime();
@@ -156,6 +162,43 @@ namespace BackTestingPlatform.Utilities.Common
         }
 
         /// <summary>
+        /// 1分钟转N周数据
+        /// </summary>
+        /// <param name="minuteData"></param>
+        /// <param name="newMinuteData"></param>
+        /// <param name="period"></param>
+        /// <param name="frequency"></param>
+        private static void MinuteToNWeeks(List<KLine> minuteData, ref List<KLine> newMinuteData, string period, int frequency)
+        {
+            int headIndex = 0, tailIndex = 0;
+            //每根bar的头尾1分钟时间戳
+            DateTime headStamp = new DateTime();
+            DateTime tailStamp = new DateTime();
+            for (int nowIndex = 0; nowIndex < minuteData.Count; nowIndex = tailIndex + 1)
+            {
+                DateTime nowTime = minuteData[nowIndex].time;
+                headStamp = nowTime;
+                headIndex = nowIndex;
+                //同一年同一周的最后一个索引
+                tailIndex = minuteData.FindLastIndex(s => s.time.Year == headStamp.Year && GetWeekOfYear(s.time) == GetWeekOfYear(headStamp) );
+                tailStamp = headStamp;
+                tailStamp = minuteData[tailIndex].time;
+                //记录新频率的k线
+                newMinuteData.Add(new KLine
+                {
+                    time = tailStamp,
+                    open = minuteData[headIndex].open,
+                    high = minuteData.Max(s => s.high),
+                    low = minuteData.Min(s => s.low),
+                    close = minuteData[tailIndex].close,
+                    volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
+                    amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
+                    openInterest = minuteData[tailIndex].openInterest
+                });
+            }
+
+        }
+        /// <summary>
         /// 1分钟转N月数据
         /// </summary>
         /// <param name="minuteData"></param>
@@ -164,7 +207,45 @@ namespace BackTestingPlatform.Utilities.Common
         /// <param name="frequency"></param>
         private static void MinuteToNMonths(List<KLine> minuteData, ref List<KLine> newMinuteData, string period, int frequency)
         {
+            int headIndex = 0, tailIndex = 0;
+            //每根bar的头尾1分钟时间戳
+            DateTime headStamp = new DateTime();
+            DateTime tailStamp = new DateTime();
+            for (int nowIndex = 0; nowIndex < minuteData.Count; nowIndex = tailIndex + 1)
+            {
+                DateTime nowTime = minuteData[nowIndex].time;
+                headStamp = nowTime;
+                headIndex = nowIndex;
+                tailIndex = minuteData.FindLastIndex(s => s.time.Month == headStamp.Month);
+                tailStamp = headStamp;
+                tailStamp = minuteData[tailIndex].time;
 
+                //记录新频率的k线
+                newMinuteData.Add(new KLine
+                {
+                    time = tailStamp,
+                    open = minuteData[headIndex].open,
+                    high = minuteData.Max(s => s.high),
+                    low = minuteData.Min(s => s.low),
+                    close = minuteData[tailIndex].close,
+                    volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
+                    amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
+                    openInterest = minuteData[tailIndex].openInterest
+                });
+            }
+
+        }
+
+        /// <summary>
+        /// 获取指定日期是一年中的第几周
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        private static int GetWeekOfYear(DateTime dt)
+        {
+            GregorianCalendar gc = new GregorianCalendar();
+            int weekOfYear = gc.GetWeekOfYear(dt, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            return weekOfYear;
         }
 
 

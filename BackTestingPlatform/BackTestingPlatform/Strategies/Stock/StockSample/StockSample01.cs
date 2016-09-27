@@ -82,7 +82,9 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
 
             //频率转换测试
             //List<KLine> data_5min = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Minutely", 3);
-
+            //List<KLine> data_1Day = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Daily", 1);
+            //List<KLine> data_1Month = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Monthly", 1);
+            List<KLine> data_1Week = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Weekly", 1);
             //计算需要指标
             //（1）回看长度内的高低极值点（值）
             //（2）各级别高低拐点的位置（值）
