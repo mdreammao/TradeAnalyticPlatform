@@ -127,6 +127,7 @@
     <Compile Include="Strategies\Option\OptionSample4.cs" />
     <Compile Include="Strategies\Stock\AdjFactorTest.cs" />
     <Compile Include="Strategies\Stock\NdaysReversion.cs" />
+    <Compile Include="Strategies\Stock\StockSampleOne.cs" />
     <Compile Include="System\GlobalizationDateTimeFormatInfo.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositonsWithSlip.cs" />
