@@ -21,6 +21,11 @@ namespace BackTestingPlatformTest.Tests
             var y = new OptionDaily();
             var prop21 = typeof(OptionDaily).GetProperty("open");
             prop21.SetValue(y, 232.333);
+
+            var list1 = new List<int>() { 1, 2, 3, 4, 5 };
+            var list2=list1.Cast<int>().ToList();
+            list2[2] = 9;
+           
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Stock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,18 +80,62 @@ namespace BackTestingPlatform.Utilities.Common
         }
 
         /// <summary>
+        /// 根据给定的时间序列作为采样点对原始Sequential列表重新筛选，并将结果列表里每项的time字段与timeline对齐
+        /// 筛选后的结果列表数量和采样序点列timeline的数量一致。
+        /// 
+        /// </summary>
+        /// <typeparam name="T">Sequential且ICloneable</typeparam>
+        /// <param name="src">必须是按时间递增的序列</param>
+        /// <param name="timeline">时间采样点序列</param>
+        ///  <param name="date">对齐的目标日期</param>
+        /// <returns></returns>
+        public static List<T> ResampleAndAlign<T>(IList<T> src, TimeLine timeline, DateTime date) where T : Sequential, ICloneable, new()
+        {
+            date = date.Date;
+            var res = Resample(src, timeline);
+            var timelineInMillis = timeline.Millis;
+            //重新校正时间，让res与timeline对齐
+            for (int i = 0; i < timelineInMillis.Count; i++)
+            {
+                if (res[i] != null)
+                {
+                    res[i] = (T)res[i].Clone();
+                }
+                else
+                {
+                    res[i] = new T();
+                }
+                res[i].time = date.AddMilliseconds(timelineInMillis[i]);
+            }
+            return res.ToList();
+        }
+
+        /// <summary>
+        /// 根据给定的时间序列作为采样点对原始Sequential列表重新筛选，但对结果列表每项的time字段不去和timeline对齐
+        /// 筛选后的结果列表数量和采样序点列timeline的数量一致。
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="src"></param>
-        /// <param name="timeline">HHmmssfff格式</param>
+        /// <param name="src">必须是按时间递增的序列</param>
+        /// <param name="timeline">时间采样点序列</param>
         /// <returns></returns>
-        public static List<T> Resample<T>(IList<T> src,IList<DateTime> timeline) where T : Sequential
+        public static List<T> Resample<T>(IList<T> src, TimeLine timeline) where T : Sequential
         {
+            if (src == null || timeline == null)
+                return null;
+            var timelineInMillis = timeline.Millis;
+            int n = timelineInMillis.Count;
+            var res = new T[n];
+            int i, j = 0;
+            //将src筛选,到res
+            for (i = 0; i < n; i++)
+            {
+                for (; j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]; j++) ;
+                if (j > 0) res[i] = src[j - 1];
+            }
 
-            return null;
+            return res.ToList();
         }
 
-       
     }
 }

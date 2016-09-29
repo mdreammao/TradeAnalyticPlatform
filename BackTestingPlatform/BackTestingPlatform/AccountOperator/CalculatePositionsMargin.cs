@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Positions
 {
-    public static class CalculateMargin
+    public static class CalculatePositionsMargin
     {
         /// <summary>
         /// 根据当前持仓计算保证金，
@@ -21,7 +21,7 @@ namespace BackTestingPlatform.Model.Positions
         public static double calculateMargin(Dictionary<string, PositionsWithDetail> nowPosition, DateTime now, ref Dictionary<string, List<KLine>> data)
         {
             double totalMargin = 0;
-            double marginRatio = 0.25;
+            
             foreach (var position0 in nowPosition.Values)
             {
                 //若当前持有空头头寸，则计算保证金
@@ -34,8 +34,7 @@ namespace BackTestingPlatform.Model.Positions
                     }
                 }
             }
-            //粗略估计法，保证金为成交金额的25%
-            totalMargin *= marginRatio;
+            totalMargin *= 0.25;
 
             return totalMargin;
 

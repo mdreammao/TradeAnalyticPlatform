@@ -97,8 +97,7 @@ namespace BackTestingPlatform.Strategies.Option
                 //不允许在同一根1minBar上开平仓
                 while (index < 240)
                 {
-                    //        if (positions.Count == 2)
-                    //                Console.ReadKey();
+
                     int nextIndex = index + 1;
                     DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(day), index);
                     Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
@@ -107,6 +106,13 @@ namespace BackTestingPlatform.Strategies.Option
                     List<double> strikeTodayArr = OptionUtilities.getStrikeListByAscending(list).OrderBy(x => Math.Abs(x - etfPrice)).ToList();
                     try
                     {
+                        /*
+                        if (index != 225)
+                        {
+                            index = nextIndex;
+                            continue;
+                        }
+                        */    
                         //持仓查询，先平后开
                         //若当前有持仓 且 允许平仓
                         //是否是空仓,若position中所有品种volum都为0，则说明是空仓     
@@ -138,7 +144,7 @@ namespace BackTestingPlatform.Strategies.Option
                                 //全部平仓
                                 DateTime next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                                 //当天不可再开仓
-                                 openingOn = false;
+                                openingOn = false;
                             }
                         }
                         //若当前无持仓 且 允许开仓 
@@ -185,7 +191,7 @@ namespace BackTestingPlatform.Strategies.Option
                         AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
 
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         throw;
                     }
@@ -202,24 +208,17 @@ namespace BackTestingPlatform.Strategies.Option
                 tempAccount.totalAssets = myAccount.totalAssets;
                 accountHistory.Add(tempAccount);
             }
-            
-            //将accountHistory输出到csv
-            /*
-            var resultPath = ConfigurationManager.AppSettings["CacheData.RootPath"];
-            FileStream fs = new FileStream(resultPath, FileMode.Append);
-            StreamWriter sw = new StreamWriter(fs, Encoding.Default);
-            //    File.WriteAllLines(@"D:\PAT\xx.txt", lines, Encoding.Default);
-            
-                foreach (var account in accountHistory)
-                    File.WriteAllLines(@"D:\xx.csv", account.totalAssets, Encoding.Default);
 
-                sw.Close();
-                fs.Close();
-                */
+            //遍历输出到console   
             foreach (var account in accountHistory)
-                Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time,account.totalAssets/initialCapital);
+                Console.WriteLine("time:{0},netWorth:{1,8:F3}\n", account.time, account.totalAssets / initialCapital);
 
+            //将accountHistory输出到csv
+            var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";
+            var dt = DataTableUtils.ToDataTable(accountHistory);          // List<MyModel> -> DataTable
+            CsvFileUtils.WriteToCsvFile(resultPath, dt);	// DataTable -> CSV File
             Console.ReadKey();
+
         }
     }
 }

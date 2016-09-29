@@ -14,11 +14,10 @@ namespace BackTestingPlatform.Model.Positions
         public double currentPrice { get; set; }
         public List<TransactionRecord> record { get; set; }
         public double transactionCost { get; set; }
-        public double totalCost { get; set; }
+        public double totalCashFlow { get; set; }
         //实时总权益
         public double totalAmt { get; set; }
         //交易品种
         public string tradingVarieties { get; set; }
-        
     }
 }

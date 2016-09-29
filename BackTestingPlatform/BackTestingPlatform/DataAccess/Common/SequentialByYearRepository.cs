@@ -308,7 +308,11 @@ namespace BackTestingPlatform.DataAccess
 
                 }
             }
-            log.Info("获取{3}数据{0}(year={1})成功.共{2}行.", Kit.ToShortName(tag), year, result.Count, code);
+            if (result != null)
+            {
+                log.Info("获取{3}数据{0}(year={1})成功.共{2}行.", Kit.ToShortName(tag), year, result.Count, code);
+            }
+            
             return result;
         }
 

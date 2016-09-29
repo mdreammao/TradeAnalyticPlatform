@@ -27,15 +27,15 @@ namespace BackTestingPlatform.Utilities.Option
 
         public static List<DateTime> getEndDateListByAscending(List<OptionInfo> list)
         {
-            List<DateTime> endDateList = new List<DateTime>();
+            List<DateTime> durationList = new List<DateTime>();
             foreach (var item in list)
             {
-                if (endDateList.Contains(item.endDate) == false)
+                if (durationList.Contains(item.endDate) == false)
                 {
-                    endDateList.Add(item.endDate);
+                    durationList.Add(item.endDate);
                 }
             }
-            return endDateList.OrderBy(x => x).ToList();
+            return durationList.OrderBy(x => x).ToList();
         }
 
         public static List<double> getStrikeListByAscending(List<OptionInfo> list)

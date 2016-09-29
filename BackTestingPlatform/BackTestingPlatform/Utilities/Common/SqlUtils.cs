@@ -80,17 +80,48 @@ namespace BackTestingPlatform.Utilities
         /// <param name="connStr">sql连接字符串，代表一个数据源</param>
         /// <param name="sql">sql语句</param>
         /// <param name="paramArr">参数数组</param>
-        /// <param name="commandType">Command类型</param>
+        /// <param name="cmdType">Command类型</param>
         /// <returns>DataTable对象</returns>
-        public static DataTable GetTable(string connStr, string sql, SqlParameter[] paramArr, CommandType commandType)
+        public static DataTable GetTable(string connStr, string sql, SqlParameter[] paramArr, CommandType cmdType)
+        {
+            return GetTable(connStr, sql, paramArr, cmdType, 0);
+        }
+
+        /// <summary>
+        /// 通过一次性的连接，执行查询，返回DataTable对象
+        /// </summary>
+        /// <param name="connStr">sql连接字符串，代表一个数据源</param>
+        /// <param name="sql">sql语句</param>
+        /// <param name="paramArr">参数数组</param>
+        /// <param name="cmdTimeout"></param>
+        /// <returns>DataTable对象</returns>
+        public static DataTable GetTable(string connStr, string sql, SqlParameter[] paramArr, int cmdTimeout)
+        {
+            return GetTable(connStr, sql, paramArr, CommandType.Text, cmdTimeout);
+        }
+
+        /// <summary>
+        /// 通过一次性的连接，执行查询，返回DataTable对象
+        /// </summary>
+        /// <param name="connStr">sql连接字符串，代表一个数据源</param>
+        /// <param name="sql">sql语句</param>
+        /// <param name="paramArr">参数数组</param>
+        /// <param name="cmdType">Command类型</param>
+        /// <param name="cmdTimeout"></param>
+        /// <returns>DataTable对象</returns>
+        public static DataTable GetTable(string connStr, string sql, SqlParameter[] paramArr, CommandType cmdType,int cmdTimeout)
         {
             DataTable dt = new DataTable();
+            log.Debug("Executing SQL Query: conn={0},SQL=[\n{1}\n]", connStr, sql);
+            if (paramArr != null)
+                log.Debug("params={0}", paramArr.ToString());
             try
             {
                 using (SqlConnection conn = new SqlConnection(connStr))
                 {
                     SqlDataAdapter da = new SqlDataAdapter(sql, conn);
-                    da.SelectCommand.CommandType = commandType;
+                    da.SelectCommand.CommandType = cmdType;
+                    if (cmdTimeout>0) da.SelectCommand.CommandTimeout = cmdTimeout;
                     if (paramArr != null)
                     {
                         da.SelectCommand.Parameters.AddRange(paramArr);
@@ -100,11 +131,10 @@ namespace BackTestingPlatform.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                log.Error(e);
             }
             return dt;
         }
-
 
 
         #endregion

@@ -23,18 +23,19 @@ namespace BackTestingPlatform.Test
             //DataAccessTests.testOptionDailyRepo();
             //
             //GenericTypeTests.test1();
+            SeqUtilsTests.test2();
             //DataAccessTests.testStockDailyRepo();
             //DataAccessTests.testStockMinuteKLineRepo();
-            int n = 130000;double x1=0;
-            var xa = new DateTime();
-            int ss = System.Runtime.InteropServices.Marshal.SizeOf(typeof(DateTime));
-            var s = new List<DateTime>(n);
-            for (int i = 0; i < n; i++)
-            {
-                s.Add(new DateTime(i));
-                //for (int j = 0; j < 44444; j++) x1 += Math.Sin(i);
-                       // Console.Write(i);
-            }
+            //int n = 130000;double x1=0;
+            //var xa = new DateTime();
+            //int ss = System.Runtime.InteropServices.Marshal.SizeOf(typeof(DateTime));
+            //var s = new List<DateTime>(n);
+            //for (int i = 0; i < n; i++)
+            //{
+            //    s.Add(new DateTime(i));
+            //    //for (int j = 0; j < 44444; j++) x1 += Math.Sin(i);
+            //           // Console.Write(i);
+            //}
             Platforms.ShutDown();
             Console.ReadKey();
         }

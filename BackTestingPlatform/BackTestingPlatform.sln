@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform", "BackTestingPlatform\BackTestingPlatform.csproj", "{830FE9E4-2D61-42ED-9104-9CB26CA72D73}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform.Test", "BackTestingPlatformTest\BackTestingPlatform.Test.csproj", "{236EF379-B062-4C69-A12C-841344889E0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalTester1", "..\..\TradeAnalyticPlatform2.localtester\LocalTester1\LocalTester1.csproj", "{034A308A-4D8E-4112-872A-7C985792C33C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalTester", "LocalTester\LocalTester.csproj", "{E9A18D0B-3AD6-4AE9-A602-C41D486717AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform", "BackTestingPlatform\BackTestingPlatform.csproj", "{830FE9E4-2D61-42ED-9104-9CB26CA72D73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalTester1", "TradeAnalyticPlatform2.localtester\LocalTester1\LocalTester1.csproj", "{034A308A-4D8E-4112-872A-7C985792C33C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,14 +17,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{830FE9E4-2D61-42ED-9104-9CB26CA72D73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{830FE9E4-2D61-42ED-9104-9CB26CA72D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{830FE9E4-2D61-42ED-9104-9CB26CA72D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{830FE9E4-2D61-42ED-9104-9CB26CA72D73}.Release|Any CPU.Build.0 = Release|Any CPU
 		{236EF379-B062-4C69-A12C-841344889E0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{236EF379-B062-4C69-A12C-841344889E0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{236EF379-B062-4C69-A12C-841344889E0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{236EF379-B062-4C69-A12C-841344889E0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9A18D0B-3AD6-4AE9-A602-C41D486717AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9A18D0B-3AD6-4AE9-A602-C41D486717AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9A18D0B-3AD6-4AE9-A602-C41D486717AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9A18D0B-3AD6-4AE9-A602-C41D486717AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{830FE9E4-2D61-42ED-9104-9CB26CA72D73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{830FE9E4-2D61-42ED-9104-9CB26CA72D73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{830FE9E4-2D61-42ED-9104-9CB26CA72D73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{830FE9E4-2D61-42ED-9104-9CB26CA72D73}.Release|Any CPU.Build.0 = Release|Any CPU
 		{034A308A-4D8E-4112-872A-7C985792C33C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{034A308A-4D8E-4112-872A-7C985792C33C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{034A308A-4D8E-4112-872A-7C985792C33C}.Release|Any CPU.ActiveCfg = Release|Any CPU
