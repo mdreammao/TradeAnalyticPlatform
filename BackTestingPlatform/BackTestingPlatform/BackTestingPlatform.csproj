@@ -56,6 +56,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TA-Lib-Core, Version=1.0.4998.21369, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TA-Lib.0.5.0.3\lib\TA-Lib-Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WAPIWrapperCSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\WAPIWrapperCSharp.dll</HintPath>
@@ -74,10 +78,10 @@
     <Compile Include="DataAccess\Futures\FuturesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesMinuteRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesTickRepository.cs" />
-    <Compile Include="DataAccess\Option\OptionDailyRepository.cs" />
-    <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
-    <Compile Include="DataAccess\Option\OptionMinuteRepository.cs" />
-    <Compile Include="DataAccess\Option\OptionTickRepository.cs" />
+    <Compile Include="DataAccess\Common\Option\OptionDailyRepository.cs" />
+    <Compile Include="DataAccess\Common\Option\OptionInfoRepository.cs" />
+    <Compile Include="DataAccess\Common\Option\OptionMinuteRepository.cs" />
+    <Compile Include="DataAccess\Common\Option\OptionTickRepository.cs" />
     <Compile Include="DataAccess\Stock\StockDailyRepository.cs" />
     <Compile Include="DataAccess\Common\SequentialByDayRepository.cs" />
     <Compile Include="DataAccess\Stock\StockInfoRepository.cs" />
@@ -117,8 +121,10 @@
     <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Option\OptionSample4.cs" />
     <Compile Include="Strategies\Stock\StockSample\ComputeReversionPoint.cs" />
+    <Compile Include="Strategies\Stock\StockSample\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSample01.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />
+    <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip2.cs" />
