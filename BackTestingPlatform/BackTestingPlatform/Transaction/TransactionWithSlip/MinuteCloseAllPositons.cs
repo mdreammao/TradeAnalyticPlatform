@@ -44,7 +44,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                 //对所有的持仓，生成现价等量反向的交易信号
                 int index = TimeListUtility.MinuteToIndex(now);
                 MinuteSignal nowSignal = new MinuteSignal() { code = position0.code, volume = - position0.volume,
-                    time = now, tradingVarieties = "option", price = data[position0.code][index].close, minuteIndex = index };
+                    time = now, tradingVarieties = position0.tradingVarieties, price = data[position0.code][index].close, minuteIndex = index };
                 signal.Add(nowSignal.code, nowSignal);
             }
             //将清仓信号传给成交判断

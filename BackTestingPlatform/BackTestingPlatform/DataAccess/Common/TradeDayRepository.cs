@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WAPIWrapperCSharp;
 using System.Data;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Model.Common;
 
 namespace BackTestingPlatform.DataAccess.Common
 {

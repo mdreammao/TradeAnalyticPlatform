@@ -112,6 +112,9 @@ namespace BackTestingPlatform.Utilities
         public static DataTable GetTable(string connStr, string sql, SqlParameter[] paramArr, CommandType cmdType,int cmdTimeout)
         {
             DataTable dt = new DataTable();
+            log.Debug("Executing SQL Query: conn={0},SQL=[\n{1}\n]", connStr, sql);
+            if (paramArr != null)
+                log.Debug("params={0}", paramArr.ToString());
             try
             {
                 using (SqlConnection conn = new SqlConnection(connStr))
@@ -128,7 +131,7 @@ namespace BackTestingPlatform.Utilities
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                log.Error(e);
             }
             return dt;
         }
