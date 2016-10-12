@@ -121,6 +121,7 @@
     <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Option\OptionSample4.cs" />
     <Compile Include="Strategies\Stock\StockSample\ComputeReversionPoint.cs" />
+    <Compile Include="Strategies\Stock\StockSample\MA.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSample01.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />
@@ -158,6 +159,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Model\TALibrary\" />
     <Folder Include="Positions\" />
     <Folder Include="Utilities\Stock\" />
     <Folder Include="Utilities\Transaction\" />
