@@ -14,13 +14,12 @@ namespace BackTestingPlatform.DataAccess.Futures
     {
         protected override List<FuturesTickFromMssql> readFromDefaultMssql(string code, DateTime date)
         {
-            var connName = "corp218";
+            var connName = "commodityTick";
             var yyyyMM = date.ToString("yyyyMM");
             var yyyyMMdd = date.ToString("yyyyMMdd");
             var codeStr = code.Replace('.', '_');
             var sql = String.Format(@"
-            SELECT * FROM [TradeMarket{0}].[dbo].[MarketData_{1}] where tdate={2}
-            ", yyyyMM, codeStr, yyyyMMdd);
+            SELECT * FROM [TradeMarket{0}].[dbo].[MarketData_{1}] where tdate={2} order by ttime", yyyyMM, codeStr, yyyyMMdd);
             var connStr = SqlUtils.GetConnectionString(connName);
             DataTable dt = SqlUtils.GetTable(connStr, sql);
             return dt.AsEnumerable().Select(
@@ -29,10 +28,11 @@ namespace BackTestingPlatform.DataAccess.Futures
                     code = (string)row["stkcd"],
                     time = Kit.ToDateTime(row["tdate"], row["ttime"]),
                     date = Kit.ToInt(row["tdate"]),
+                    ndate=Kit.ToInt(row["ndate"]),
                     moment = Kit.ToInt(row["ttime"]),
                     lastPrice = Kit.ToDouble(row["cp"]),
-                    ask = Position.buildAsk5(row),
-                    bid = Position.buildBid5(row),
+                    ask = Position.buildAsk(row),
+                    bid = Position.buildBid(row),
                     high = Kit.ToDouble(row["hp"]),
                     low = Kit.ToDouble(row["lp"]),
                     preClose = Kit.ToDouble(row["PRECLOSE"]),
