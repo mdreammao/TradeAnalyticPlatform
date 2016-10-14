@@ -7,7 +7,7 @@ using static TicTacTec.TA.Library.Core;
 
 namespace BackTestingPlatform.Model.TALibrary
 {
-    public static class TA_SMA
+    public static class TA_MA
     {
         public static double[] SMA(double[] data, int length)
         {

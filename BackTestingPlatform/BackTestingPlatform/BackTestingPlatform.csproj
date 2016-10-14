@@ -78,10 +78,10 @@
     <Compile Include="DataAccess\Futures\FuturesInfoRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesMinuteRepository.cs" />
     <Compile Include="DataAccess\Futures\FuturesTickRepository.cs" />
-    <Compile Include="DataAccess\Common\Option\OptionDailyRepository.cs" />
-    <Compile Include="DataAccess\Common\Option\OptionInfoRepository.cs" />
-    <Compile Include="DataAccess\Common\Option\OptionMinuteRepository.cs" />
-    <Compile Include="DataAccess\Common\Option\OptionTickRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionDailyRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionMinuteRepository.cs" />
+    <Compile Include="DataAccess\Option\OptionTickRepository.cs" />
     <Compile Include="DataAccess\Stock\StockDailyRepository.cs" />
     <Compile Include="DataAccess\Common\SequentialByDayRepository.cs" />
     <Compile Include="DataAccess\Stock\StockInfoRepository.cs" />
@@ -113,7 +113,7 @@
     <Compile Include="Model\Option\OptionDaily.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
-    <Compile Include="Model\TALibrary\TA_SMA.cs" />
+    <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
@@ -122,11 +122,13 @@
     <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Option\OptionSample4.cs" />
     <Compile Include="Strategies\Stock\StockSample\ComputeReversionPoint.cs" />
+    <Compile Include="Strategies\Stock\StockSample\DoubleMAForTick.cs" />
     <Compile Include="Strategies\Stock\StockSample\MA.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSample01.cs" />
     <Compile Include="AccountOperator\AccountUpdating.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
+    <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip2.cs" />
