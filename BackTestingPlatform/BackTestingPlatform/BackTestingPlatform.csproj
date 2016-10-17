@@ -44,12 +44,14 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,6 +66,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\WAPIWrapperCSharp.dll</HintPath>
     </Reference>
+    <Reference Include="ZedGraph, Version=5.1.7.430, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZedGraph.5.1.7\lib\net35-Client\ZedGraph.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountOperator\Minute\CalculateOnesMarginForMinute.cs" />
@@ -71,6 +77,9 @@
     <Compile Include="AccountOperator\Tick\AccountUpdatingForTick.cs" />
     <Compile Include="AccountOperator\Tick\CalculateOnesMarginForTick.cs" />
     <Compile Include="AccountOperator\Tick\CalculatePositionsMarginForTick.cs" />
+    <Compile Include="Charts\Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
@@ -172,6 +181,7 @@
     <Folder Include="Utilities\Transaction\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="License-LGPL.txt" />
     <Content Include="Task\HeFeiying.txt" />
     <Content Include="Task\HuangZhenkun.txt" />
     <Content Include="Task\MaoHeng.txt" />

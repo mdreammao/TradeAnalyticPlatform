@@ -1,4 +1,5 @@
 ﻿using BackTestingPlatform.AccountOperator;
+using BackTestingPlatform.AccountOperator.Minute;
 using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
@@ -268,7 +269,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
                     if (positions.Count != 0)
-                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
 
             }
@@ -527,7 +528,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
                     if (positions.Count != 0)
-                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
 
             }

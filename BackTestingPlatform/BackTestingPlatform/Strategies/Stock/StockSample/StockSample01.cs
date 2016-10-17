@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using BackTestingPlatform.Strategies.Stock.StockSample;
 using BackTestingPlatform.Strategies.Stock.StockSample01;
 using BackTestingPlatform.Utilities.Common;
+using BackTestingPlatform.AccountOperator.Minute;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
@@ -173,7 +174,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                         }
                                                
                         //账户信息更新
-                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
                     }
 
                     catch (Exception)

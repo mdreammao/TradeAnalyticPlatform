@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using BackTestingPlatform.AccountOperator.Tick;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess;
 using BackTestingPlatform.DataAccess.Futures;

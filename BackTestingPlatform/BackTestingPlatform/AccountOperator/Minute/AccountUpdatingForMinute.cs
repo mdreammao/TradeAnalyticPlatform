@@ -11,7 +11,7 @@ using NLog;
 
 namespace BackTestingPlatform.AccountOperator.Minute
 {
-    public class AccountUpdatingForTick
+    public class AccountUpdatingForMinute
     {
         //初始化log组件
         static Logger log = LogManager.GetCurrentClassLogger();

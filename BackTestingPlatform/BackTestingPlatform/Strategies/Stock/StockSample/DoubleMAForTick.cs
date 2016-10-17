@@ -99,6 +99,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
 
             /**/
+            /*
             ///回测循环
             //回测循环--By Day
             foreach (var day in tradeDays)
@@ -214,8 +215,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
 
 
             Console.ReadKey();
-            
+            */
+
         }
 
     }
+
 }
