@@ -27,6 +27,7 @@ using BackTestingPlatform.Strategies.Stock.StockSample01;
 using BackTestingPlatform.Utilities.Common;
 using TicTacTec.TA.Library;
 using System.Diagnostics;
+using BackTestingPlatform.Model.TALibrary;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
@@ -47,7 +48,6 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
         public void compute()
         {
 
-
             ///数据准备
             //交易日信息
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startDate, endDate);
@@ -64,7 +64,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
 
             ///指标计算
             var closePrice = data[targetVariety].Select(x => x.close).ToArray();
-
+            /*
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start(); //  开始监视代码运行时间
             //-----------------------------------------
@@ -81,12 +81,12 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             stopwatch.Stop(); //  停止监视
             TimeSpan timespan = stopwatch.Elapsed; //  获取当前实例测量得出的总时间
             Console.WriteLine("Calc MA Running Time: {0}", timespan.TotalSeconds);
-
+            */
             Stopwatch stopwatch2 = new Stopwatch();
             stopwatch2.Start(); //  开始监视代码运行时间
-            var MAValue = MA.compute(closePrice, periods);
+            var MAValue = TA_SMA.SMA(closePrice, periods);
             stopwatch2.Stop(); //  停止监视
-            TimeSpan timespan2 = stopwatch.Elapsed; //  获取当前实例测量得出的总时间
+            TimeSpan timespan2 = stopwatch2.Elapsed; //  获取当前实例测量得出的总时间
             Console.WriteLine("Calc MA2 Running Time: {0}", timespan2.TotalSeconds);
             Console.ReadKey();
 

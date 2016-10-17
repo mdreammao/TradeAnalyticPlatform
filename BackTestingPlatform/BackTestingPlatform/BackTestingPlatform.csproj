@@ -121,6 +121,7 @@
     <Compile Include="Model\Option\OptionDaily.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
+    <Compile Include="Model\TALibrary\TA_SMA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
@@ -167,7 +168,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\TALibrary\" />
     <Folder Include="Positions\" />
     <Folder Include="Utilities\Stock\" />
     <Folder Include="Utilities\Transaction\" />
