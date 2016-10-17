@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.AccountOperator
+namespace BackTestingPlatform.AccountOperator.Minute
 {
-    public static class CalculateOnesMargin
+    public static class CalculateOnesMarginForTick
     {
         public static double calculateOnesMargin(string code, double volume, DateTime now, ref Dictionary<string, List<KLine>> data)
         {

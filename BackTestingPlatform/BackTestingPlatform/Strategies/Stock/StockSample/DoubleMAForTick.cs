@@ -94,24 +94,24 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             List<double> longMA = new List<double>();
             List<double> shortMA = new List<double>();
 
-            var bidPrice = data[targetVariety].Select(x => x.bid[0].price).ToArray();
-            longMA = TA_MA.SMA(bidPrice, longLength).ToList();
-            shortMA = TA_MA.SMA(bidPrice, shortLength).ToList();
+            var lastPrice = data[targetVariety].Select(x => x.lastPrice).ToArray();
+            longMA = TA_MA.SMA(lastPrice, longLength).ToList();
+            shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
 
-            /*
+            /**/
             ///回测循环
             //回测循环--By Day
             foreach (var day in tradeDays)
             {
 
                 //取出当天的数据
-                Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
+                Dictionary<string, List<FuturesTickFromMssql>> dataToday = new Dictionary<string, List<FuturesTickFromMssql>>();
                 foreach (var variety in data)
                 {
                     dataToday.Add(variety.Key, data[variety.Key].FindAll(s => s.time.Year == day.Year && s.time.Month == day.Month && s.time.Day == day.Day));
                 }
 
-
+                int dayLength = dataToday.Count;
                 int index = 0;
                 //交易开关设置，控制day级的交易开关
                 bool tradingOn = true;//总交易开关
@@ -121,20 +121,19 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 //是否为回测最后一天
                 bool isLastDayOfBackTesting = day.Equals(endDate);
 
-                //回测循环 -- By Minute
-                //不允许在同一根1minBar上开平仓
-                while (index < 240)
+                //回测循环 -- By Tick
+
+                while (index < dayLength)
                 {
                     int nextIndex = index + 1;
                     DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(day), index);
-                    Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
+                    Dictionary<string, TickSignal> signal = new Dictionary<string, TickSignal>();
                     DateTime next = new DateTime();
                     int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
-                    double nowClose = dataToday[targetVariety][index].close;
-                    double nowUpReversionPoint = upReversionPoint[indexOfNow];
-                    double nowDownReversionPoint = downReversionPoint[indexOfNow];
-                    //实际操作从第一个回望期后开始
-                    if (indexOfNow < lengthOfBackLooking - 1)
+                    double nowPrice = dataToday[targetVariety][index].lastPrice;
+
+                    //实际操作从第一个回望期后开始    
+                    if (indexOfNow < longLength - 1)
                     {
                         index = nextIndex;
                         continue;
@@ -179,7 +178,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                         }
 
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
+                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
                     }
 
                     catch (Exception)
@@ -215,7 +214,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
 
 
             Console.ReadKey();
-            */
+            
         }
 
     }

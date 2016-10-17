@@ -66,8 +66,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountOperator\CalculateOnesMargin.cs" />
+    <Compile Include="AccountOperator\Minute\CalculateOnesMarginForMinute.cs" />
     <Compile Include="AccountOperator\QueryPositons.cs" />
+    <Compile Include="AccountOperator\Tick\AccountUpdatingForTick.cs" />
+    <Compile Include="AccountOperator\Tick\CalculateOnesMarginForTick.cs" />
+    <Compile Include="AccountOperator\Tick\CalculatePositionsMarginForTick.cs" />
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
@@ -98,13 +101,14 @@
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
     <Compile Include="Model\Positions\BasicPositions.cs" />
-    <Compile Include="AccountOperator\CalculatePositionsMargin.cs" />
+    <Compile Include="AccountOperator\Minute\CalculatePositionsMarginForMinute.cs" />
     <Compile Include="Model\Positions\MinutePositions.cs" />
     <Compile Include="Model\Positions\PositionDetail.cs" />
     <Compile Include="Model\Positions\PositionsWithDetail.cs" />
     <Compile Include="Model\Positions\TransactionRecord.cs" />
     <Compile Include="Model\Signal\BasicSignal.cs" />
     <Compile Include="Model\Signal\MinuteSignal.cs" />
+    <Compile Include="Model\Signal\TickSignal.cs" />
     <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
     <Compile Include="Model\Futures\FuturesMinute.cs" />
@@ -126,9 +130,10 @@
     <Compile Include="Strategies\Stock\StockSample\MA.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSample01.cs" />
-    <Compile Include="AccountOperator\AccountUpdating.cs" />
+    <Compile Include="AccountOperator\Minute\AccountUpdatingForMinute.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
+    <Compile Include="Transaction\TickTransaction\TickTransactionWtihSlip.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip2.cs" />

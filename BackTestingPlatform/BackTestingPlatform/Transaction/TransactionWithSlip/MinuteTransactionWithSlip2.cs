@@ -78,7 +78,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //-------------------------------------------------------------------                 
                     //验资，检查当前剩余资金是否足够执行信号
                     //计算当前信号占用资金
-                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMargin.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
+                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMarginForTick.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
                     //若资金不足，则跳过当前信号（*需要记录）
                     /*
                     if (nowSignalCapitalOccupy > myAccount.freeCash)
@@ -257,7 +257,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
                     if (positions.Count != 0)
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
 
             }

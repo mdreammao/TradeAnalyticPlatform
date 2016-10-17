@@ -188,7 +188,7 @@ namespace BackTestingPlatform.Strategies.Option
                             }
                         }
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
 
                     catch (Exception)

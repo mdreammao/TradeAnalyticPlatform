@@ -1,17 +1,17 @@
 ﻿using BackTestingPlatform.AccountOperator;
-using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Futures;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
-using BackTestingPlatform.Utilities.TimeList;
+using BackTestingPlatform.Transaction.TransactionWithSlip;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Transaction.TransactionWithSlip
+namespace BackTestingPlatform.Transaction.TickTransaction
 {
-    public static class MinuteTransactionWithSlip3
+    public class TickTransactionWtihSlip
     {
         /// <summary>
         /// 该成交判断方法，开仓与平仓分开
@@ -29,11 +29,11 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="signal"></param>
         /// <param name="data"></param>
         /// <param name="positions"></param>
-        /// <param name="myAccount"></param>
+        /// <param name="myAccount"></param> 
         /// <param name="now"></param>
         /// <param name="slipPoint"></param>
         /// <returns></returns>
-        public static DateTime computeMinuteClosePositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
+        public static DateTime computeMinuteClosePositions(Dictionary<string, TickSignal> signal, Dictionary<string, List<FuturesTickFromMssql>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
         {
             //若signal为空或无信号，返回下一时刻时间
             if (signal == null || signal.Count == 0)
@@ -287,7 +287,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="now"></param>
         /// <param name="slipPoint"></param>
         /// <returns></returns>
-        public static DateTime computeMinuteOpenPositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
+        public static DateTime computeMinuteOpenPositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<FuturesTickFromMssql>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
         {
 
             //若signal为空或无信号，返回下一时刻时间
@@ -353,7 +353,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     /**/
                     if (nowSignalCapitalOccupy > myAccount.freeCash)
                         continue;
-                        
+
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
@@ -535,7 +535,5 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             return now.AddMinutes(1);
 
         }
-
-
     }
 }

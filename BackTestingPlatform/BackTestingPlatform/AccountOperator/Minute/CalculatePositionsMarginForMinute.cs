@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Model.Positions
+namespace BackTestingPlatform.AccountOperator.Minute
 {
-    public static class CalculatePositionsMargin
+    public static class CalculatePositionsMarginForTick
     {
         /// <summary>
         /// 根据当前持仓计算保证金，
