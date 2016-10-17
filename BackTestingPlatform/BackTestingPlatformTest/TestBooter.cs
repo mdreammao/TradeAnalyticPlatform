@@ -3,6 +3,8 @@ using BackTestingPlatform.Tests;
 using BackTestingPlatformTest.Tests;
 using System;
 using System.Collections.Generic;
+using BackTestingPlatform.Charts;
+using System.Windows.Forms;
 
 namespace BackTestingPlatform.Test
 {
@@ -23,7 +25,7 @@ namespace BackTestingPlatform.Test
             //DataAccessTests.testOptionDailyRepo();
             //
             //GenericTypeTests.test1();
-            SeqUtilsTests.test2();
+            //SeqUtilsTests.test2();
             //DataAccessTests.testStockDailyRepo();
             //DataAccessTests.testStockMinuteKLineRepo();
             //int n = 130000;double x1=0;
@@ -36,6 +38,8 @@ namespace BackTestingPlatform.Test
             //    //for (int j = 0; j < 44444; j++) x1 += Math.Sin(i);
             //           // Console.Write(i);
             //}
+            //测试图形化
+            Application.Run(new Form1());
             Platforms.ShutDown();
             Console.ReadKey();
         }
