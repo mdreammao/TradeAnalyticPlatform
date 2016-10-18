@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ZedGraph;
+using NLog;
 
 namespace BackTestingPlatform.Charts
 {
@@ -21,8 +22,9 @@ namespace BackTestingPlatform.Charts
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
+        static Logger log = LogManager.GetCurrentClassLogger();
 
-		public Form1()
+        public Form1()
 		{
 			//
 			// Required for Windows Form Designer support
@@ -52,27 +54,27 @@ namespace BackTestingPlatform.Charts
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.z1 = new ZedGraph.ZedGraphControl();
-            this.SuspendLayout();
+            z1 = new ZedGraphControl();
+            SuspendLayout();
             // 
             // z1
             // 
-            this.z1.IsShowPointValues = false;
-            this.z1.Location = new System.Drawing.Point(0, 0);
-            this.z1.Name = "z1";
-            this.z1.PointValueFormat = "G";
-            this.z1.Size = new System.Drawing.Size(1360, 764);
-            this.z1.TabIndex = 0;
+            z1.IsShowPointValues = false;
+            z1.Location = new Point(0, 0);
+            z1.Name = "z1";
+            z1.PointValueFormat = "G";
+            z1.Size = new Size(1360, 764);
+            z1.TabIndex = 0;
             // 
             // Form1
             // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(10, 24);
-            this.ClientSize = new System.Drawing.Size(923, 538);
-            this.Controls.Add(this.z1);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.ResumeLayout(false);
+            AutoScaleBaseSize = new Size(10, 24);
+            ClientSize = new Size(923, 538);
+            Controls.Add(z1);
+            Name = "Form1";
+            Text = "Form1";
+            Load += new EventHandler(Form1_Load);
+            ResumeLayout(false);
 
         }
 		#endregion
@@ -88,10 +90,11 @@ namespace BackTestingPlatform.Charts
 		}
         */
 
-		private void Form1_Load( object sender, System.EventArgs e )
+		private void Form1_Load( object sender, EventArgs e )
 		{
             GraphPane myPane = z1.GraphPane;
 
+            //蜡烛线例子
             // Set the title and axis labels   
             myPane.Title.Text = "K线图";
             myPane.XAxis.Title.Text = "日期";
@@ -162,7 +165,64 @@ namespace BackTestingPlatform.Charts
             Color c1 = ColorTranslator.FromHtml("#ffffff");
             Color c2 = ColorTranslator.FromHtml("#ffd693");
             myPane.Chart.Fill = new Fill(c1);//图形区域颜色
-            myPane.Fill = new Fill(c2);//整体颜色
+            myPane.Fill = new Fill(c2);//整体颜色            
+
+            /*
+            //成交量线例子
+            // Set the Titles
+            myPane.Title.Text = "Test Volume Bar";
+            myPane.XAxis.Title.Text = "Time";
+            myPane.YAxis.Title.Text = "Volume Num";
+
+            // Make up some random data points
+            //string[] labels = { "Panther", "Lion", "Cheetah","Cougar", "Tiger", "Leopard" };
+            double[] y1 = { 100, 115, 75, 22, 98, 40, -100, -20 };
+            double[] y2 = { 90, 100, 95, 35, 80, 35 };
+            //double[] y3 = { 80, 110, 65, 15, 54, 67 };
+            //double[] y4 = { 120, 125, 100, 40, 105, 75 };
+
+            // Generate a red bar with "Curve 1" in the legend
+            BarItem myBar = myPane.AddBar("Curve 1", null, y1, Color.Red);
+            myBar.Bar.Fill = new Fill(Color.Red, Color.White, Color.Red);
+
+            // Generate a blue bar with "Curve 2" in the legend
+            myBar = myPane.AddBar("Curve 2", null, y2, Color.Blue);
+            myBar.Bar.Fill = new Fill(Color.Blue, Color.White, Color.Blue);
+            //设置bar宽度
+            myPane.BarSettings.ClusterScaleWidth = 0.5;
+            log.Info(myPane.BarSettings.GetClusterWidth());
+            myPane.BarSettings.Type = ZedGraph.BarType.Cluster;
+
+            // Generate a green bar with "Curve 3" in the legend
+            //myBar = myPane.AddBar("Curve 3", null, y3, Color.Green);
+            //myBar.Bar.Fill = new Fill(Color.Green, Color.White,
+            // Color.Green);
+
+            // Generate a black line with "Curve 4" in the legend
+            //LineItem myCurve = myPane.AddCurve("Curve 4",
+            //null, y4, Color.Black, SymbolType.Circle);
+            //myCurve.Line.Fill = new Fill(Color.White,
+            //Color.LightSkyBlue, -45F);
+
+            // Fix up the curve attributes a little
+            //myCurve.Symbol.Size = 8.0F;
+            //myCurve.Symbol.Fill = new Fill(Color.White);
+            //myCurve.Line.Width = 2.0F;
+
+            // Draw the X tics between the labels instead of 
+            // at the labels
+            myPane.XAxis.MajorTic.IsBetweenLabels = true;
+
+            // Set the XAxis labels
+            //myPane.XAxis.Scale.TextLabels = labels;
+            // Set the XAxis to Text type
+            myPane.XAxis.Type = AxisType.Text;
+
+            // Fill the Axis and Pane backgrounds
+            myPane.Chart.Fill = new Fill(Color.White,
+                  Color.FromArgb(255, 255, 166), 90F);
+            myPane.Fill = new Fill(Color.FromArgb(250, 250, 255));
+            */
 
             myPane.AxisChange();
         }
