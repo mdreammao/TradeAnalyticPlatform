@@ -1,41 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 using System.Windows.Forms;
 using ZedGraph;
 using NLog;
+using BackTestingPlatform.Utilities;
+using System.Collections.Generic;
+using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.DataAccess.Stock;
+using Autofac;
+using BackTestingPlatform.Core;
 
 namespace BackTestingPlatform.Charts
 {
    /// <summary>
 	/// Summary description for Form1.
 	/// </summary>
-	public class Form1 : System.Windows.Forms.Form
+	public class CandleStick : Form
 	{
-		private ZedGraph.ZedGraphControl z1;
+		private ZedGraphControl z1;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.Container components = null;
+		private Container components = null;
         static Logger log = LogManager.GetCurrentClassLogger();
 
-        public Form1()
+        //Form 的全局变量
+        private DateTime startTime, endTime;
+        private string secCode = "";
+        //0 tick, 1 1min, 2 15min，3 day，未来需要自己加入时间
+        private int frequency;
+
+        /// <param name="startTime"></param>K线图的起始时间
+        /// <param name="endTime"></param>K线图的结束时间
+        /// <param name="secCode"></param>K线图标的名称
+        /// <param name="frequency"></param>请求标的的显示频率
+        public CandleStick(int startTime, int endTime, string secCode, int frequency)
 		{
-			//
-			// Required for Windows Form Designer support
-			//
+			//初始化显示图片的基本格式
 			InitializeComponent();
+            this.startTime = Kit.ToDate(startTime);
+            this.endTime = Kit.ToDate(endTime);
+            this.secCode = secCode;
         }
 
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
-		protected override void Dispose( bool disposing )
+		protected override void Dispose(bool disposing)
 		{
 			if( disposing )
 			{
@@ -44,7 +57,7 @@ namespace BackTestingPlatform.Charts
 					components.Dispose();
 				}
 			}
-			base.Dispose( disposing );
+			base.Dispose(disposing);
 		}
 
 		#region Windows Form Designer generated code
@@ -54,78 +67,94 @@ namespace BackTestingPlatform.Charts
 		/// </summary>
 		private void InitializeComponent()
 		{
+            //显示的属性设置，后期还要做美工处理**************
             z1 = new ZedGraphControl();
             SuspendLayout();
-            // 
-            // z1
-            // 
+            // 图片属性设置 
             z1.IsShowPointValues = false;
             z1.Location = new Point(0, 0);
             z1.Name = "z1";
             z1.PointValueFormat = "G";
             z1.Size = new Size(1360, 764);
             z1.TabIndex = 0;
-            // 
-            // Form1
-            // 
+            // Form属性设置
             AutoScaleBaseSize = new Size(10, 24);
             ClientSize = new Size(923, 538);
             Controls.Add(z1);
             Name = "Form1";
             Text = "Form1";
-            Load += new EventHandler(Form1_Load);
+            Load += new EventHandler(Form_Load);
             ResumeLayout(false);
 
         }
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-        /*
-        static void Main() 
-		{
-			Application.Run( new Form1() );
-		}
-        */
-
-		private void Form1_Load( object sender, EventArgs e )
+        #region 在K线图中加载Sec数据的设置
+        /// <summary>
+        /// 取出1分钟数据的时间，开收盘价，高低价，成交量等信息输入该图
+        /// </summary>
+        private void Form_Load( object sender, EventArgs e )
 		{
             GraphPane myPane = z1.GraphPane;
 
             //蜡烛线例子
-            // Set the title and axis labels   
+            //设置名称和坐标轴
             myPane.Title.Text = "K线图";
             myPane.XAxis.Title.Text = "日期";
             myPane.XAxis.Title.FontSpec.FontColor = Color.Black;
             myPane.YAxis.Title.Text = "价格";
             myPane.YAxis.Title.FontSpec.FontColor = Color.Black;
 
-            //Get Data
+            //spl装载时间，价格数据
             StockPointList spl = new StockPointList();
             Random rand = new Random();
 
-            // First day is jan 1st
+            //将系统时间转化为xDate时间，按分钟加时间
+            XDate xStart = XDate.DateTimeToXLDate(startTime);
+            XDate xEnd = XDate.DateTimeToXLDate(endTime);
+
+            //取Sec的分钟数据，存储于data中
+            List<DateTime> tradeDays = DateUtils.GetTradeDays(startTime, endTime);
+            //分钟数据准备，取全回测期的数据存放于data
+            Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
+            foreach (var tempDay in tradeDays)
+            {
+                var stockData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(secCode, tempDay);
+                if (!data.ContainsKey(secCode))
+                    data.Add(secCode, stockData.Cast<KLine>().ToList());
+                else
+                    data[secCode].AddRange(stockData.Cast<KLine>().ToList());
+            }
+            
+            //取出当天的数据,列表类型，包含high,low,amt等数据
+            //取出当天的数据，暂时写死一天数据
+            Dictionary<string, List<KLine>> minuteData = new Dictionary<string, List<KLine>>();
+            //DateTime day = tradeDays[0];
+            foreach (var variety in data)
+            {
+                minuteData.Add(variety.Key, data[variety.Key]);
+            }
+            /*
             XDate xDate = new XDate(2006, 1, 1);
             double open = 50.0;
+            */
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < minuteData[secCode].Count; i++)
             {
-                double x = xDate.XLDate;
-                double close = open + rand.NextDouble() * 10.0 - 5.0;
-                double hi = Math.Max(open, close) + rand.NextDouble() * 5.0;
-                double low = Math.Min(open, close) - rand.NextDouble() * 5.0;
+                double timePoint = i;
+                double open = minuteData[secCode][i].open;
+                double close = minuteData[secCode][i].close;
+                double high = minuteData[secCode][i].high;
+                double low = minuteData[secCode][i].low;
 
-                StockPt pt = new StockPt(x, hi, low, open, close, 100000);
+                StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
                 spl.Add(pt);
 
-                open = close;
-                // Advance one day
-                xDate.AddDays(1.0);
+                // 时间加一分钟
+                xStart.AddMinutes(1.0);
                 // but skip the weekends
-                if (XDate.XLDateToDayOfWeek(xDate.XLDate) == 6)
-                    xDate.AddDays(2.0);
+                if (XDate.XLDateToDayOfWeek(xStart.XLDate) == 6)
+                    xStart.AddDays(2.0);
             }
             //添加栅格线
             //myPane.XAxis.MajorGrid.IsVisible = true;
@@ -153,7 +182,7 @@ namespace BackTestingPlatform.Charts
             //myPane.Legend.Position = LegendPos.InsideTopRight;
             //myPane.Legend.Location = new Location(0.5f, 0.6f, CoordType.PaneFraction,
             //    AlignH.Right, AlignV.Top);
-            JapaneseCandleStickItem myCurve = myPane.AddJapaneseCandleStick("中石化", spl);
+            JapaneseCandleStickItem myCurve = myPane.AddJapaneseCandleStick(secCode, spl);
             myCurve.Stick.IsAutoSize = true;
             //myCurve.Stick.Color = Color.Blue;
             myCurve.Stick.FallingFill = new Fill(Color.Green);//下跌颜色
@@ -226,5 +255,6 @@ namespace BackTestingPlatform.Charts
 
             myPane.AxisChange();
         }
-	}
+        #endregion
+    }
 }

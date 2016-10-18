@@ -73,7 +73,7 @@
   <ItemGroup>
     <Compile Include="AccountOperator\CalculateOnesMargin.cs" />
     <Compile Include="AccountOperator\QueryPositons.cs" />
-    <Compile Include="Charts\Form1.cs">
+    <Compile Include="Charts\CandleStick.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Core\Caches.cs" />
