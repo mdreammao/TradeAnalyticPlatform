@@ -107,6 +107,7 @@
     <Compile Include="Model\Futures\FuturesDaily.cs" />
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
+    <Compile Include="Model\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
     <Compile Include="Model\Positions\BasicPositions.cs" />
@@ -142,11 +143,12 @@
     <Compile Include="AccountOperator\Minute\AccountUpdatingForMinute.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
-    <Compile Include="Transaction\TickTransaction\TickTransactionWtihSlip.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip2.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip3.cs" />
+    <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
+    <Compile Include="Transaction\Tick\TickTransactionWtihSlip.cs" />
+    <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />
+    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
+    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip2.cs" />
+    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip3.cs" />
     <Compile Include="Utilities\Common\MinuteFrequencyTransferUtils.cs" />
     <Compile Include="Utilities\Common\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />

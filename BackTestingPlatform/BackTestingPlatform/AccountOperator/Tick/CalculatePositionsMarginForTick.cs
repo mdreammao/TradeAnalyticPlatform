@@ -18,7 +18,7 @@ namespace BackTestingPlatform.AccountOperator.Tick
         /// <param name="nowPosition"></param>
         /// <param name="now"></param>
         /// <returns></returns>
-        public static double calculateMargin(Dictionary<string, PositionsWithDetail> nowPosition, DateTime now, ref Dictionary<string, List<KLine>> data)
+        public static double calculateMargin(Dictionary<string, PositionsWithDetail> nowPosition, DateTime now, ref Dictionary<string, List<TickFromMssql>> data)
         {
             double totalMargin = 0;
             
@@ -29,9 +29,16 @@ namespace BackTestingPlatform.AccountOperator.Tick
                 {
                     //若当前持仓品种为期权
                     if (position0.tradingVarieties.Equals("option"))
-                    {                       
-                        totalMargin += Math.Abs(position0.volume)*data[position0.code].First().close;
+                    {
+                        totalMargin += Math.Abs(position0.volume) * data[position0.code].First().preSettle;
                     }
+                    //若当前持仓品种为期货
+                    else if (position0.tradingVarieties.Equals("futures"))
+                    {
+                        totalMargin += Math.Abs(position0.volume) * data[position0.code].First().preSettle;
+                    }
+
+
                 }
             }
             totalMargin *= 0.25;

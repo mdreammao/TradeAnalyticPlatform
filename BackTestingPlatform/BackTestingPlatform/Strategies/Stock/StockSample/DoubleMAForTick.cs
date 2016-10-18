@@ -10,7 +10,8 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Transaction;
-using BackTestingPlatform.Transaction.TransactionWithSlip;
+using BackTestingPlatform.Transaction.TickTransaction;
+using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TimeList;
@@ -27,6 +28,9 @@ using BackTestingPlatform.Strategies.Stock.StockSample01;
 using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Model.TALibrary;
 using BackTestingPlatform.Model.Futures;
+using BackTestingPlatform.Transaction.TickTransaction;
+using BackTestingPlatform.Model.LogicFunction;
+using BackTestingPlatform.AccountOperator.Tick;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
@@ -49,8 +53,8 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
         private static int contractTimes = 100;
 
         //策略参数设定
-        private int longLength = 70;//短周期均线参数
-        private int shortLength = 500;//长周期均线参数
+        private int shortLength = 70;//短周期均线参数
+        private int longLength = 500;//长周期均线参数
 
         string targetVariety = "IF1609.CFE";
 
@@ -77,15 +81,15 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             //交易日信息
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startDate, endDate);
 
-            Dictionary<string, List<FuturesTickFromMssql>> data = new Dictionary<string, List<FuturesTickFromMssql>>();
+            Dictionary<string, List<TickFromMssql>> data = new Dictionary<string, List<TickFromMssql>>();
             foreach (var tempDay in tradeDays)
             {
                 var tick = Platforms.container.Resolve<FuturesTickRepository>().fetchFromMssql(targetVariety, tempDay);
                 List<FuturesTickFromMssql> tick2 = SequentialUtils.ResampleAndAlign(tick, Constants.timeline500ms, tempDay);
                 if (!data.ContainsKey(targetVariety))
-                    data.Add(targetVariety, tick2.Cast<FuturesTickFromMssql>().ToList());
+                    data.Add(targetVariety, tick2.Cast<TickFromMssql>().ToList());
                 else
-                    data[targetVariety].AddRange(tick2.Cast<FuturesTickFromMssql>().ToList());
+                    data[targetVariety].AddRange(tick2.Cast<TickFromMssql>().ToList());
             }
 
             //计算需要指标
@@ -99,20 +103,20 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
 
             /**/
-            /*
+            
             ///回测循环
             //回测循环--By Day
             foreach (var day in tradeDays)
             {
 
                 //取出当天的数据
-                Dictionary<string, List<FuturesTickFromMssql>> dataToday = new Dictionary<string, List<FuturesTickFromMssql>>();
+                Dictionary<string, List<TickFromMssql>> dataToday = new Dictionary<string, List<TickFromMssql>>();
                 foreach (var variety in data)
                 {
                     dataToday.Add(variety.Key, data[variety.Key].FindAll(s => s.time.Year == day.Year && s.time.Month == day.Month && s.time.Day == day.Day));
                 }
 
-                int dayLength = dataToday.Count;
+                int dayLength = dataToday[targetVariety].Count;
                 int index = 0;
                 //交易开关设置，控制day级的交易开关
                 bool tradingOn = true;//总交易开关
@@ -127,7 +131,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 while (index < dayLength)
                 {
                     int nextIndex = index + 1;
-                    DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(day), index);
+                    DateTime now = TimeListUtility.IndexToTickDateTime(Kit.ToInt_yyyyMMdd(day), index);
                     Dictionary<string, TickSignal> signal = new Dictionary<string, TickSignal>();
                     DateTime next = new DateTime();
                     int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
@@ -151,28 +155,28 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                         {
                             ///平仓条件
                             /// （1）若当前为 回测结束日 或 tradingOn 为false，平仓
-                            /// （2）若当前下穿下反转点*（1-容忍度），平多                    
+                            /// （2）若短均线下穿长均线，平多                    
                             //（1）若当前为 回测结束日 或 tradingOn 为false，平仓
                             if (isLastDayOfBackTesting || tradingOn == false)
-                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
-                            //（2）若当前下穿下反转点*（1-容忍度），平多
-                            else if (data[targetVariety][indexOfNow - 1].close >= nowDownReversionPoint * (1 - toleranceDegree) && nowClose < nowDownReversionPoint * (1 - toleranceDegree))
-                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                            //（2）若短均线下穿长均线，平多      
+                            else if (Cross.crossDown(shortMA,longMA,indexOfNow))
+                                next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                         }
                         //空仓 且可交易 可开仓
                         else if (isEmptyPosition && tradingOn && openingOn)
                         {
                             ///开仓条件
-                            /// 可用资金足够，且出现上反转信号
+                            /// 可用资金足够，且短均线上传长均线
                             double nowFreeCash = myAccount.freeCash;
                             //开仓量，满仓梭哈
-                            double openVolume = Math.Truncate(nowFreeCash / data[targetVariety][indexOfNow].close / contractTimes) * contractTimes;
+                            double openVolume = Math.Truncate(nowFreeCash / data[targetVariety][indexOfNow].lastPrice / contractTimes) * contractTimes;
                             //若剩余资金至少购买一手 且 出上反转信号 开仓
-                            if (openVolume >= 1 && data[targetVariety][indexOfNow - 1].close <= nowUpReversionPoint * (1 + toleranceDegree) && nowClose > nowUpReversionPoint * (1 + toleranceDegree))
+                            if (openVolume >= 1 && Cross.crossUp(shortMA, longMA, indexOfNow))
                             {
-                                MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = dataToday[targetVariety][index].close, minuteIndex = index };
+                                TickSignal openSignal = new TickSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = dataToday[targetVariety][index].lastPrice, tickIndex = index };
                                 signal.Add(targetVariety, openSignal);
-                                next = MinuteTransactionWithSlip3.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                                next = TickTransactionWithSlip.computeTickOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                                 //当天买入不可卖出
                                 closingOn = false;
                             }
@@ -209,13 +213,14 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 Console.WriteLine("time:{0,-8:F}, netWorth:{1,-8:F3}\n", account.time, account.totalAssets / initialCapital);
 
             //将accountHistory输出到csv
+            /*
             var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";
             var dt = DataTableUtils.ToDataTable(accountHistory);          // List<MyModel> -> DataTable
             CsvFileUtils.WriteToCsvFile(resultPath, dt);    // DataTable -> CSV File
-
+            */
 
             Console.ReadKey();
-            */
+            
 
         }
 

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.AccountOperator.Minute
 {
-    public static class CalculatePositionsMarginForTick
+    public static class CalculatePositionsMarginForMinute
     {
         /// <summary>
         /// 根据当前持仓计算保证金，

@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using BackTestingPlatform.AccountOperator.Minute;
 using BackTestingPlatform.AccountOperator.Tick;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess;
@@ -11,7 +12,7 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Transaction;
-using BackTestingPlatform.Transaction.TransactionWithSlip;
+using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TimeList;
@@ -113,7 +114,7 @@ namespace BackTestingPlatform.Strategies.Option
                             index = nextIndex;
                             continue;
                         }
-                        */    
+                        */
                         //持仓查询，先平后开
                         //若当前有持仓 且 允许平仓
                         //是否是空仓,若position中所有品种volum都为0，则说明是空仓     
@@ -135,7 +136,7 @@ namespace BackTestingPlatform.Strategies.Option
                             if (!isEmptyPosition && (isExpiredDay || isLastDayOfBackTesting || closingOn == false))
                             {
                                 //全部平仓
-                                DateTime next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                DateTime next = MinnteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                                 //当天不可再开仓
                                 openingOn = false;
                             }
@@ -143,7 +144,7 @@ namespace BackTestingPlatform.Strategies.Option
                             else if (!isEmptyPosition && !isParPriceOption)
                             {
                                 //全部平仓
-                                DateTime next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                DateTime next = MinnteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                                 //当天不可再开仓
                                 openingOn = false;
                             }
@@ -189,7 +190,7 @@ namespace BackTestingPlatform.Strategies.Option
                             }
                         }
                         //账户信息更新
-                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
 
                     catch (Exception)

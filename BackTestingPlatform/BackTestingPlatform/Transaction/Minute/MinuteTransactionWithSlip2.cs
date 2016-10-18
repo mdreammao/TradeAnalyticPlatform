@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Transaction.TransactionWithSlip
+namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
 {
     public static class MinuteTransactionWithSlip2
     {
@@ -79,7 +79,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //-------------------------------------------------------------------                 
                     //验资，检查当前剩余资金是否足够执行信号
                     //计算当前信号占用资金
-                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMarginForTick.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
+                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMarginForMinute.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
                     //若资金不足，则跳过当前信号（*需要记录）
                     /*
                     if (nowSignalCapitalOccupy > myAccount.freeCash)

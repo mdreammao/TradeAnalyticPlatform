@@ -25,7 +25,7 @@ namespace BackTestingPlatform.AccountOperator.Tick
         /// <param name="nowPosition"></param>当前持仓，用于计算保证金及持仓价值
         /// <param name="now"></param>当前时间
         /// <param name="data"></param>当天行情数据
-        public static void computeAccountUpdating(ref BasicAccount myAccount, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, ref Dictionary<string, List<KLine>> data)
+        public static void computeAccountUpdating(ref BasicAccount myAccount, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, ref Dictionary<string, List<TickFromMssql>> data)
         {
             //若position为null，直接跳过
             if (positions.Count == 0)
@@ -45,7 +45,7 @@ namespace BackTestingPlatform.AccountOperator.Tick
             //计算持仓总价值
             //持仓价值（实时）
             //当前时间对应data中timeList 的序号
-            int index = TimeListUtility.MinuteToIndex(now);
+            int index = TimeListUtility.TickToIndex(now);
             double totalPositionValue = 0;
             foreach (var position0 in nowPosition.Values)
             {
@@ -56,7 +56,7 @@ namespace BackTestingPlatform.AccountOperator.Tick
                 //当前持仓成本价
                 double nowPositionAveragePrice = position0.volume > 0 ? position0.LongPosition.averagePrice : position0.ShortPosition.averagePrice;
                 //若当前品种持仓量为0，则持仓价值+0，否则按当前市值计算
-                totalPositionValue += position0.volume != 0 ? (data[position0.code][index].close - nowPositionAveragePrice) * position0.volume + Math.Abs(nowPositionAveragePrice * position0.volume) : 0;
+                totalPositionValue += position0.volume != 0 ? (data[position0.code][index].lastPrice - nowPositionAveragePrice) * position0.volume + Math.Abs(nowPositionAveragePrice * position0.volume) : 0;
                 //空头开仓价值加总
                 openShortValue += position0.volume > 0 ? 0 : nowPositionAveragePrice * position0.volume;
             }

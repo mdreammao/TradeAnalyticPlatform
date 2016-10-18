@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.AccountOperator.Minute
 {
-    public static class CalculateOnesMarginForTick
+    public static class CalculateOnesMarginForMinute
     {
         public static double calculateOnesMargin(string code, double volume, DateTime now, ref Dictionary<string, List<KLine>> data)
         {

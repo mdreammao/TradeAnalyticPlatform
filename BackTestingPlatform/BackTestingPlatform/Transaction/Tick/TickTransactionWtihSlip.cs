@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.AccountOperator;
 using BackTestingPlatform.AccountOperator.Minute;
+using BackTestingPlatform.AccountOperator.Tick;
 using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
@@ -10,9 +11,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Transaction.TransactionWithSlip
+namespace BackTestingPlatform.Transaction
 {
-    public static class MinuteTransactionWithSlip3
+    public static class TickTransactionWithSlip
     {
         /// <summary>
         /// 该成交判断方法，开仓与平仓分开
@@ -34,7 +35,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="now"></param>
         /// <param name="slipPoint"></param>
         /// <returns></returns>
-        public static DateTime computeMinuteClosePositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
+        public static DateTime computeTickClosePositions(Dictionary<string, TickSignal> signal,Dictionary<string,List<TickFromMssql>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
         {
             //若signal为空或无信号，返回下一时刻时间
             if (signal == null || signal.Count == 0)
@@ -269,7 +270,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
                     if (positions.Count != 0)
-                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
 
             }
@@ -288,7 +289,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="now"></param>
         /// <param name="slipPoint"></param>
         /// <returns></returns>
-        public static DateTime computeMinuteOpenPositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
+        public static DateTime computeTickOpenPositions(Dictionary<string, TickSignal> signal, Dictionary<string, List<TickFromMssql>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
         {
 
             //若signal为空或无信号，返回下一时刻时间
@@ -354,7 +355,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     /**/
                     if (nowSignalCapitalOccupy > myAccount.freeCash)
                         continue;
-                        
+
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
@@ -528,7 +529,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
                     if (positions.Count != 0)
-                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
 
             }
