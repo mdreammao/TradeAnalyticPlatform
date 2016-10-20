@@ -11,6 +11,7 @@ using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.DataAccess.Stock;
 using Autofac;
 using BackTestingPlatform.Core;
+using BackTestingPlatform.Utilities.Common;
 
 namespace BackTestingPlatform.Charts
 {
@@ -29,13 +30,13 @@ namespace BackTestingPlatform.Charts
         //Form 的全局变量
         private DateTime startTime, endTime;
         private string secCode = "";
-        //0 tick, 1 1min, 2 15min，3 day，未来需要自己加入时间
         private int frequency;
 
         /// <param name="startTime"></param>K线图的起始时间
         /// <param name="endTime"></param>K线图的结束时间
         /// <param name="secCode"></param>K线图标的名称
-        /// <param name="frequency"></param>请求标的的显示频率
+        /// <param name="frequency"></param>请求标的的显示频率，
+        /// 0 tick, 1 1min, 2 5min， 15min，3 30min, 4 60min, 5 1day，
         public CandleStick(int startTime, int endTime, string secCode, int frequency)
 		{
 			//初始化显示图片的基本格式
@@ -43,6 +44,7 @@ namespace BackTestingPlatform.Charts
             this.startTime = Kit.ToDate(startTime);
             this.endTime = Kit.ToDate(endTime);
             this.secCode = secCode;
+            this.frequency = frequency;
         }
 
 		/// <summary>
@@ -109,13 +111,14 @@ namespace BackTestingPlatform.Charts
             StockPointList spl = new StockPointList();
             Random rand = new Random();
 
-            //将系统时间转化为xDate时间，按分钟加时间
+            //将系统时间转化为xDate时间
             XDate xStart = XDate.DateTimeToXLDate(startTime);
             XDate xEnd = XDate.DateTimeToXLDate(endTime);
 
             //取Sec的分钟数据，存储于data中
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startTime, endTime);
-            //分钟数据准备，取全回测期的数据存放于data
+
+            //数据准备，取minute数据，然后再将数据进行转换为各个频率
             Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
             foreach (var tempDay in tradeDays)
             {
@@ -125,37 +128,185 @@ namespace BackTestingPlatform.Charts
                 else
                     data[secCode].AddRange(stockData.Cast<KLine>().ToList());
             }
-            
-            //取出当天的数据,列表类型，包含high,low,amt等数据
-            //取出当天的数据，暂时写死一天数据
+
+            //定义变量存储分钟数据
             Dictionary<string, List<KLine>> minuteData = new Dictionary<string, List<KLine>>();
-            //DateTime day = tradeDays[0];
             foreach (var variety in data)
             {
                 minuteData.Add(variety.Key, data[variety.Key]);
             }
-            /*
-            XDate xDate = new XDate(2006, 1, 1);
-            double open = 50.0;
-            */
 
-            for (int i = 0; i < minuteData[secCode].Count; i++)
+            //根据频率选择累加的时间
+            switch (frequency)
             {
-                double timePoint = i;
-                double open = minuteData[secCode][i].open;
-                double close = minuteData[secCode][i].close;
-                double high = minuteData[secCode][i].high;
-                double low = minuteData[secCode][i].low;
+                //取tick数据
+                case 0:
+                    log.Info("暂时没有tick数据");
+                    break;
 
-                StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
-                spl.Add(pt);
+                //1min K线
+                case 1:
+                    for (int i = 0; i < minuteData[secCode].Count; i++)
+                    {
+                        double timePoint = i;
+                        double open = minuteData[secCode][i].open;
+                        double close = minuteData[secCode][i].close;
+                        double high = minuteData[secCode][i].high;
+                        double low = minuteData[secCode][i].low;
 
-                // 时间加一分钟
-                xStart.AddMinutes(1.0);
-                // but skip the weekends
-                if (XDate.XLDateToDayOfWeek(xStart.XLDate) == 6)
-                    xStart.AddDays(2.0);
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        spl.Add(pt);
+
+                        // 时间加1分钟
+                        xStart.AddMinutes(1.0);
+                        // but skip the weekends
+                        if (XDate.XLDateToDayOfWeek(xStart.XLDate) == 6)
+                            xStart.AddDays(2.0);
+                    }
+                    break;
+
+                //显示5min K线
+                case 2:
+                    Dictionary<string, List<KLine>> minuteData5Min = new Dictionary<string, List<KLine>>();
+                    foreach (var variety in data)
+                    {
+                        List<KLine> data5K = new List<KLine>();
+                        data5K = MinuteFrequencyTransferUtils.MinuteToNPeriods(minuteData[variety.Key], "Minutely", 5);
+                        minuteData5Min.Add(variety.Key, data5K);
+                    }
+                    for (int i = 0; i < minuteData5Min[secCode].Count; i++)
+                    {
+                        double timePoint = i;
+                        double open = minuteData5Min[secCode][i].open;
+                        double close = minuteData5Min[secCode][i].close;
+                        double high = minuteData5Min[secCode][i].high;
+                        double low = minuteData5Min[secCode][i].low;
+
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        spl.Add(pt);
+
+                        // 时间加5分钟
+                        xStart.AddMinutes(5.0);
+                        // but skip the weekends
+                        if (XDate.XLDateToDayOfWeek(xStart.XLDate) == 6)
+                            xStart.AddDays(2.0);
+                    }
+                    break;
+
+                //显示15min K线
+                case 3:
+                    Dictionary<string, List<KLine>> minuteData15Min = new Dictionary<string, List<KLine>>();
+                    foreach (var variety in data)
+                    {
+                        List<KLine> data15K = new List<KLine>();
+                        data15K = MinuteFrequencyTransferUtils.MinuteToNPeriods(minuteData[variety.Key], "Minutely", 15);
+                        minuteData15Min.Add(variety.Key, data15K);
+                    }
+                    for (int i = 0; i < minuteData15Min[secCode].Count; i++)
+                    {
+                        double timePoint = i;
+                        double open = minuteData15Min[secCode][i].open;
+                        double close = minuteData15Min[secCode][i].close;
+                        double high = minuteData15Min[secCode][i].high;
+                        double low = minuteData15Min[secCode][i].low;
+
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        spl.Add(pt);
+
+                        // 时间加15分钟
+                        xStart.AddMinutes(15.0);
+                        // but skip the weekends
+                        if (XDate.XLDateToDayOfWeek(xStart.XLDate) == 6)
+                            xStart.AddDays(2.0);
+                    }
+                    break;
+
+                //显示30min K线
+                case 4:
+                    Dictionary<string, List<KLine>> minuteData30Min = new Dictionary<string, List<KLine>>();
+                    foreach (var variety in data)
+                    {
+                        List<KLine> data30K = new List<KLine>();
+                        data30K = MinuteFrequencyTransferUtils.MinuteToNPeriods(minuteData[variety.Key], "Minutely", 30);
+                        minuteData30Min.Add(variety.Key, data30K);
+                    }
+                    for (int i = 0; i < minuteData30Min[secCode].Count; i++)
+                    {
+                        double timePoint = i;
+                        double open = minuteData30Min[secCode][i].open;
+                        double close = minuteData30Min[secCode][i].close;
+                        double high = minuteData30Min[secCode][i].high;
+                        double low = minuteData30Min[secCode][i].low;
+
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        spl.Add(pt);
+
+                        // 时间加30分钟
+                        xStart.AddMinutes(30.0);
+                        // but skip the weekends
+                        if (XDate.XLDateToDayOfWeek(xStart.XLDate) == 6)
+                            xStart.AddDays(2.0);
+                    }
+                    break;
+
+                //显示60min K线
+                case 5:
+                    Dictionary<string, List<KLine>> minuteData60Min = new Dictionary<string, List<KLine>>();
+                    foreach (var variety in data)
+                    {
+                        List<KLine> data60K = new List<KLine>();
+                        data60K = MinuteFrequencyTransferUtils.MinuteToNPeriods(minuteData[variety.Key], "Minutely", 60);
+                        minuteData60Min.Add(variety.Key, data60K);
+                    }
+                    for (int i = 0; i < minuteData60Min[secCode].Count; i++)
+                    {
+                        double timePoint = i;
+                        double open = minuteData60Min[secCode][i].open;
+                        double close = minuteData60Min[secCode][i].close;
+                        double high = minuteData60Min[secCode][i].high;
+                        double low = minuteData60Min[secCode][i].low;
+
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        spl.Add(pt);
+
+                        // 时间加60分钟
+                        xStart.AddMinutes(60.0);
+                        // but skip the weekends
+                        if (XDate.XLDateToDayOfWeek(xStart.XLDate) == 6)
+                            xStart.AddDays(2.0);
+                    }
+                    break;
+
+                //显示日K线
+                case 6:
+                    Dictionary<string, List<KLine>> minuteDataDaily = new Dictionary<string, List<KLine>>();
+                    foreach (var variety in data)
+                    {
+                        List<KLine> dataDaily = new List<KLine>();
+                        dataDaily = MinuteFrequencyTransferUtils.MinuteToNPeriods(minuteData[variety.Key], "Minutely", 240);
+                        minuteDataDaily.Add(variety.Key, dataDaily);
+                    }
+                    for (int i = 0; i < minuteDataDaily[secCode].Count; i++)
+                    {
+                        double timePoint = i;
+                        double open = minuteDataDaily[secCode][i].open;
+                        double close = minuteDataDaily[secCode][i].close;
+                        double high = minuteDataDaily[secCode][i].high;
+                        double low = minuteDataDaily[secCode][i].low;
+
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        spl.Add(pt);
+
+                        // 时间加1天
+                        xStart.AddDays(1.0);
+                        // but skip the weekends
+                        if (XDate.XLDateToDayOfWeek(xStart.XLDate) == 6)
+                            xStart.AddDays(2.0);
+                    }
+                    break;
+
             }
+            
             //添加栅格线
             //myPane.XAxis.MajorGrid.IsVisible = true;
             //myPane.YAxis.MajorGrid.IsVisible = true;
