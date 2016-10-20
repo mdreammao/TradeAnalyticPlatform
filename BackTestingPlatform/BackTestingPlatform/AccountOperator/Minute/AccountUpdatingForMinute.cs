@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog;
 
-namespace BackTestingPlatform.Transaction.TransactionWithSlip
+namespace BackTestingPlatform.AccountOperator.Minute
 {
-    public class AccountUpdating
+    public class AccountUpdatingForMinute
     {
         //初始化log组件
         static Logger log = LogManager.GetCurrentClassLogger();
@@ -30,13 +30,13 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
             //若position为null，直接跳过
             if (positions.Count == 0)
             {
-                log.Info("初始持仓为空！");
+               // log.Info("初始持仓为空！");
                 return;
             }
             Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();
             nowPosition = positions[positions.Keys.Last()];
             //计算保证金
-            double totalMargin = CalculatePositionsMargin.calculateMargin(nowPosition, now, ref data);
+            double totalMargin = CalculatePositionsMarginForMinute.calculateMargin(nowPosition, now, ref data);
             //计算剩余可用资金
             //持仓的资金流加总
             double totalCashFlow = 0;

@@ -1,4 +1,5 @@
 ﻿using BackTestingPlatform.AccountOperator;
+using BackTestingPlatform.AccountOperator.Minute;
 using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Transaction.TransactionWithSlip
+namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
 {
     public static class MinuteTransactionWithSlip2
     {
@@ -78,7 +79,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //-------------------------------------------------------------------                 
                     //验资，检查当前剩余资金是否足够执行信号
                     //计算当前信号占用资金
-                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMargin.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
+                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMarginForMinute.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
                     //若资金不足，则跳过当前信号（*需要记录）
                     /*
                     if (nowSignalCapitalOccupy > myAccount.freeCash)
@@ -257,7 +258,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //账户信息更新
                     //根据当前交易记录和持仓情况更新账户
                     if (positions.Count != 0)
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
 
             }

@@ -10,7 +10,7 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Transaction;
-using BackTestingPlatform.Transaction.TransactionWithSlip;
+using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TimeList;
@@ -108,8 +108,8 @@ namespace BackTestingPlatform.Utilities.Common
                 {
                     time = tailStamp,
                     open = minuteData[headIndex].open,
-                    high = minuteData.Max(s => s.high),
-                    low = minuteData.Min(s => s.low),
+                    high = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Max(s => s.high),
+                    low = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Min(s => s.low),
                     close = minuteData[tailIndex].close,
                     volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
                     amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
@@ -150,8 +150,8 @@ namespace BackTestingPlatform.Utilities.Common
                 {
                     time = tailStamp,
                     open = minuteData[headIndex].open,
-                    high = minuteData.Max(s => s.high),
-                    low = minuteData.Min(s => s.low),
+                    high = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Max(s => s.high),
+                    low = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Min(s => s.low),
                     close = minuteData[tailIndex].close,
                     volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
                     amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
@@ -188,8 +188,8 @@ namespace BackTestingPlatform.Utilities.Common
                 {
                     time = tailStamp,
                     open = minuteData[headIndex].open,
-                    high = minuteData.Max(s => s.high),
-                    low = minuteData.Min(s => s.low),
+                    high = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Max(s => s.high),
+                    low = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Min(s => s.low),
                     close = minuteData[tailIndex].close,
                     volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
                     amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
@@ -225,8 +225,8 @@ namespace BackTestingPlatform.Utilities.Common
                 {
                     time = tailStamp,
                     open = minuteData[headIndex].open,
-                    high = minuteData.Max(s => s.high),
-                    low = minuteData.Min(s => s.low),
+                    high = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Max(s => s.high),
+                    low = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Min(s => s.low),
                     close = minuteData[tailIndex].close,
                     volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
                     amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),

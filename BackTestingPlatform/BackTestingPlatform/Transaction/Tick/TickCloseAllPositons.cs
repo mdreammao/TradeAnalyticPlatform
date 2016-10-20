@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace BackTestingPlatform.Transaction.TransactionWithSlip
+namespace BackTestingPlatform.Transaction.TickTransaction
 {
-    public class MinuteCloseAllPositonsWithSlip
+    public class TickCloseAllPositonsWithSlip
     {
         /// <summary>
         /// 清空当前所有持仓，对所有的持仓生成平仓信号（等量反向）
@@ -20,9 +20,9 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="positions"></param>
         /// <param name="myAccount"></param>
         /// <param name="now"></param>
-        public static DateTime closeAllPositions(Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint)
+        public static DateTime closeAllPositions(Dictionary<string, List<TickFromMssql>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint)
         {
-            Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
+            Dictionary<string, TickSignal> signal = new Dictionary<string, TickSignal>();
 
             //查询当前持仓情况
             Dictionary<string, PositionsWithDetail> positionShot = new Dictionary<string, PositionsWithDetail>();
@@ -42,13 +42,13 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                 if (position0.volume == 0)
                     continue;
                 //对所有的持仓，生成现价等量反向的交易信号
-                int index = TimeListUtility.MinuteToIndex(now);
-                MinuteSignal nowSignal = new MinuteSignal() { code = position0.code, volume = - position0.volume,
-                    time = now, tradingVarieties = position0.tradingVarieties, price = data[position0.code][index].close, minuteIndex = index };
+                int index = TimeListUtility.TickToIndex(now);
+                TickSignal nowSignal = new TickSignal() { code = position0.code, volume = - position0.volume,
+                    time = now, tradingVarieties = position0.tradingVarieties, price = data[position0.code][index].lastPrice, tickIndex = index };
                 signal.Add(nowSignal.code, nowSignal);
             }
             //将清仓信号传给成交判断
-            DateTime next = MinuteTransactionWithSlip3.computeMinuteClosePositions(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+            DateTime next = TickTransactionWithSlip.computeTickClosePositions(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
             return next;
         }
 

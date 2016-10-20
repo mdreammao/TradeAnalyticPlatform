@@ -10,7 +10,7 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Transaction;
-using BackTestingPlatform.Transaction.TransactionWithSlip;
+using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TimeList;
@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using BackTestingPlatform.Strategies.Stock.StockSample;
 using BackTestingPlatform.Strategies.Stock.StockSample01;
 using BackTestingPlatform.Utilities.Common;
+using BackTestingPlatform.AccountOperator.Minute;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
@@ -148,10 +149,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             /// （2）若当前下穿下反转点*（1-容忍度），平多                    
                             //（1）若当前为 回测结束日 或 tradingOn 为false，平仓
                             if (isLastDayOfBackTesting || tradingOn == false)
-                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                next = MinnteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                             //（2）若当前下穿下反转点*（1-容忍度），平多
                             else if (data[targetVariety][indexOfNow - 1].close >= nowDownReversionPoint * (1 - toleranceDegree) && nowClose < nowDownReversionPoint * (1 - toleranceDegree))
-                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                next = MinnteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                         }
                         //空仓 且可交易 可开仓
                         else if (isEmptyPosition && tradingOn && openingOn)
@@ -173,7 +174,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                         }
                                                
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
                     }
 
                     catch (Exception)
