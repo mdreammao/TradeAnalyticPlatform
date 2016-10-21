@@ -56,7 +56,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
         private int shortLength = 70;//短周期均线参数
         private int longLength = 500;//长周期均线参数
 
-        string targetVariety = "IF1607.CFE";
+        string targetVariety = "IF1609.CFE";
 
         /// <summary>
         /// 50ETF，Tick级双均线策略
@@ -103,7 +103,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
 
             /**/
-            int indexOfNow = 0;
+            
             ///回测循环
             //回测循环--By Day
             foreach (var day in tradeDays)
@@ -123,27 +123,19 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 bool openingOn = true;//开仓开关
                 bool closingOn = true;//平仓开关
 
-
                 //是否为回测最后一天
-
                 bool isLastDayOfBackTesting = day.Equals(endDate);
 
                 //回测循环 -- By Tick
 
                 while (index < dayLength)
                 {
-                    indexOfNow ++;
-                    int nextIndex = index + 1;            
+                    int nextIndex = index + 1;
                     DateTime now = TimeListUtility.IndexToTickDateTime(Kit.ToInt_yyyyMMdd(day), index);
                     Dictionary<string, TickSignal> signal = new Dictionary<string, TickSignal>();
                     DateTime next = new DateTime();
-
-
-                    //int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
+                    int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
                     double nowPrice = dataToday[targetVariety][index].lastPrice;
-                    //   int sign;
-                    //   if (index == 28801)
-                    //       sign = 0;
 
                     //实际操作从第一个回望期后开始    
                     if (indexOfNow < longLength - 1)
@@ -152,61 +144,54 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                         continue;
                     }
 
-
-                    //      try
-                    //      {
-                    //持仓查询，先平后开
-                    //若当前有持仓 且 允许平仓
-                    //是否是空仓,若position中所有品种volum都为0，则说明是空仓     
-                    bool isEmptyPosition = positions.Count != 0 ? positions[positions.Keys.Last()].Values.Sum(x => Math.Abs(x.volume)) == 0 : true;
-                    //若当前有持仓且允许交易
-                    if (!isEmptyPosition && closingOn)
+                    try
                     {
-                        ///平仓条件
-                        /// （1）若当前为 回测结束日 或 tradingOn 为false，平仓
-                        /// （2）若短均线下穿长均线，平多                    
-                        //（1）若当前为 回测结束日 或 tradingOn 为false，平仓
-                        if (isLastDayOfBackTesting || tradingOn == false)
+                        //持仓查询，先平后开
+                        //若当前有持仓 且 允许平仓
+                        //是否是空仓,若position中所有品种volum都为0，则说明是空仓     
+                        bool isEmptyPosition = positions.Count != 0 ? positions[positions.Keys.Last()].Values.Sum(x => Math.Abs(x.volume)) == 0 : true;
+                        //若当前有持仓且允许交易
+                        if (!isEmptyPosition && closingOn)
                         {
-                            next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
-                            break;                  
+                            ///平仓条件
+                            /// （1）若当前为 回测结束日 或 tradingOn 为false，平仓
+                            /// （2）若短均线下穿长均线，平多                    
+                            //（1）若当前为 回测结束日 或 tradingOn 为false，平仓
+                            if (isLastDayOfBackTesting || tradingOn == false)
+                                next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                            //（2）若短均线下穿长均线，平多      
+                            else if (Cross.crossDown(shortMA,longMA,indexOfNow))
+                                next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                         }
-                           
-                        //  （2）若短均线下穿长均线，平多      
-                        else if (Cross.crossDown(shortMA, longMA, indexOfNow)) 
-                            next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                        //空仓 且可交易 可开仓
+                        else if (isEmptyPosition && tradingOn && openingOn)
+                        {
+                            ///开仓条件
+                            /// 可用资金足够，且短均线上传长均线
+                            double nowFreeCash = myAccount.freeCash;
+                            //开仓量，满仓梭哈
+                            double openVolume = Math.Truncate(nowFreeCash / data[targetVariety][indexOfNow].lastPrice / contractTimes) * contractTimes;
+                            //若剩余资金至少购买一手 且 出上反转信号 开仓
+                            if (openVolume >= 1 && Cross.crossUp(shortMA, longMA, indexOfNow))
+                            {
+                                TickSignal openSignal = new TickSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = dataToday[targetVariety][index].lastPrice, tickIndex = index };
+                                signal.Add(targetVariety, openSignal);
+                                next = TickTransactionWithSlip.computeTickOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                                //当天买入不可卖出
+                                closingOn = false;
+                            }
+                        }
+
+                        //账户信息更新
+                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
                     }
-                    //空仓 且可交易 可开仓
-                    else if (isEmptyPosition && tradingOn && openingOn)
+
+                    catch (Exception)
                     {
-                        ///开仓条件
-                        /// 可用资金足够，且短均线上传长均线
-                        double nowFreeCash = myAccount.freeCash;
-                        //开仓量，满仓梭哈
-                        double openVolume = Math.Truncate(nowFreeCash / data[targetVariety][indexOfNow].lastPrice / contractTimes) * contractTimes;
-                        //若剩余资金至少购买一手 且 出上反转信号 开仓
-                        if (openVolume >= 1 && Cross.crossUp(shortMA, longMA, indexOfNow)) 
-                     {
-                         TickSignal openSignal = new TickSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = dataToday[targetVariety][index].lastPrice, tickIndex = index };
-                         signal.Add(targetVariety, openSignal);
-                         next = TickTransactionWithSlip.computeTickOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
-                         //当天买入不可卖出
-                         closingOn = false;
-                     }
+                        throw;
                     }
-
-                    //账户信息更新
-                    AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
-                    //        }
-
-                    //     catch (Exception)
-                    //     {
-                    //         throw;
-                    //     }
                     nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
                     index = nextIndex;
-
-                  //  if (isLastDayOfBackTesting) break;                
                 }
                 //账户信息记录By Day            
                 //用于记录的临时账户
@@ -219,13 +204,13 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 accountHistory.Add(tempAccount);
 
                 //显示当前信息
-                Console.WriteLine("Time:{0,-8:F},netWorth:{1,-8:F3}", day.Date, myAccount.totalAssets / initialCapital);
+                Console.WriteLine("Time:{0,-8:F},netWorth:{1,-8:F3}", day, myAccount.totalAssets / initialCapital);
             }
 
 
             //遍历输出到console   
-       //    foreach (var account in accountHistory)
-       //        Console.WriteLine("time:{0,-8:F}, netWorth:{1,-8:F3}\n", account.time, account.totalAssets / initialCapital);
+            foreach (var account in accountHistory)
+                Console.WriteLine("time:{0,-8:F}, netWorth:{1,-8:F3}\n", account.time, account.totalAssets / initialCapital);
 
             //将accountHistory输出到csv
             /*
@@ -234,8 +219,8 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             CsvFileUtils.WriteToCsvFile(resultPath, dt);    // DataTable -> CSV File
             */
 
-            //Console.ReadKey();
-
+            Console.ReadKey();
+            
 
         }
 
