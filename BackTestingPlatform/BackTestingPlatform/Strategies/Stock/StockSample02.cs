@@ -25,11 +25,11 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Strategies.Stock
 {
-    public class StockSample01
+    public class StockSample02
     {
         static Logger log = LogManager.GetCurrentClassLogger();
         private DateTime startdate, endDate;
-        public StockSample01(int start, int end)
+        public StockSample02(int start, int end)
         {
             startdate = Kit.ToDate(start);
             endDate = Kit.ToDate(end);
