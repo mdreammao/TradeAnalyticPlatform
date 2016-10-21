@@ -91,6 +91,10 @@ namespace BackTestingPlatform.Charts
             //设置左右拖拽功能
             z1.PanModifierKeys = Keys.None;
 
+            //同步缩放，还是不成功，会影响坐标轴
+            //z1.IsSynchronizeXAxes = true;
+            //z1.IsSynchronizeYAxes = true;
+
             //使用键盘聚焦还没有成功
             z1.ZoomModifierKeys = System.Windows.Forms.Keys.Down;
 
@@ -109,10 +113,10 @@ namespace BackTestingPlatform.Charts
             myPaneMaster.Title.FontSpec.FontColor = Color.Black;
 
             //PaneMaster里面画一张价格的小图
-            GraphPane panePrice = z1.GraphPane;
+            GraphPane panePrice = new GraphPane(new Rectangle(10, 10, 10, 10), "Mes", " t ( h )", "Rate");
             myPaneMaster.PaneList[0] = (panePrice);
             //PaneMaster里面画一张成交量的小图
-            GraphPane paneVolume = z1.GraphPane;
+            GraphPane paneVolume = new GraphPane(new Rectangle(10, 10, 10, 10), "Mes", " t ( h )", "Rate");
             myPaneMaster.PaneList.Add(paneVolume);
 
             //蜡烛线例子
@@ -152,6 +156,8 @@ namespace BackTestingPlatform.Charts
                 minuteData.Add(variety.Key, data[variety.Key]);
             }
 
+            //定义成交量
+            double[] volume = new double[minuteData[secCode].Count];
             //根据频率选择累加的时间
             switch (frequency)
             {
@@ -169,9 +175,9 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData[secCode][i].close;
                         double high = minuteData[secCode][i].high;
                         double low = minuteData[secCode][i].low;
-                        double volume = minuteData[secCode][i].volume;
+                        volume[i] = minuteData[secCode][i].volume;
 
-                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, volume[i]);
                         spl.Add(pt);
 
                         // 时间加1分钟
@@ -198,9 +204,9 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData5Min[secCode][i].close;
                         double high = minuteData5Min[secCode][i].high;
                         double low = minuteData5Min[secCode][i].low;
-                        double volume = minuteData[secCode][i].volume;
+                        volume[i] = minuteData[secCode][i].volume;
 
-                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, volume[i]);
                         spl.Add(pt);
 
                         // 时间加5分钟
@@ -227,9 +233,9 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData15Min[secCode][i].close;
                         double high = minuteData15Min[secCode][i].high;
                         double low = minuteData15Min[secCode][i].low;
-                        double volume = minuteData[secCode][i].volume;
+                        volume[i] = minuteData[secCode][i].volume;
 
-                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, volume[i]);
                         spl.Add(pt);
 
                         // 时间加15分钟
@@ -256,9 +262,9 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData30Min[secCode][i].close;
                         double high = minuteData30Min[secCode][i].high;
                         double low = minuteData30Min[secCode][i].low;
-                        double volume = minuteData[secCode][i].volume;
+                        volume[i] = minuteData[secCode][i].volume;
 
-                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, volume[i]);
                         spl.Add(pt);
 
                         // 时间加30分钟
@@ -285,9 +291,9 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData60Min[secCode][i].close;
                         double high = minuteData60Min[secCode][i].high;
                         double low = minuteData60Min[secCode][i].low;
-                        double volume = minuteData[secCode][i].volume;
+                        volume[i] = minuteData[secCode][i].volume;
 
-                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, volume[i]);
                         spl.Add(pt);
 
                         // 时间加60分钟
@@ -314,9 +320,9 @@ namespace BackTestingPlatform.Charts
                         double close = minuteDataDaily[secCode][i].close;
                         double high = minuteDataDaily[secCode][i].high;
                         double low = minuteDataDaily[secCode][i].low;
-                        double volume = minuteData[secCode][i].volume;
+                        volume[i] = minuteData[secCode][i].volume;
 
-                        StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
+                        StockPt pt = new StockPt(timePoint, high, low, open, close, volume[i]);
                         spl.Add(pt);
 
                         // 时间加1天
@@ -379,19 +385,20 @@ namespace BackTestingPlatform.Charts
             paneVolume.YAxis.Title.Text = "Volume Num";
 
             // Make up some random data points
-            string[] labels = { "Panther", "Lion", "Cheetah","Cougar", "Tiger", "Leopard" };
-            double[] y1 = { 100, 115, 75, 22, 98, 40, -100, -20 };
-            double[] y2 = { 90, 100, 95, 35, 80, 35 };
+            //string[] labels = { "Panther", "Lion", "Cheetah","Cougar", "Tiger", "Leopard" };
+
+            //double[] y1 = { 100, 115, 75, 22, 98, 40, -100, -20 };
+            //double[] y2 = { 90, 100, 95, 35, 80, 35 };
             //double[] y3 = { 80, 110, 65, 15, 54, 67 };
             //double[] y4 = { 120, 125, 100, 40, 105, 75 };
 
             // Generate a red bar with "Curve 1" in the legend
-            BarItem myBar = paneVolume.AddBar("Curve 1", null, y1, Color.Red);
+            BarItem myBar = paneVolume.AddBar("Curve 1", null, volume, Color.Red);
             myBar.Bar.Fill = new Fill(Color.Red, Color.White, Color.Red);
 
             // Generate a blue bar with "Curve 2" in the legend
-            myBar = paneVolume.AddBar("Curve 2", null, y2, Color.Blue);
-            myBar.Bar.Fill = new Fill(Color.Blue, Color.White, Color.Blue);
+            //myBar = paneVolume.AddBar("Curve 2", null, y2, Color.Blue);
+            //myBar.Bar.Fill = new Fill(Color.Blue, Color.White, Color.Blue);
             //设置bar宽度
             paneVolume.BarSettings.ClusterScaleWidth = 0.5;
             log.Info(paneVolume.BarSettings.GetClusterWidth());
