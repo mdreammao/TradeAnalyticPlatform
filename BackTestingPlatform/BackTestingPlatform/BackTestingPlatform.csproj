@@ -164,6 +164,7 @@
     <Compile Include="Utilities\Common\MinuteFrequencyTransferUtils.cs" />
     <Compile Include="Utilities\Common\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
+    <Compile Include="Utilities\Common\PerformanceStatisics.cs" />
     <Compile Include="Utilities\Common\SequentialUtils.cs" />
     <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
