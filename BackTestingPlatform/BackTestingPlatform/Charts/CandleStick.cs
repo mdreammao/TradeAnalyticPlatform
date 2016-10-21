@@ -92,8 +92,8 @@ namespace BackTestingPlatform.Charts
             z1.PanModifierKeys = Keys.None;
 
             //同步缩放，还是不成功，会影响坐标轴
-            //z1.IsSynchronizeXAxes = true;
-            //z1.IsSynchronizeYAxes = true;
+            z1.IsSynchronizeXAxes = true;
+            z1.IsSynchronizeYAxes = false;
 
             //使用键盘聚焦还没有成功
             z1.ZoomModifierKeys = System.Windows.Forms.Keys.Down;
