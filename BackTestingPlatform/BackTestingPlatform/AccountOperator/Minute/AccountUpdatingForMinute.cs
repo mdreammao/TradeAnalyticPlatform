@@ -30,7 +30,7 @@ namespace BackTestingPlatform.AccountOperator.Minute
             //若position为null，直接跳过
             if (positions.Count == 0)
             {
-                log.Info("初始持仓为空！");
+                //log.Info("初始持仓为空！");
                 return;
             }
             Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();

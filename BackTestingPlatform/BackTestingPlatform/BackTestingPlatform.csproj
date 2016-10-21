@@ -135,9 +135,9 @@
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
-    <Compile Include="Service\Common\TradeDaysService.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
+    <Compile Include="Service\Common\TradeDaysService.cs" />
     <Compile Include="Strategies\MA_Strategy\GenSignal.cs" />
     <Compile Include="Strategies\MA_Strategy\GetData.cs" />
     <Compile Include="Strategies\MA_Strategy\MAtest.cs" />
@@ -145,6 +145,7 @@
     <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Strategies\Option\OptionSample3.cs" />
     <Compile Include="Strategies\Option\OptionSample4.cs" />
+    <Compile Include="Strategies\Stock\StockSample02.cs" />
     <Compile Include="Strategies\Stock\StockSampleOne.cs" />
     <Compile Include="Strategies\Stock\StockSample\ComputeReversionPoint.cs" />
     <Compile Include="Strategies\Stock\StockSample\DoubleMAForTick.cs" />

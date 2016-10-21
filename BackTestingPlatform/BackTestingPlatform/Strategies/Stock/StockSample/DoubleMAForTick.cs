@@ -101,6 +101,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             var lastPrice = data[targetVariety].Select(x => x.lastPrice).ToArray();
             longMA = TA_MA.SMA(lastPrice, longLength).ToList();
             shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
+            int indexOfNow = -1;//记录整个data的索引
 
             /**/
             
@@ -131,10 +132,11 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 while (index < dayLength)
                 {
                     int nextIndex = index + 1;
+                    indexOfNow ++;
                     DateTime now = TimeListUtility.IndexToTickDateTime(Kit.ToInt_yyyyMMdd(day), index);
                     Dictionary<string, TickSignal> signal = new Dictionary<string, TickSignal>();
                     DateTime next = new DateTime();
-                    int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
+                   // int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
                     double nowPrice = dataToday[targetVariety][index].lastPrice;
 
                     //实际操作从第一个回望期后开始    
@@ -192,6 +194,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                     }
                     nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
                     index = nextIndex;
+                    
                 }
                 //账户信息记录By Day            
                 //用于记录的临时账户
