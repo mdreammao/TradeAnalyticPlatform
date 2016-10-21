@@ -39,12 +39,12 @@ namespace BackTestingPlatform.Test
             //           // Console.Write(i);
             //}
             //测试图形化
-            int startTime = 20160725;
+            int startTime = 20160108;
             int endTime = 20160810;
             string secCode = "510050.SH";
             //最好将数据初始化以后，传入图形化类，但是需要考虑传递大数量级形参会不会出什么问题，考虑是传递参数还是数据
             //最后一个数据5表示k线为daily
-            Application.Run(new CandleStick(startTime, endTime, secCode, 2));
+            Application.Run(new CandleStick(startTime, endTime, secCode, 3));
             Platforms.ShutDown();
             Console.ReadKey();
         }
