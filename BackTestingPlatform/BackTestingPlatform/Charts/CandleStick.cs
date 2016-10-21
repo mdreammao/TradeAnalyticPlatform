@@ -88,6 +88,12 @@ namespace BackTestingPlatform.Charts
             Load += new EventHandler(Form_Load);
             ResumeLayout(false);
 
+            //设置左右拖拽功能
+            z1.PanModifierKeys = Keys.None;
+
+            //使用键盘聚焦还没有成功
+            z1.ZoomModifierKeys = System.Windows.Forms.Keys.Down;
+
         }
         #endregion
 
@@ -97,15 +103,25 @@ namespace BackTestingPlatform.Charts
         /// </summary>
         private void Form_Load( object sender, EventArgs e )
 		{
-            GraphPane myPane = z1.GraphPane;
+            //画一张大图，包含价格K线和成交量
+            MasterPane myPaneMaster = z1.MasterPane;
+            myPaneMaster.Title.Text = secCode;
+            myPaneMaster.Title.FontSpec.FontColor = Color.Black;
+
+            //PaneMaster里面画一张价格的小图
+            GraphPane panePrice = z1.GraphPane;
+            myPaneMaster.PaneList[0] = (panePrice);
+            //PaneMaster里面画一张成交量的小图
+            GraphPane paneVolume = z1.GraphPane;
+            myPaneMaster.PaneList.Add(paneVolume);
 
             //蜡烛线例子
             //设置名称和坐标轴
-            myPane.Title.Text = "K线图";
-            myPane.XAxis.Title.Text = "日期";
-            myPane.XAxis.Title.FontSpec.FontColor = Color.Black;
-            myPane.YAxis.Title.Text = "价格";
-            myPane.YAxis.Title.FontSpec.FontColor = Color.Black;
+            panePrice.Title.Text = "K线图";
+            panePrice.XAxis.Title.Text = "日期";
+            panePrice.XAxis.Title.FontSpec.FontColor = Color.Black;
+            panePrice.YAxis.Title.Text = "价格";
+            panePrice.YAxis.Title.FontSpec.FontColor = Color.Black;
 
             //spl装载时间，价格数据
             StockPointList spl = new StockPointList();
@@ -153,6 +169,7 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData[secCode][i].close;
                         double high = minuteData[secCode][i].high;
                         double low = minuteData[secCode][i].low;
+                        double volume = minuteData[secCode][i].volume;
 
                         StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
                         spl.Add(pt);
@@ -181,6 +198,7 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData5Min[secCode][i].close;
                         double high = minuteData5Min[secCode][i].high;
                         double low = minuteData5Min[secCode][i].low;
+                        double volume = minuteData[secCode][i].volume;
 
                         StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
                         spl.Add(pt);
@@ -209,6 +227,7 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData15Min[secCode][i].close;
                         double high = minuteData15Min[secCode][i].high;
                         double low = minuteData15Min[secCode][i].low;
+                        double volume = minuteData[secCode][i].volume;
 
                         StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
                         spl.Add(pt);
@@ -237,6 +256,7 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData30Min[secCode][i].close;
                         double high = minuteData30Min[secCode][i].high;
                         double low = minuteData30Min[secCode][i].low;
+                        double volume = minuteData[secCode][i].volume;
 
                         StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
                         spl.Add(pt);
@@ -265,6 +285,7 @@ namespace BackTestingPlatform.Charts
                         double close = minuteData60Min[secCode][i].close;
                         double high = minuteData60Min[secCode][i].high;
                         double low = minuteData60Min[secCode][i].low;
+                        double volume = minuteData[secCode][i].volume;
 
                         StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
                         spl.Add(pt);
@@ -293,6 +314,7 @@ namespace BackTestingPlatform.Charts
                         double close = minuteDataDaily[secCode][i].close;
                         double high = minuteDataDaily[secCode][i].high;
                         double low = minuteDataDaily[secCode][i].low;
+                        double volume = minuteData[secCode][i].volume;
 
                         StockPt pt = new StockPt(timePoint, high, low, open, close, 100000);
                         spl.Add(pt);
@@ -306,7 +328,7 @@ namespace BackTestingPlatform.Charts
                     break;
 
             }
-            
+
             //添加栅格线
             //myPane.XAxis.MajorGrid.IsVisible = true;
             //myPane.YAxis.MajorGrid.IsVisible = true;
@@ -316,24 +338,26 @@ namespace BackTestingPlatform.Charts
             //myPane.XAxis.MajorGrid.DashOff = 0;
 
 
-            myPane.XAxis.Type = AxisType.Date;
-            myPane.XAxis.Scale.Format = "MM-dd";
+            panePrice.XAxis.Type = AxisType.Date;
+            panePrice.XAxis.Scale.Format = "MM-dd";
             //myPane.XAxis.Scale.FontSpec.Angle = 45;//X轴文字方向，0-90度
             //开始Y轴坐标设置
             ////设置Y轴坐标的范围
             //myPane.YAxis.Scale.Max = Math.Round(maxhi * 1.2, 2);//Math.Ceiling(maxhi);
             //myPane.YAxis.Scale.Min = Math.Round(minlow * 0.8, 2);
-            //Y轴最大刻度，注意minStep只会显示刻度线不会显示刻度值
-            //myPane.YAxis.Scale.MajorStep = 0.01;
+
+            //Y轴最大刻度，注意minStep只会显示刻度线不会显示刻度值，minStep为纵坐标步长
+            panePrice.YAxis.Scale.MajorStep = 0.001;
+
             //myPane.XAxis.Scale.FontSpec.FontColor = Color.Black;
             //myPane.YAxis.Scale.FontSpec.FontColor = Color.Black;
 
-            myPane.XAxis.Type = AxisType.DateAsOrdinal;
+            panePrice.XAxis.Type = AxisType.DateAsOrdinal;
             //myPane.Legend.FontSpec.Size = 18f;
             //myPane.Legend.Position = LegendPos.InsideTopRight;
             //myPane.Legend.Location = new Location(0.5f, 0.6f, CoordType.PaneFraction,
             //    AlignH.Right, AlignV.Top);
-            JapaneseCandleStickItem myCurve = myPane.AddJapaneseCandleStick(secCode, spl);
+            JapaneseCandleStickItem myCurve = panePrice.AddJapaneseCandleStick(secCode, spl);
             myCurve.Stick.IsAutoSize = true;
             //myCurve.Stick.Color = Color.Blue;
             myCurve.Stick.FallingFill = new Fill(Color.Green);//下跌颜色
@@ -344,34 +368,34 @@ namespace BackTestingPlatform.Charts
             //myPane.Fill = new Fill(Color.Orange, Color.FromArgb(220, 220, 255), 45.0f);
             Color c1 = ColorTranslator.FromHtml("#ffffff");
             Color c2 = ColorTranslator.FromHtml("#ffd693");
-            myPane.Chart.Fill = new Fill(c1);//图形区域颜色
-            myPane.Fill = new Fill(c2);//整体颜色            
+            panePrice.Chart.Fill = new Fill(c1);//图形区域颜色
+            panePrice.Fill = new Fill(c2);//整体颜色 
 
-            /*
+
             //成交量线例子
             // Set the Titles
-            myPane.Title.Text = "Test Volume Bar";
-            myPane.XAxis.Title.Text = "Time";
-            myPane.YAxis.Title.Text = "Volume Num";
+            paneVolume.Title.Text = "Test Volume Bar";
+            paneVolume.XAxis.Title.Text = "Time";
+            paneVolume.YAxis.Title.Text = "Volume Num";
 
             // Make up some random data points
-            //string[] labels = { "Panther", "Lion", "Cheetah","Cougar", "Tiger", "Leopard" };
+            string[] labels = { "Panther", "Lion", "Cheetah","Cougar", "Tiger", "Leopard" };
             double[] y1 = { 100, 115, 75, 22, 98, 40, -100, -20 };
             double[] y2 = { 90, 100, 95, 35, 80, 35 };
             //double[] y3 = { 80, 110, 65, 15, 54, 67 };
             //double[] y4 = { 120, 125, 100, 40, 105, 75 };
 
             // Generate a red bar with "Curve 1" in the legend
-            BarItem myBar = myPane.AddBar("Curve 1", null, y1, Color.Red);
+            BarItem myBar = paneVolume.AddBar("Curve 1", null, y1, Color.Red);
             myBar.Bar.Fill = new Fill(Color.Red, Color.White, Color.Red);
 
             // Generate a blue bar with "Curve 2" in the legend
-            myBar = myPane.AddBar("Curve 2", null, y2, Color.Blue);
+            myBar = paneVolume.AddBar("Curve 2", null, y2, Color.Blue);
             myBar.Bar.Fill = new Fill(Color.Blue, Color.White, Color.Blue);
             //设置bar宽度
-            myPane.BarSettings.ClusterScaleWidth = 0.5;
-            log.Info(myPane.BarSettings.GetClusterWidth());
-            myPane.BarSettings.Type = ZedGraph.BarType.Cluster;
+            paneVolume.BarSettings.ClusterScaleWidth = 0.5;
+            log.Info(paneVolume.BarSettings.GetClusterWidth());
+            paneVolume.BarSettings.Type = ZedGraph.BarType.Cluster;
 
             // Generate a green bar with "Curve 3" in the legend
             //myBar = myPane.AddBar("Curve 3", null, y3, Color.Green);
@@ -391,20 +415,21 @@ namespace BackTestingPlatform.Charts
 
             // Draw the X tics between the labels instead of 
             // at the labels
-            myPane.XAxis.MajorTic.IsBetweenLabels = true;
+            paneVolume.XAxis.MajorTic.IsBetweenLabels = true;
 
             // Set the XAxis labels
             //myPane.XAxis.Scale.TextLabels = labels;
             // Set the XAxis to Text type
-            myPane.XAxis.Type = AxisType.Text;
+            paneVolume.XAxis.Type = AxisType.Text;
 
             // Fill the Axis and Pane backgrounds
-            myPane.Chart.Fill = new Fill(Color.White,
+            paneVolume.Chart.Fill = new Fill(Color.White,
                   Color.FromArgb(255, 255, 166), 90F);
-            myPane.Fill = new Fill(Color.FromArgb(250, 250, 255));
-            */
+            paneVolume.Fill = new Fill(Color.FromArgb(250, 250, 255));
 
-            myPane.AxisChange();
+            using (Graphics g = this.CreateGraphics())
+                myPaneMaster.SetLayout(g, 2, 0);
+            z1.AxisChange();
         }
         #endregion
     }
