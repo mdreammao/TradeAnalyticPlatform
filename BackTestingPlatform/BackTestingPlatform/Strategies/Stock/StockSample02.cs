@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using BackTestingPlatform.AccountOperator.Minute;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess;
 using BackTestingPlatform.DataAccess.Futures;
@@ -103,7 +104,7 @@ namespace BackTestingPlatform.Strategies.Stock
 
 
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                     }
 
                     catch (Exception)

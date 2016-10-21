@@ -77,7 +77,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountOperator\CalculateOnesMargin.cs" />
     <Compile Include="AccountOperator\Minute\AccountUpdatingForMinute.cs" />
     <Compile Include="AccountOperator\Minute\CalculateOnesMarginForMinute.cs" />
     <Compile Include="AccountOperator\Minute\CalculatePositionsMarginForMinute.cs" />
@@ -119,7 +118,6 @@
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
     <Compile Include="Model\Positions\BasicPositions.cs" />
-    <Compile Include="AccountOperator\CalculatePositionsMargin.cs" />
     <Compile Include="Model\Positions\MinutePositions.cs" />
     <Compile Include="Model\Positions\PositionDetail.cs" />
     <Compile Include="Model\Positions\PositionsWithDetail.cs" />
@@ -137,9 +135,7 @@
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
-    <Compile Include="Model\TALibrary\TA_SMA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
-    <Compile Include="Service\Option\OptionService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
     <Compile Include="Strategies\MA_Strategy\GenSignal.cs" />
@@ -156,7 +152,6 @@
     <Compile Include="Strategies\Stock\StockSample\MA.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSample01.cs" />
-    <Compile Include="AccountOperator\AccountUpdating.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
     <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />

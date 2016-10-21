@@ -1,6 +1,7 @@
 ﻿using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
+using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities.TimeList;
 using System;
 using System.Collections.Generic;
