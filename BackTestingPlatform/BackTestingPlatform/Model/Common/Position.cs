@@ -29,6 +29,12 @@ namespace BackTestingPlatform.Model.Common
         {
             return null;    //TODO
         }
+
+        /// <summary>
+        /// 获取5档盘口价格
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
         public static Position[] buildAsk5(DataRow row)
         {
             Position[] res = new Position[5];
@@ -41,12 +47,29 @@ namespace BackTestingPlatform.Model.Common
         }
         public static Position[] buildBid5(DataRow row)
         {
-            Position[] res = new Position[5];            
+            Position[] res = new Position[5];
             res[0] = new Position(Convert.ToDouble(row["B1"]), Convert.ToDouble(row["BV1"]));
             res[1] = new Position(Convert.ToDouble(row["B2"]), Convert.ToDouble(row["BV2"]));
             res[2] = new Position(Convert.ToDouble(row["B3"]), Convert.ToDouble(row["BV3"]));
             res[3] = new Position(Convert.ToDouble(row["B4"]), Convert.ToDouble(row["BV4"]));
-            res[4] = new Position(Convert.ToDouble(row["B5"]), Convert.ToDouble(row["BV5"]));           
+            res[4] = new Position(Convert.ToDouble(row["B5"]), Convert.ToDouble(row["BV5"]));
+            return res;
+        }
+        /// <summary>
+        /// 获取一档盘口价格
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public static Position[] buildAsk(DataRow row)
+        {
+            Position[] res = new Position[5];
+            res[0] = new Position(Convert.ToDouble(row["S1"]), Convert.ToDouble(row["SV1"]));
+            return res;
+        }
+        public static Position[] buildBid(DataRow row)
+        {
+            Position[] res = new Position[5];            
+            res[0] = new Position(Convert.ToDouble(row["B1"]), Convert.ToDouble(row["BV1"]));
             return res;
         }
     }

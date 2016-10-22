@@ -35,8 +35,9 @@ namespace BackTestingPlatform.Model.Common
         public double preSettle { get; set; }
 
         public double preClose { get; set; }
-
-        public int date;
+        
+        //包含交易日字段和自然日字段
+        public int date,ndate;
 
         public int moment;
 

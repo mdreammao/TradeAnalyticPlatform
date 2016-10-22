@@ -3,6 +3,8 @@ using BackTestingPlatform.Tests;
 using BackTestingPlatformTest.Tests;
 using System;
 using System.Collections.Generic;
+using BackTestingPlatform.Charts;
+using System.Windows.Forms;
 
 namespace BackTestingPlatform.Test
 {
@@ -23,7 +25,7 @@ namespace BackTestingPlatform.Test
             //DataAccessTests.testOptionDailyRepo();
             //
             //GenericTypeTests.test1();
-            SeqUtilsTests.test2();
+            //SeqUtilsTests.test2();
             //DataAccessTests.testStockDailyRepo();
             //DataAccessTests.testStockMinuteKLineRepo();
             //int n = 130000;double x1=0;
@@ -36,6 +38,13 @@ namespace BackTestingPlatform.Test
             //    //for (int j = 0; j < 44444; j++) x1 += Math.Sin(i);
             //           // Console.Write(i);
             //}
+            //测试图形化
+            int startTime = 20160108;
+            int endTime = 20160810;
+            string secCode = "510050.SH";
+            //最好将数据初始化以后，传入图形化类，但是需要考虑传递大数量级形参会不会出什么问题，考虑是传递参数还是数据
+            //最后一个数据5表示k线为daily
+            Application.Run(new CandleStick(startTime, endTime, secCode, 2));
             Platforms.ShutDown();
             Console.ReadKey();
         }
