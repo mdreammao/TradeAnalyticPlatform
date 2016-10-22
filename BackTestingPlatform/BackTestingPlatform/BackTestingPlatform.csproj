@@ -101,6 +101,7 @@
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
     <Compile Include="DataAccess\Option\OptionMinuteRepository.cs" />
     <Compile Include="DataAccess\Option\OptionTickRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockDailyFactorRepository.cs" />
     <Compile Include="DataAccess\Stock\StockDailyRepository.cs" />
     <Compile Include="DataAccess\Common\SequentialByDayRepository.cs" />
     <Compile Include="DataAccess\Stock\StockInfoRepository.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Model\Signal\BasicSignal.cs" />
     <Compile Include="Model\Signal\MinuteSignal.cs" />
     <Compile Include="Model\Signal\TickSignal.cs" />
+    <Compile Include="Model\Stock\StockFactor.cs" />
     <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
     <Compile Include="Model\Futures\FuturesMinute.cs" />
