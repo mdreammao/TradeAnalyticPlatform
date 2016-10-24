@@ -14,7 +14,7 @@ namespace BackTestingPlatform.Model.Stock
         public StockInfo basicInfo { get; set; }
     }
   
-    public class StockDailyWithFactor : KLine
+    public class StockDailyWithFactor : StockDaily
     {
         public StockFactor basicFactor { get; set; }
     }
