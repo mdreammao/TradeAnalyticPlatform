@@ -87,6 +87,9 @@
     <Compile Include="Charts\CandleStick.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Charts\PLChart.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />

@@ -20,7 +20,7 @@ namespace BackTestingPlatform.Charts
 	/// </summary>
 	public class CandleStick : Form
 	{
-		private ZedGraphControl z1;
+		private ZedGraphControl zedG;
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -70,33 +70,33 @@ namespace BackTestingPlatform.Charts
 		private void InitializeComponent()
 		{
             //显示的属性设置，后期还要做美工处理**************
-            z1 = new ZedGraphControl();
+            zedG = new ZedGraphControl();
             SuspendLayout();
             // 图片属性设置 
-            z1.IsShowPointValues = false;
-            z1.Location = new Point(0, 0);
-            z1.Name = "z1";
-            z1.PointValueFormat = "G";
-            z1.Size = new Size(1360, 764);
-            z1.TabIndex = 0;
+            zedG.IsShowPointValues = false;
+            zedG.Location = new Point(0, 0);
+            zedG.Name = "z1";
+            zedG.PointValueFormat = "G";
+            zedG.Size = new Size(1360, 764);
+            zedG.TabIndex = 0;
             // Form属性设置
             AutoScaleBaseSize = new Size(10, 24);
             ClientSize = new Size(923, 538);
-            Controls.Add(z1);
+            Controls.Add(zedG);
             Name = "Form1";
             Text = "Form1";
             Load += new EventHandler(Form_Load);
             ResumeLayout(false);
 
             //设置左右拖拽功能
-            z1.PanModifierKeys = Keys.None;
+            zedG.PanModifierKeys = Keys.None;
 
             //同步缩放，还是不成功，会影响坐标轴
-            z1.IsSynchronizeXAxes = true;
-            z1.IsSynchronizeYAxes = false;
+            zedG.IsSynchronizeXAxes = true;
+            zedG.IsSynchronizeYAxes = false;
 
             //使用键盘聚焦还没有成功
-            z1.ZoomModifierKeys = System.Windows.Forms.Keys.Down;
+            zedG.ZoomModifierKeys = Keys.Down;
 
         }
         #endregion
@@ -108,7 +108,7 @@ namespace BackTestingPlatform.Charts
         private void Form_Load( object sender, EventArgs e )
 		{
             //画一张大图，包含价格K线和成交量
-            MasterPane myPaneMaster = z1.MasterPane;
+            MasterPane myPaneMaster = zedG.MasterPane;
             myPaneMaster.Title.Text = secCode;
             myPaneMaster.Title.FontSpec.FontColor = Color.Black;
 
@@ -436,7 +436,7 @@ namespace BackTestingPlatform.Charts
 
             using (Graphics g = this.CreateGraphics())
                 myPaneMaster.SetLayout(g, 2, 0);
-            z1.AxisChange();
+            zedG.AxisChange();
         }
         #endregion
     }

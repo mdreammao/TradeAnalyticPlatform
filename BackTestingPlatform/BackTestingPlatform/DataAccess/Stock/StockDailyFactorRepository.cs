@@ -40,10 +40,10 @@ namespace BackTestingPlatform.DataAccess.Stock
                         close = dataList[k * fieldLen + 3],
                         volume = dataList[k * fieldLen + 4],
                         amount = dataList[k * fieldLen + 5],
-                        adjustFactor = dataList[k * fieldLen + 6],
-                        settle = dataList[k * fieldLen + 7],
-                        preClose = dataList[k * fieldLen + 8],
-                        preSettle = dataList[k * fieldLen + 9]
+                        //adjustFactor = dataList[k * fieldLen + 6],
+                        //settle = dataList[k * fieldLen + 7],
+                        //preClose = dataList[k * fieldLen + 8],
+                        //preSettle = dataList[k * fieldLen + 9]
                     });
                 }
             }
