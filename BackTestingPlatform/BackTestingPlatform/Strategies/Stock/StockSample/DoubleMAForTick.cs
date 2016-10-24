@@ -56,7 +56,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
         private int shortLength = 70;//短周期均线参数
         private int longLength = 500;//长周期均线参数
 
-        string targetVariety = "IF1503.CFE";
+        string targetVariety = "IF1608.CFE";
 
         /// <summary>
         /// 50ETF，Tick级双均线策略
@@ -160,7 +160,12 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             /// （2）若短均线下穿长均线，平多                    
                             //（1）若当前为 回测结束日 或 tradingOn 为false，平仓
                             if (isLastDayOfBackTesting || tradingOn == false)
+                            {
                                 next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                break;
+
+                            }
+                                
                             //（2）若短均线下穿长均线，平多      
                             else if (Cross.crossDown(shortMA,longMA,indexOfNow))
                                 next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
