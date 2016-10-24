@@ -10,28 +10,28 @@ using WAPIWrapperCSharp;
 
 namespace BackTestingPlatform.DataAccess.Stock
 {
-    public class StockDailyRepository : SequentialByYearRepository<StockDaily>
+    public class StockDailyRepository : SequentialByYearRepository<StockDailyWithFactor>
     {
-        protected override List<StockDaily> readFromDefaultMssql(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
+        protected override List<StockDailyWithFactor> readFromDefaultMssql(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
             throw new NotImplementedException();
         }
 
-        protected override List<StockDaily> readFromWind(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
+        protected override List<StockDailyWithFactor> readFromWind(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
             WindAPI w = Platforms.GetWindAPI();
             WindData wd = w.wsd(code, "open,high,low,close,volume,amt,adjfactor,settle,pre_close,pre_settle", dateStart, dateEnd, "Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
 
-            var items = new List<StockDaily>(len * fieldLen);
+            var items = new List<StockDailyWithFactor>(len * fieldLen);
             if (wd.data is double[])
             {
                 double[] dataList = (double[])wd.data;
                 DateTime[] timeList = wd.timeList;
                 for (int k = 0; k < len; k++)
                 {
-                    items.Add(new StockDaily
+                    items.Add(new StockDailyWithFactor
                     {
                         time = timeList[k],
                         open = dataList[k * fieldLen + 0],

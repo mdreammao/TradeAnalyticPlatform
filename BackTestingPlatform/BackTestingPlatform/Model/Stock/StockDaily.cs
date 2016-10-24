@@ -19,7 +19,7 @@ namespace BackTestingPlatform.Model.Stock
         public StockFactor basicFactor { get; set; }
     }
 
-    public class StockDaily : KLine
+    public class StockDailyWithFactor : KLine
     {
         public double settle { get; set; }
         public double preSettle { get; set; }

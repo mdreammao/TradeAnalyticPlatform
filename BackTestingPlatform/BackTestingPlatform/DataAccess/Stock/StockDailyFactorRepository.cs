@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BackTestingPlatform.DataAccess.Common;
+using BackTestingPlatform.Model.Stock;
+using WAPIWrapperCSharp;
+using BackTestingPlatform.Core;
 
 namespace BackTestingPlatform.DataAccess.Stock
 {
@@ -28,7 +31,7 @@ namespace BackTestingPlatform.DataAccess.Stock
                 DateTime[] timeList = wd.timeList;
                 for (int k = 0; k < len; k++)
                 {
-                    items.Add(new StockDaily
+                    items.Add(new StockDailyWithFactor
                     {
                         time = timeList[k],
                         open = dataList[k * fieldLen + 0],
