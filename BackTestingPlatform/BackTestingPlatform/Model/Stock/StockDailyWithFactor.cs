@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Model.Stock
 {
-    public class StockFactor
+    public class StockDailyWithFactor : StockDaily
     {
-        public string code { get; set; }
         public double marketValue { get; set; }
-        public double currentMarketValue { get; set; }
+        public double floatMarketValue { get; set; }
         public double PE { get; set; }
         public double PB { get; set; }
         public double PS { get; set; }
-        public double industry { get; set; }
-
+        public string industry { get; set; }
     }
 }

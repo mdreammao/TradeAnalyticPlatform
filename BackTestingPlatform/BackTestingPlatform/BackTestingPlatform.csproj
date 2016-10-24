@@ -87,6 +87,9 @@
     <Compile Include="Charts\CandleStick.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Charts\PLChart.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
@@ -127,7 +130,7 @@
     <Compile Include="Model\Signal\BasicSignal.cs" />
     <Compile Include="Model\Signal\MinuteSignal.cs" />
     <Compile Include="Model\Signal\TickSignal.cs" />
-    <Compile Include="Model\Stock\StockFactor.cs" />
+    <Compile Include="Model\Stock\StockDailyWithFactor.cs" />
     <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
     <Compile Include="Model\Futures\FuturesMinute.cs" />
