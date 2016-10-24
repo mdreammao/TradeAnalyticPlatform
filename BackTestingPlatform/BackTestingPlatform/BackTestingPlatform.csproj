@@ -130,7 +130,7 @@
     <Compile Include="Model\Signal\BasicSignal.cs" />
     <Compile Include="Model\Signal\MinuteSignal.cs" />
     <Compile Include="Model\Signal\TickSignal.cs" />
-    <Compile Include="Model\Stock\StockFactor.cs" />
+    <Compile Include="Model\Stock\StockDailyWithFactor.cs" />
     <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
     <Compile Include="Model\Futures\FuturesMinute.cs" />
