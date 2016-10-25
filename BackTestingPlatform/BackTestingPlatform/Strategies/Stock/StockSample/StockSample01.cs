@@ -153,10 +153,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             /// （2）若当前下穿下反转点*（1-容忍度），平多                    
                             //（1）若当前为 回测结束日 或 tradingOn 为false，平仓
                             if (isLastDayOfBackTesting || tradingOn == false)
-                                next = MinnteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                             //（2）若当前下穿下反转点*（1-容忍度），平多
                             else if (data[targetVariety][indexOfNow - 1].close >= nowDownReversionPoint * (1 - toleranceDegree) && nowClose < nowDownReversionPoint * (1 - toleranceDegree))
-                                next = MinnteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                         }
                         //空仓 且可交易 可开仓
                         else if (isEmptyPosition && tradingOn && openingOn)

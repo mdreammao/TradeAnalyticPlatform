@@ -136,7 +136,7 @@ namespace BackTestingPlatform.Strategies.Option
                             if (!isEmptyPosition && (isExpiredDay || isLastDayOfBackTesting || closingOn == false))
                             {
                                 //全部平仓
-                                DateTime next = MinnteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                DateTime next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                                 //当天不可再开仓
                                 openingOn = false;
                             }
@@ -144,7 +144,7 @@ namespace BackTestingPlatform.Strategies.Option
                             else if (!isEmptyPosition && !isParPriceOption)
                             {
                                 //全部平仓
-                                DateTime next = MinnteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                DateTime next = MinuteCloseAllPositonsWithSlip.closeAllPositions(data, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
                                 //当天不可再开仓
                                 openingOn = false;
                             }
