@@ -24,12 +24,14 @@ namespace BackTestingPlatform.Charts
         private Container components = null;
 
         //PL曲线输入字典
-        Dictionary<string, double[]> lineChart = new Dictionary<string, double[]>(); 
+        private Dictionary<string, double[]> lineChart = new Dictionary<string, double[]>();
+        private string[] date = { };
 
-        public PLChart(Dictionary<string, double[]> line)
+        public PLChart(Dictionary<string, double[]> line, string[] datePeriod)
         {
             InitializeComponent();
-            this.lineChart = line;
+            lineChart = line;
+            date = datePeriod;
         }
 
         protected override void Dispose(bool disposing)
@@ -90,7 +92,7 @@ namespace BackTestingPlatform.Charts
             //myPane.XAxis.IsTicsBetweenLabels = true;
 
             // Set the XAxis labels
-            //myPane.XAxis.TextLabels = labels;
+            myPane.XAxis.Scale.TextLabels = date;
             // Set the XAxis to Text type
             myPane.XAxis.Type = AxisType.Text;
 

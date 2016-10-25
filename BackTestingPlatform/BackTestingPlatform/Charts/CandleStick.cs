@@ -70,6 +70,10 @@ namespace BackTestingPlatform.Charts
 		private void InitializeComponent()
 		{
             //显示的属性设置，后期还要做美工处理**************
+            //获得屏幕大小
+            int iActulaWidth = Screen.PrimaryScreen.Bounds.Width;
+            int iActulaHeight = Screen.PrimaryScreen.Bounds.Height;
+
             zedG = new ZedGraphControl();
             SuspendLayout();
             // 图片属性设置 
@@ -77,11 +81,11 @@ namespace BackTestingPlatform.Charts
             zedG.Location = new Point(0, 0);
             zedG.Name = "z1";
             zedG.PointValueFormat = "G";
-            zedG.Size = new Size(1360, 764);
+            zedG.Size = new Size(iActulaWidth+iActulaWidth/2, iActulaHeight+iActulaHeight/2);
             zedG.TabIndex = 0;
             // Form属性设置
             AutoScaleBaseSize = new Size(10, 24);
-            ClientSize = new Size(923, 538);
+            ClientSize = new Size(iActulaWidth+iActulaWidth/2, iActulaHeight+iActulaHeight/2);
             Controls.Add(zedG);
             Name = "Form1";
             Text = "Form1";
@@ -332,7 +336,6 @@ namespace BackTestingPlatform.Charts
                             xStart.AddDays(2.0);
                     }
                     break;
-
             }
 
             //添加栅格线
@@ -353,7 +356,7 @@ namespace BackTestingPlatform.Charts
             //myPane.YAxis.Scale.Min = Math.Round(minlow * 0.8, 2);
 
             //Y轴最大刻度，注意minStep只会显示刻度线不会显示刻度值，minStep为纵坐标步长
-            panePrice.YAxis.Scale.MajorStep = 0.001;
+            panePrice.YAxis.Scale.MajorStep = 0.01;
 
             //myPane.XAxis.Scale.FontSpec.FontColor = Color.Black;
             //myPane.YAxis.Scale.FontSpec.FontColor = Color.Black;
@@ -380,7 +383,7 @@ namespace BackTestingPlatform.Charts
 
             //成交量线例子
             // Set the Titles
-            paneVolume.Title.Text = "Test Volume Bar";
+            paneVolume.Title.Text = "成交量";
             paneVolume.XAxis.Title.Text = "Time";
             paneVolume.YAxis.Title.Text = "Volume Num";
 
@@ -393,8 +396,8 @@ namespace BackTestingPlatform.Charts
             //double[] y4 = { 120, 125, 100, 40, 105, 75 };
 
             // Generate a red bar with "Curve 1" in the legend
-            BarItem myBar = paneVolume.AddBar("Curve 1", null, volume, Color.Red);
-            myBar.Bar.Fill = new Fill(Color.Red, Color.White, Color.Red);
+            BarItem myBar = paneVolume.AddBar(null, null, volume, Color.Red);
+            //myBar.Bar.Fill = new Fill(Color.Red);
 
             // Generate a blue bar with "Curve 2" in the legend
             //myBar = paneVolume.AddBar("Curve 2", null, y2, Color.Blue);
@@ -402,7 +405,7 @@ namespace BackTestingPlatform.Charts
             //设置bar宽度
             paneVolume.BarSettings.ClusterScaleWidth = 0.5;
             log.Info(paneVolume.BarSettings.GetClusterWidth());
-            paneVolume.BarSettings.Type = ZedGraph.BarType.Cluster;
+            paneVolume.BarSettings.Type = BarType.Cluster;
 
             // Generate a green bar with "Curve 3" in the legend
             //myBar = myPane.AddBar("Curve 3", null, y3, Color.Green);
@@ -434,7 +437,7 @@ namespace BackTestingPlatform.Charts
                   Color.FromArgb(255, 255, 166), 90F);
             paneVolume.Fill = new Fill(Color.FromArgb(250, 250, 255));
 
-            using (Graphics g = this.CreateGraphics())
+            using (Graphics g = CreateGraphics())
                 myPaneMaster.SetLayout(g, 2, 0);
             zedG.AxisChange();
         }
