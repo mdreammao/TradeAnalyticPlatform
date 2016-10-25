@@ -81,7 +81,7 @@ namespace BackTestingPlatform.Charts
             foreach (var variety in lineChart)
             {
                 myCurve[indexD] = myPane.AddCurve(variety.Key, null, lineChart[variety.Key],
-                    Color.FromArgb(aa.Next(1, 255), aa.Next(1, 255), aa.Next(1, 255)), SymbolType.Circle);
+                    Color.FromArgb(aa.Next(1, 255), aa.Next(1, 255), aa.Next(1, 255)), SymbolType.None);
                 myCurve[indexD].Symbol.Size = 8.0F;
                 myCurve[indexD].Symbol.Fill = new Fill(Color.White);
                 myCurve[indexD].Line.Width = 2.0F;

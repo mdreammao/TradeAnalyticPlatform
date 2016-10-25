@@ -144,6 +144,7 @@
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
+    <Compile Include="Strategies\Alpha\Class1.cs" />
     <Compile Include="Strategies\MA_Strategy\GenSignal.cs" />
     <Compile Include="Strategies\MA_Strategy\GetData.cs" />
     <Compile Include="Strategies\MA_Strategy\MAtest.cs" />
