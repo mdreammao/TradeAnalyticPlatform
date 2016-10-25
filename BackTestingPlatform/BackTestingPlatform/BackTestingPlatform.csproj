@@ -72,7 +72,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\WAPIWrapperCSharp.dll</HintPath>
     </Reference>
-    <Reference Include="ZedGraph">
+    <Reference Include="ZedGraph, Version=5.1.5.28844, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>References\ZedGraph.dll</HintPath>
     </Reference>
   </ItemGroup>

@@ -31,6 +31,8 @@ using BackTestingPlatform.Model.Futures;
 using BackTestingPlatform.Transaction.TickTransaction;
 using BackTestingPlatform.Model.LogicFunction;
 using BackTestingPlatform.AccountOperator.Tick;
+using System.Windows.Forms;
+using BackTestingPlatform.Charts;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
@@ -56,7 +58,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
         private int shortLength = 70;//短周期均线参数
         private int longLength = 500;//长周期均线参数
 
-        string targetVariety = "IF1503.CFE";
+        string targetVariety = "IF1607.CFE";
 
         /// <summary>
         /// 50ETF，Tick级双均线策略
@@ -160,7 +162,12 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             /// （2）若短均线下穿长均线，平多                    
                             //（1）若当前为 回测结束日 或 tradingOn 为false，平仓
                             if (isLastDayOfBackTesting || tradingOn == false)
+                            {
                                 next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                                break;
+
+                            }
+                                
                             //（2）若短均线下穿长均线，平多      
                             else if (Cross.crossDown(shortMA,longMA,indexOfNow))
                                 next = TickCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
@@ -210,17 +217,26 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 Console.WriteLine("Time:{0,-8:F},netWorth:{1,-8:F3}", day, myAccount.totalAssets / initialCapital);
             }
 
-
+            /*
             //遍历输出到console   
             foreach (var account in accountHistory)
                 Console.WriteLine("time:{0,-8:F}, netWorth:{1,-8:F3}\n", account.time, account.totalAssets / initialCapital);
-
+             */
             //将accountHistory输出到csv
             /*
             var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";
             var dt = DataTableUtils.ToDataTable(accountHistory);          // List<MyModel> -> DataTable
             CsvFileUtils.WriteToCsvFile(resultPath, dt);    // DataTable -> CSV File
             */
+            //画图测试
+
+            Dictionary<string, double[]> line = new Dictionary<string, double[]>();
+            double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
+         //   double[] y2 = { 100, 66, 77, 40, 198, 20 };
+            line.Add("NetWorth", netWorth);
+         //   line.Add("text2", y2);
+
+            Application.Run(new PLChart(line));
 
             Console.ReadKey();
             
