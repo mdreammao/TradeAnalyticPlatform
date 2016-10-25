@@ -147,6 +147,7 @@
     <Compile Include="Strategies\MA_Strategy\GenSignal.cs" />
     <Compile Include="Strategies\MA_Strategy\GetData.cs" />
     <Compile Include="Strategies\MA_Strategy\MAtest.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\CoveredOptionStrategy.cs" />
     <Compile Include="Strategies\Option\OptionSample.cs" />
     <Compile Include="Strategies\Option\OptionSample2.cs" />
     <Compile Include="Strategies\Option\OptionSample3.cs" />
