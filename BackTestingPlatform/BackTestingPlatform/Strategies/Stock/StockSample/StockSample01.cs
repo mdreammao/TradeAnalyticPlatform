@@ -26,6 +26,8 @@ using BackTestingPlatform.Strategies.Stock.StockSample;
 using BackTestingPlatform.Strategies.Stock.StockSample01;
 using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.AccountOperator.Minute;
+using System.Windows.Forms;
+using BackTestingPlatform.Charts;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
@@ -93,6 +95,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             List<double> downReversionPoint = new List<double>();
             upReversionPoint = ComputeReversionPoint.findUpReversionPoint(data[targetVariety], NDays, lengthOfBackLooking, period);
             downReversionPoint = ComputeReversionPoint.findDownReversionPoint(data[targetVariety], NDays, lengthOfBackLooking, period);
+            int indexOfNow = -1;//记录整个data的索引
 
             ///回测循环
             //回测循环--By Day
@@ -121,10 +124,11 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 while (index < 240)
                 {
                     int nextIndex = index + 1;
+                    indexOfNow++;
                     DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(day), index);
                     Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                     DateTime next = new DateTime();
-                    int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
+                    //int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
                     double nowClose = dataToday[targetVariety][index].close;
                     double nowUpReversionPoint = upReversionPoint[indexOfNow];
                     double nowDownReversionPoint = downReversionPoint[indexOfNow];
@@ -199,8 +203,17 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             }
 
             //遍历输出到console   
+            /*
             foreach (var account in accountHistory)
                 Console.WriteLine("time:{0,-8:F}, netWorth:{1,-8:F3}\n", account.time, account.totalAssets / initialCapital);
+             */
+            //画图
+            Dictionary<string, double[]> line = new Dictionary<string, double[]>();
+            double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
+            line.Add("NetWorth", netWorth);
+
+            string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
+            Application.Run(new PLChart(line, datestr));
             /*
             //将accountHistory输出到csv
             var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";

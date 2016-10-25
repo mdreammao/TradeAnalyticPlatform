@@ -101,8 +101,8 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             List<double> shortMA = new List<double>();
 
             var lastPrice = data[targetVariety].Select(x => x.lastPrice).ToArray();
-            longMA = TA_MA.SMA(lastPrice, longLength).ToList();
-            shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
+            longMA = TA_MA.EMA(lastPrice, longLength).ToList();
+            shortMA = TA_MA.EMA(lastPrice, shortLength).ToList();
             int indexOfNow = -1;//记录整个data的索引
 
             /**/
@@ -234,9 +234,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
          //   double[] y2 = { 100, 66, 77, 40, 198, 20 };
             line.Add("NetWorth", netWorth);
-         //   line.Add("text2", y2);
+            //   line.Add("text2", y2);
 
-            Application.Run(new PLChart(line));
+            string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
+            Application.Run(new PLChart(line,datestr));
 
             Console.ReadKey();
             
