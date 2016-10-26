@@ -267,15 +267,21 @@ namespace BackTestingPlatform.Transaction
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                    //账户信息更新
-                    //根据当前交易记录和持仓情况更新账户
-                    if (positions.Count != 0)
-                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
+                //每处理一个信号，positions更新，myAccount更新（便于验资）
+                //若当前时间键值已存在，则加1毫秒
+                if (positions.ContainsKey(now))
+                    positions.Add(now.AddMilliseconds(1), positionShot);
+                else
+                    positions.Add(now, positionShot);
+
+                //账户信息更新
+                //根据当前交易记录和持仓情况更新账户
+                if (positions.Count != 0)
+                    AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
 
             }
-            positions.Add(now, positionShot);
-            return now.AddMinutes(1);
+            return now.AddMilliseconds(500);
         }
 
         /// <summary>
@@ -526,15 +532,23 @@ namespace BackTestingPlatform.Transaction
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                    //账户信息更新
-                    //根据当前交易记录和持仓情况更新账户
-                    if (positions.Count != 0)
-                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+
                 }
+                //每处理一个信号，positions更新，myAccount更新（便于验资）
+                //若当前时间键值已存在，则加1毫秒
+                if (positions.ContainsKey(now))
+                    positions.Add(now.AddMilliseconds(1), positionShot);
+                else
+                    positions.Add(now, positionShot);
+
+                //账户信息更新
+                //根据当前交易记录和持仓情况更新账户
+                if (positions.Count != 0)
+                    AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
 
             }
-            positions.Add(now, positionShot);
-            return now.AddMinutes(1);
+
+            return now.AddMilliseconds(500);
 
         }
 

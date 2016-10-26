@@ -199,7 +199,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                     {
                         throw;
                     }
-                    nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
+                    nextIndex = Math.Max(nextIndex, TimeListUtility.TickToIndex(next));
                     index = nextIndex;
                     
                 }

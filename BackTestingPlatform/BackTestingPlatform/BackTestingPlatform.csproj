@@ -149,12 +149,9 @@
     <Compile Include="Strategies\MA_Strategy\GetData.cs" />
     <Compile Include="Strategies\MA_Strategy\MAtest.cs" />
     <Compile Include="Strategies\Option\MaoHeng\CoveredOptionStrategy.cs" />
-    <Compile Include="Strategies\Option\OptionSample.cs" />
-    <Compile Include="Strategies\Option\OptionSample2.cs" />
-    <Compile Include="Strategies\Option\OptionSample3.cs" />
-    <Compile Include="Strategies\Option\OptionSample4.cs" />
-    <Compile Include="Strategies\Stock\StockSample02.cs" />
-    <Compile Include="Strategies\Stock\StockSampleOne.cs" />
+    <Compile Include="Strategies\Option\OptionSample\OptionSample4.cs" />
+    <Compile Include="Strategies\Stock\StockSample\StockSample02.cs" />
+    <Compile Include="Strategies\Stock\StockSample\StockSampleOne.cs" />
     <Compile Include="Strategies\Stock\StockSample\ComputeReversionPoint.cs" />
     <Compile Include="Strategies\Stock\StockSample\DoubleMAForTick.cs" />
     <Compile Include="Strategies\Stock\StockSample\MA.cs" />
@@ -163,9 +160,6 @@
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
     <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />
-    <Compile Include="Transaction\Minute\MinuteCloseAllPositonsWithSlip.cs" />
-    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
-    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip2.cs" />
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip3.cs" />
     <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
     <Compile Include="Transaction\Tick\TickTransactionWtihSlip.cs" />

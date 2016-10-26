@@ -17,6 +17,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
         /// <summary>
         /// 该成交判断方法，开仓与平仓分开
         /// （1）开仓行为一般是给定金额限制，滑点存在时实际成交量会变化；而平仓行为一般是给定需要成交的数量限制，滑点存在时实际成交金额会变化，两者成交方式有所区别，似乎分开更好；（2）开仓需检查freeCash，平仓检查持仓
+        /// (2）若传入的信号中处理到第N个资金不足，则会直接跳出，只处理N-1个
         /// </summary>
 
         //佣金和手续费字典，品种字符对应手续费，期权单位为“x元/张”，股票及期货为成交金额的“x%”
@@ -266,15 +267,21 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                    //账户信息更新
-                    //根据当前交易记录和持仓情况更新账户
-                    if (positions.Count != 0)
-                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
+                //每处理一个信号，positions更新，myAccount更新（便于验资）
+                //若当前时间键值已存在，则加1毫秒
+                if (positions.ContainsKey(now))
+                    positions.Add(now.AddMilliseconds(1), positionShot);
+                else
+                    positions.Add(now, positionShot);
 
+                //账户信息更新
+                //根据当前交易记录和持仓情况更新账户
+                if (positions.Count != 0)
+                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
             }
-            positions.Add(now, positionShot);
             return now.AddMinutes(1);
+
         }
 
         /// <summary>
@@ -354,7 +361,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     /**/
                     if (nowSignalCapitalOccupy > myAccount.freeCash)
                         continue;
-                        
+
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
@@ -525,14 +532,20 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                    //账户信息更新
-                    //根据当前交易记录和持仓情况更新账户
-                    if (positions.Count != 0)
-                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
+                //每处理一个信号，positions更新，myAccount更新（便于验资）
+                //若当前时间键值已存在，则加1毫秒
+                if (positions.ContainsKey(now))
+                    positions.Add(now.AddMilliseconds(1), positionShot);
+                else
+                    positions.Add(now, positionShot);
 
+                //账户信息更新
+                //根据当前交易记录和持仓情况更新账户
+                if (positions.Count != 0)
+                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
             }
-            positions.Add(now, positionShot);
+
             return now.AddMinutes(1);
 
         }
