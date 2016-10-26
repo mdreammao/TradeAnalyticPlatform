@@ -40,7 +40,7 @@ namespace BackTestingPlatform.Transaction
             //若signal为空或无信号，返回下一时刻时间
             if (signal == null || signal.Count == 0)
             {
-                return now.AddMinutes(1);
+                return now.AddMilliseconds(500);
             }
             //否则在信号价格上，朝不利方向加一个滑点成交
             Dictionary<string, PositionsWithDetail> positionShot = new Dictionary<string, PositionsWithDetail>();
@@ -92,7 +92,7 @@ namespace BackTestingPlatform.Transaction
                     //-------------------------------------------------------------------                 
                     //验资，检查当前剩余资金或持仓是否足够执行信号
                     //查询当前持仓数量
-                    double nowHoldingVolume = position0.volume;
+                    double nowHoldingVolume = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].volume : 0;
                     //若持仓数量与信号数量不匹配，则以持仓数量为成交数量
                     if (nowHoldingVolume != signal0.volume)
                         transactionVolume = nowHoldingVolume;
@@ -251,7 +251,7 @@ namespace BackTestingPlatform.Transaction
                     position0.totalCashFlow += -transactionPrice * transactionVolume - nowTransactionCost;
 
                     //交易记录添加
-                    position0.record = new List<TransactionRecord>();
+                    position0.record = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].record : new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
                     {
                         time = now,
@@ -516,7 +516,7 @@ namespace BackTestingPlatform.Transaction
                     position0.totalCashFlow += -transactionPrice * transactionVolume - nowTransactionCost;
 
                     //交易记录添加
-                    position0.record = new List<TransactionRecord>();
+                    position0.record = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].record : new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
                     {
                         time = now,

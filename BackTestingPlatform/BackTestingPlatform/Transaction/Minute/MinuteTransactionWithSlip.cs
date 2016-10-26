@@ -92,7 +92,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     //-------------------------------------------------------------------                 
                     //验资，检查当前剩余资金或持仓是否足够执行信号
                     //查询当前持仓数量
-                    double nowHoldingVolume = position0.volume;
+                    double nowHoldingVolume = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].volume:0 ;
                     //若持仓数量与信号数量不匹配，则以持仓数量为成交数量
                     if (nowHoldingVolume != signal0.volume)
                         transactionVolume = nowHoldingVolume;
@@ -251,7 +251,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     position0.totalCashFlow += -transactionPrice * transactionVolume - nowTransactionCost;
 
                     //交易记录添加
-                    position0.record = new List<TransactionRecord>();
+                    position0.record = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].record : new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
                     {
                         time = now,
@@ -516,7 +516,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     position0.totalCashFlow += -transactionPrice * transactionVolume - nowTransactionCost;
 
                     //交易记录添加
-                    position0.record = new List<TransactionRecord>();
+                    position0.record = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].record : new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
                     {
                         time = now,
