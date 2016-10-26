@@ -171,7 +171,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             {
                                 MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = dataToday[targetVariety][index].close, minuteIndex = index };
                                 signal.Add(targetVariety, openSignal);
-                                next = MinuteTransactionWithSlip3.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                                next = MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                                 //当天买入不可卖出
                                 closingOn = false;
                             }

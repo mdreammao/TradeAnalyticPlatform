@@ -48,7 +48,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                 signal.Add(nowSignal.code, nowSignal);
             }
             //将清仓信号传给成交判断
-            DateTime next = MinuteTransactionWithSlip3.computeMinuteClosePositions(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+            DateTime next = MinuteTransactionWithSlip.computeMinuteClosePositions(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
             return next;
         }
 
