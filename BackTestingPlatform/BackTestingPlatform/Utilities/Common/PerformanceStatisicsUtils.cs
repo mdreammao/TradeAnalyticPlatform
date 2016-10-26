@@ -50,7 +50,7 @@ namespace BackTestingPlatform.Utilities.Common
             {
                 foreach (var variety in positions[date].Keys)
                 {
-                    
+                    numOfTrades = positions[date][variety].record.Count / 2;
 
                 }
 
