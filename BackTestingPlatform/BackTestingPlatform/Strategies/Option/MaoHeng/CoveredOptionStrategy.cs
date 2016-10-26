@@ -56,33 +56,31 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             //交易日信息
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startDate, endDate);
             //50ETF的日线数据准备，从回测期开始之前100个交易开始取
+            int number = 100;
             List<StockDaily> dailyData = new List<StockDaily>();
-            dailyData = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, DateUtils.PreviousTradeDay(startDate,100), endDate);
+            dailyData = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, DateUtils.PreviousTradeDay(startDate,number), endDate);
             //计算50ETF的EMA
             var closePrice = dailyData.Select(x => x.close).ToArray();
-            var ema7 = TA_MA.EMA(closePrice, 7).ToArray();
-            var ema50 = TA_MA.EMA(closePrice, 50).ToArray();
-            //50etf分钟数据准备，取全回测期的数据存放于data
-            Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
-            foreach (var tempDay in tradeDays)
+            List<double> ema7 = TA_MA.EMA(closePrice, 7).ToList();
+            List<double> ema50 = TA_MA.EMA(closePrice, 50).ToList();
+            for (int day = 0; day < tradeDays.Count(); day++)
             {
-                var ETFData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tempDay);
-                if (!data.ContainsKey(targetVariety))
-                    data.Add(targetVariety, ETFData.Cast<KLine>().ToList());
-                else
-                    data[targetVariety].AddRange(ETFData.Cast<KLine>().ToList());
-            }
-            foreach (var day in tradeDays)
-            {
-
-                //取出当天的数据
-                Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
-                foreach (var variety in data)
+                Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
+                if (ema7[day+number]>ema50[day+number] && day+1<tradeDays.Count())
                 {
-                    dataToday.Add(variety.Key, data[variety.Key].FindAll(s => s.time.Year == day.Year && s.time.Month == day.Month && s.time.Day == day.Day));
-                }
-            }
+                    //取出指定日期
+                    var etfData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tradeDays[day]);
+                    Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
+                    dataToday.Add(targetVariety, etfData.Cast<KLine>().ToList());
+                    DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(tradeDays[day]), 4);
+                    double averagePrice = (etfData[0].close + etfData[1].close + etfData[2].close + etfData[3].close + etfData[4].close) / 5;
+                    MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = 100, time = now, tradingVarieties = "stock", price =averagePrice, minuteIndex = day };
+                    signal.Add(targetVariety, openSignal);
+                    MinuteTransactionWithSlip3.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
 
+                }
+                
+            }
          }
     }
 }
