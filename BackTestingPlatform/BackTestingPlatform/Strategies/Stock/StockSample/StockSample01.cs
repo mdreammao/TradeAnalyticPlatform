@@ -178,7 +178,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                         }
                                                
                         //账户信息更新
-                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now, dataToday);
                     }
 
                     catch (Exception)

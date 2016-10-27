@@ -94,8 +94,8 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     //查询当前持仓数量
                     double nowHoldingVolume = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].volume:0 ;
                     //若持仓数量与信号数量不匹配，则以持仓数量为成交数量
-                    if (nowHoldingVolume != signal0.volume)
-                        transactionVolume = nowHoldingVolume;
+                    if (Math.Abs(nowHoldingVolume) < Math.Abs(signal0.volume))
+                        transactionVolume = - nowHoldingVolume;
                     //------------------------------------------------------------------- 
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
@@ -278,7 +278,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                 //账户信息更新
                 //根据当前交易记录和持仓情况更新账户
                 if (positions.Count != 0)
-                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now, data);
             }
             return now.AddMinutes(1);
 
@@ -543,7 +543,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                 //账户信息更新
                 //根据当前交易记录和持仓情况更新账户
                 if (positions.Count != 0)
-                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now, data);
             }
 
             return now.AddMinutes(1);

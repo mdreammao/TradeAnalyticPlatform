@@ -25,7 +25,7 @@ namespace BackTestingPlatform.AccountOperator.Minute
         /// <param name="nowPosition"></param>当前持仓，用于计算保证金及持仓价值
         /// <param name="now"></param>当前时间
         /// <param name="data"></param>当天行情数据
-        public static void computeAccountUpdating(ref BasicAccount myAccount, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, ref Dictionary<string, List<KLine>> data)
+        public static void computeAccountUpdating(ref BasicAccount myAccount, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, Dictionary<string, List<KLine>> data)
         {
             //若position为null，直接跳过
             if (positions.Count == 0)

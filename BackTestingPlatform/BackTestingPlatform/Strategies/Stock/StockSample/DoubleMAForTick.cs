@@ -192,7 +192,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                         }
 
                         //账户信息更新
-                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
+                        AccountUpdatingForTick.computeAccountUpdating(ref myAccount, positions, now, dataToday);
                     }
 
                     catch (Exception)

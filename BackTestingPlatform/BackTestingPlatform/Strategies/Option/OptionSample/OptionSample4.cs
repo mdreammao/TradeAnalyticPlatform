@@ -190,7 +190,7 @@ namespace BackTestingPlatform.Strategies.Option
                             }
                         }
                         //账户信息更新
-                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now, data);
                     }
 
                     catch (Exception)

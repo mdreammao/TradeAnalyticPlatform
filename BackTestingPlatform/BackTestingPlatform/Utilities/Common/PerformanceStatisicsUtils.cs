@@ -50,7 +50,10 @@ namespace BackTestingPlatform.Utilities.Common
             {
                 foreach (var variety in positions[date].Keys)
                 {
+                    //交易笔数累计（一组相邻的反向交易为一笔交易）
                     numOfTrades = positions[date][variety].record.Count / 2;
+                    //成功交易笔数累计
+                    
 
                 }
 
