@@ -43,6 +43,10 @@
     <Reference Include="Autofac">
       <HintPath>E:\TradeAnalyticPlatform\trunk\BackTestingPlatform\LocalTester\bin\Debug\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="MathNet.Numerics, Version=3.13.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.13.1\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="NLog">
       <HintPath>E:\TradeAnalyticPlatform\trunk\BackTestingPlatform\LocalTester\bin\Debug\NLog.dll</HintPath>
     </Reference>

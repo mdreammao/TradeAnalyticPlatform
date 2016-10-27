@@ -19,7 +19,7 @@ namespace BackTestingPlatform.Model.Common
         public double winningRate { get; set; }//胜率
         public double PnLRatio { get; set; }//盈亏比
         public double maxDrawDown { get; set; }//最大回撤率        
-        public double maxPremiumRatio { get; set; }//最大升水率
+        public double maxProfitRatio { get; set; }//最大升水率
         public double ProfitMDDRatio { get; set; }//收益回撤比
         public double informationRatio { get; set; }//信息比率
         public double alpha { get; set; }//Jensen' alpha
