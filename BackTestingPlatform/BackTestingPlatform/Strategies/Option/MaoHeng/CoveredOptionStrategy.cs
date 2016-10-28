@@ -64,12 +64,23 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             var closePrice = dailyData.Select(x => x.close).ToArray();
             List<double> ema7 = TA_MA.EMA(closePrice, 7).ToList();
             List<double> ema50 = TA_MA.EMA(closePrice, 50).ToList();
-            for (int day = 0; day < tradeDays.Count(); day++)
+            for (int day = 1; day < tradeDays.Count(); day++)
             {
+                var dateStructure= OptionUtilities.getDurationStructure(optionInfoList, tradeDays[day]);
+                double duration = 0;
+                for (int i = 0; i < dateStructure.Count(); i++)
+                {
+                    if (dateStructure[i]>=20 && dateStructure[i]<=40)
+                    {
+                        duration = dateStructure[i];
+                        break;
+                    }
+                }
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
-                if (ema7[day+number]>ema50[day+number] && day+1<tradeDays.Count())
+                if (ema7[day+number-1]>ema50[day+number-1])
                 {
                     //取出指定日期
+                    double lastETFPrice = dailyData[number + day - 1].close;
                     var etfData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tradeDays[day]);
                     Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                     dataToday.Add(targetVariety, etfData.Cast<KLine>().ToList());
@@ -77,7 +88,10 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     double averagePrice = (etfData[0].close + etfData[1].close + etfData[2].close + etfData[3].close + etfData[4].close) / 5;
                     MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = 10000, time = now, tradingVarieties = "stock", price =averagePrice, minuteIndex = day };
                     signal.Add(targetVariety, openSignal);
-                    MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                    //选取指定的看涨期权
+                    var list =OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice+0.1,lastETFPrice+0.2);
+
+                   // MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                 }
                 
             }
