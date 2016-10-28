@@ -68,6 +68,8 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             myAccount.freeCash = myAccount.totalAssets;
             //记录历史账户信息
             List<BasicAccount> accountHistory = new List<BasicAccount>();
+            //记录benchmark数据
+            List<double> benchmark = new List<double>(); 
 
             ///数据准备
             //交易日信息
@@ -87,7 +89,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             //List<KLine> data_5min = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Minutely", 3);
             //List<KLine> data_1Day = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Daily", 1);
             //List<KLine> data_1Month = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Monthly", 1);
-            List<KLine> data_1Week = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Weekly", 1);
+           // List<KLine> data_1Week = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Weekly", 1);
             //计算需要指标
             //（1）回看长度内的高低极值点（值）
             //（2）各级别高低拐点的位置（值）
@@ -171,14 +173,14 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             {
                                 MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = dataToday[targetVariety][index].close, minuteIndex = index };
                                 signal.Add(targetVariety, openSignal);
-                                next = MinuteTransactionWithSlip3.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                                next = MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                                 //当天买入不可卖出
                                 closingOn = false;
                             }
                         }
                                                
                         //账户信息更新
-                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, ref positions, now, ref dataToday);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now, dataToday);
                     }
 
                     catch (Exception)
@@ -197,6 +199,8 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 tempAccount.positionValue = myAccount.positionValue;
                 tempAccount.totalAssets = myAccount.totalAssets;
                 accountHistory.Add(tempAccount);
+                //抓取benchmark
+                benchmark.Add(dataToday[targetVariety].Last().close);
 
                 //显示当前信息
                 Console.WriteLine("Time:{0,-8:F},netWorth:{1,-8:F3}",day,myAccount.totalAssets/ initialCapital);
@@ -207,6 +211,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             foreach (var account in accountHistory)
                 Console.WriteLine("time:{0,-8:F}, netWorth:{1,-8:F3}\n", account.time, account.totalAssets / initialCapital);
              */
+            //策略绩效统计及输出
+            PerformanceStatisics myStgStats = new PerformanceStatisics();
+            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
+
             //画图
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
