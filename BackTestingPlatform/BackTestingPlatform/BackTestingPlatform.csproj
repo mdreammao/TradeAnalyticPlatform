@@ -117,7 +117,6 @@
     <Compile Include="DataAccess\Stock\StockTickRepository.cs" />
     <Compile Include="Model\Common\Constants.cs" />
     <Compile Include="Model\Common\KLine.cs" />
-    <Compile Include="Model\Common\PerformanceStatisics.cs" />
     <Compile Include="Model\Common\Position.cs" />
     <Compile Include="Model\Common\Sequential.cs" />
     <Compile Include="Model\Common\Tick.cs" />
@@ -170,7 +169,6 @@
     <Compile Include="Utilities\Common\MinuteFrequencyTransferUtils.cs" />
     <Compile Include="Utilities\Common\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
-    <Compile Include="Utilities\Common\PerformanceStatisicsUtils.cs" />
     <Compile Include="Utilities\Common\SequentialUtils.cs" />
     <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />

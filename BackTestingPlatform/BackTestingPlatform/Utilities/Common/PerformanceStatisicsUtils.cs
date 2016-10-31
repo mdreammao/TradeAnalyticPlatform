@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics.Statistics;
+using MathNet.Numerics.LinearRegression;
 
 namespace BackTestingPlatform.Utilities.Common
 {
@@ -27,11 +28,14 @@ namespace BackTestingPlatform.Utilities.Common
         //    public double annualSharpe { get; set; }
         //    public double maxDrawDown { get; set; }
         //    public double maxProfitRate { get; set; }
-        //    public double returnMDDRatio { get; set; }
-        //    public double informationRatio { get; set; }
-        //    public double rSquare { get; set; }
-        //    public double averageHoldingPeriod { get; set; }
-        public static PerformanceStatisics compute(List<BasicAccount> accountHistory, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions,double[] benchmark)
+        //    public double ProfitMDDRatio { get; set; }//收益回撤比
+        //    public double informationRatio { get; set; }//信息比率
+        //    public double alpha { get; set; }//Jensen' alpha
+        //    public double beta { get; set; }//beta系数，CAPM模型
+        //    public double rSquare { get; set; }//R平方，线性拟合优度
+        //    public double averageHoldingRate { get; set; }//平均持仓比例
+        //    public double averagePositionRate { get; set; }//平均仓位
+        public static PerformanceStatisics compute(List<BasicAccount> accountHistory, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, double[] benchmark)
         {
             PerformanceStatisics performanceStats = new PerformanceStatisics();
             //无风险收益率(年化)
@@ -42,21 +46,29 @@ namespace BackTestingPlatform.Utilities.Common
             double intialAssets = accountHistory[0].totalAssets;
             //净值
             double[] netWorth = accountHistory.Select(a => a.totalAssets / intialAssets).ToArray();
-            //收益率，比净值数少一
-            double[] returnArray = new double[netWorth.Length - 1];
-            double[] returnArrayOfBenchmark = new double[netWorth.Length - 1]; ;
+            //收益率与超额收益率，比净值数少一
+            double[] returnArray = new double[netWorth.Length - 1];//收益率
+            double[] returnArrayOfBenchmark = new double[netWorth.Length - 1];//基准收益率
+            double[] benchmarkExcessReturn = new double[returnArray.Length];//基准收益率 - 无风险收益率
+            double[] excessReturnToBenchmark = new double[returnArray.Length];//收益率 - 基准收益率
+            double[] excessReturnToRf = new double[returnArray.Length];//收益率 - 无风险收益率
+            double[] timeIndexList = new double[netWorth.Length];//时间标签tick
             for (int i = 0; i < returnArray.Length; i++)
             {
                 returnArray[i] = (netWorth[i + 1] - netWorth[i]) / netWorth[i];
                 returnArrayOfBenchmark[i] = (benchmark[i + 1] - benchmark[i]) / benchmark[i];
+                excessReturnToRf[i] = returnArray[i] - riskFreeRate;
+                benchmarkExcessReturn[i] = returnArrayOfBenchmark[i] - riskFreeRate;
+                excessReturnToBenchmark[i] = returnArray[i] - returnArrayOfBenchmark[i];
+                timeIndexList[i] = i;
             }
-                
+            timeIndexList[timeIndexList.Length - 1] = timeIndexList.Length - 1;
             //交易次数
-            int numOfTrades = 0;
+            double numOfTrades = 0;
             //成功交易次数
-            int numOfSuccess = 0;
+            double numOfSuccess = 0;
             //失败交易次数
-            int numOfFailure = 0;
+            double numOfFailure = 0;
             //累计盈利
             double cumProfit = 0;
             //累计亏损
@@ -68,7 +80,7 @@ namespace BackTestingPlatform.Utilities.Common
                 foreach (var variety in positions[date].Keys)
                 {
                     //交易笔数累计（一组相邻的反向交易为一笔交易）
-                    numOfTrades = positions[date][variety].record.Count / 2;
+                    numOfTrades += positions[date][variety].record.Count / 2;
                     //成功交易笔数累计
                     //  List<TransactionRecord> lastestRecord = new List<TransactionRecord>(positions[date][variety].record[positions[date][variety].record.Count -1])
                     for (int rec = 1; rec < positions[date][variety].record.Count; rec += 2)
@@ -77,7 +89,7 @@ namespace BackTestingPlatform.Utilities.Common
                         var lastRec = positions[date][variety].record[rec - 1];
                         //若当前为平多，则平多价格大于开多价格，成功数+1；
                         //若当前为平空，则平空价格小于于开空价格，成功数+1
-                        if ((nowRec.volume < 0 && nowRec.price > lastRec.price) && (nowRec.volume > 0 && nowRec.price < lastRec.price))
+                        if ((nowRec.volume < 0 && nowRec.price > lastRec.price) || (nowRec.volume > 0 && nowRec.price < lastRec.price))
                         {
                             //成功计数
                             numOfSuccess++;
@@ -92,7 +104,6 @@ namespace BackTestingPlatform.Utilities.Common
                     }
                 }
             }
-
             numOfFailure = numOfTrades - numOfSuccess;
 
             // netProfit
@@ -105,7 +116,7 @@ namespace BackTestingPlatform.Utilities.Common
             performanceStats.totalReturn = performanceStats.netProfit / intialAssets;
 
             //anualReturn
-            int daysOfBackTesting = accountHistory.Count;
+            double daysOfBackTesting = accountHistory.Count;
             performanceStats.anualReturn = performanceStats.totalReturn / (daysOfBackTesting / 252);
 
             //anualSharpe
@@ -123,10 +134,44 @@ namespace BackTestingPlatform.Utilities.Common
             //maxProfitRate
             performanceStats.maxProfitRatio = computeMaxProfitRate(netWorth.ToList());
 
-            
+            //profitMDDRatio
+            performanceStats.profitMDDRatio = performanceStats.totalReturn / performanceStats.maxDrawDown;
+
+            //informationRatio
+
+
+            performanceStats.informationRatio = excessReturnToBenchmark.Average() / Statistics.StandardDeviation(excessReturnToBenchmark) * Math.Sqrt(252);
+
+            //alpha
+            var regstats = SimpleRegression.Fit(benchmarkExcessReturn, excessReturnToRf);
+            performanceStats.alpha = regstats.Item1;
+
+            //beta
+            performanceStats.beta = regstats.Item2;
+
+            //rSquare
+            performanceStats.rSquare = Math.Pow(Correlation.Pearson(timeIndexList, netWorth),2);
+
+            //averageHoldingRate 
+            double barsOfHolding = 0;
+            double[] positionRate = new double[accountHistory.Count];
+            int sign = 0;
+            foreach (var accout in accountHistory)
+            {
+                if (accout.positionValue != 0) barsOfHolding++;
+                positionRate[sign] = accout.positionValue / accout.totalAssets;
+                sign++;
+            }
+
+            performanceStats.averageHoldingRate = barsOfHolding / accountHistory.Count;
+
+            //averagePositionRate
+            performanceStats.averagePositionRate = positionRate.Average();
 
             return performanceStats;
         }
+
+
 
         /// <summary>
         /// 计算最大回撤率
@@ -136,7 +181,7 @@ namespace BackTestingPlatform.Utilities.Common
         private static double computeMaxDrawDown(List<double> price)
         {
             double maxDrawDown = 0;
-            double[] MDDArray =new double[price.Count];
+            double[] MDDArray = new double[price.Count];
 
             for (int i = 0; i < price.Count; i++)
             {
@@ -174,5 +219,5 @@ namespace BackTestingPlatform.Utilities.Common
 
     }
 
-    
+
 }

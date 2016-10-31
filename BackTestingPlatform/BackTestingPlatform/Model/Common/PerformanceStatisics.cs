@@ -20,7 +20,7 @@ namespace BackTestingPlatform.Model.Common
         public double PnLRatio { get; set; }//盈亏比
         public double maxDrawDown { get; set; }//最大回撤率        
         public double maxProfitRatio { get; set; }//最大升水率
-        public double ProfitMDDRatio { get; set; }//收益回撤比
+        public double profitMDDRatio { get; set; }//收益回撤比
         public double informationRatio { get; set; }//信息比率
         public double alpha { get; set; }//Jensen' alpha
         public double beta { get; set; }//beta系数，CAPM模型
