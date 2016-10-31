@@ -70,7 +70,16 @@ namespace BackTestingPlatform.Charts
 
         private void Form_Load(object sender, EventArgs e)
         {
+            MasterPane myPaneMaster = zedG.MasterPane;
+            myPaneMaster.Title.Text = "NetWorth";
+            myPaneMaster.Title.FontSpec.FontColor = Color.Black;
+
             GraphPane myPane = zedG.GraphPane;
+            myPaneMaster.PaneList[0] = (myPane);
+
+      //    //画一张的小图
+      //    GraphPane paneStats = new GraphPane(new Rectangle(10, 10, 10, 10), "Mes", " t ( h )", "Rate");
+      //    myPaneMaster.PaneList.Add(paneStats);
 
             LineItem[] myCurve = new LineItem[lineChart.Count];
 
@@ -101,6 +110,9 @@ namespace BackTestingPlatform.Charts
                  //Color.FromArgb(255, 255, 166), 90F);
             // Fill the pane area with a solid color
             //myPane.PaneFill = new Fill(Color.FromArgb(250, 250, 255));
+
+            //绩效指标图统计
+
 
             zedG.AxisChange();
         }
