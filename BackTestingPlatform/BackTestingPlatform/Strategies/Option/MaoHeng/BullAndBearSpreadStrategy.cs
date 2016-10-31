@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Strategies.Option.MaoHeng
 {
-    public class CoveredOptionStrategy
+    public class BullAndBearSpreadStrategy
     {
         static Logger log = LogManager.GetCurrentClassLogger();
         private DateTime startDate, endDate;
@@ -33,7 +33,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         private double initialCapital = 10000000;
         private double slipPoint = 0.000;
         private string targetVariety = "510050.SH";
-        public CoveredOptionStrategy(int start, int end)
+        public BullAndBearSpreadStrategy(int start, int end)
         {
             startDate = Kit.ToDate(start);
             endDate = Kit.ToDate(end);
@@ -66,6 +66,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             List<double> ema50 = TA_MA.EMA(closePrice, 50).ToList();
             for (int day = 1; day < tradeDays.Count(); day++)
             {
+                var today = tradeDays[day];
                 var dateStructure= OptionUtilities.getDurationStructure(optionInfoList, tradeDays[day]);
                 double duration = 0;
                 for (int i = 0; i < dateStructure.Count(); i++)
@@ -77,24 +78,34 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     }
                 }
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
-                if (ema7[day+number-1]>ema50[day+number-1])
+                if (ema7[day+number-1]>ema50[day+number-1]) // EMA7日线上传50日线，开牛市价差
                 {
                     //取出指定日期
                     double lastETFPrice = dailyData[number + day - 1].close;
                     var etfData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tradeDays[day]);
                     Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                     dataToday.Add(targetVariety, etfData.Cast<KLine>().ToList());
-                    DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(tradeDays[day]), 4);
-                    double averagePrice = (etfData[0].close + etfData[1].close + etfData[2].close + etfData[3].close + etfData[4].close) / 5;
-                    MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = 10000, time = now, tradingVarieties = "stock", price =averagePrice, minuteIndex = day };
-                    signal.Add(targetVariety, openSignal);
+                    DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(tradeDays[day]), 0);
+                    //MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = 10000, time = now, tradingVarieties = "stock", price =averagePrice, minuteIndex = day };
+                    //signal.Add(targetVariety, openSignal);
                     //选取指定的看涨期权
-                    var list =OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice+0.1,lastETFPrice+0.2);
-
-                   // MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                    var list =OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice,lastETFPrice+0.5);
+                    //如果可以构成看涨期权牛市价差，就开仓
+                    if (list.Count()>=2)
+                    {
+                        var option1 = list[0];
+                        var option2 = list[list.Count() - 1];
+                        var option1Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(option1.optionCode, today);
+                        var option2Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(option2.optionCode, today);
+                        MinuteSignal openSignal1 = new MinuteSignal() { code = option1.optionCode, volume = 10000, time = now, tradingVarieties = "option", price =option1Data[0].close , minuteIndex = 0 };
+                        MinuteSignal openSignal2 = new MinuteSignal() { code = option2.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = option2Data[0].close, minuteIndex = 0 };
+                        signal.Add(option1.optionCode, openSignal1);
+                        signal.Add(option2.optionCode, openSignal2);
+                    }
+                    MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                 }
-                
+                // MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
             }
-         }
+        }
     }
 }
