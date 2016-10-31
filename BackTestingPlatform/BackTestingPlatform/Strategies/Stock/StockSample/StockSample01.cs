@@ -47,7 +47,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
 
         //策略参数设定
         private int period = 1;//应用周期
-        private int NDays = 6 * 1;//5分钟级别
+        private int NDays = 6 * 5;//5分钟级别
         private int lengthOfBackLooking = 120;//回看周期
         private double toleranceDegree = 0.01;//容忍度，允许破位的幅度
         string targetVariety = "510050.SH";

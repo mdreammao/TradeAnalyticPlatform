@@ -14,6 +14,7 @@ namespace BackTestingPlatform.Utilities.Common
     {
         /// <summary>
         /// 计算策略的各项性能指标，目前胜率等和交易次数相关的指标只针对非仓位管理型的策略
+        /// 该性能统计默认为是对日频采样的统计，若为其他频率需调整barsOfYear
         /// </summary>
         /// <param name="accountHistory"></param>
         /// <param name="positions"></param>
@@ -40,6 +41,7 @@ namespace BackTestingPlatform.Utilities.Common
             PerformanceStatisics performanceStats = new PerformanceStatisics();
             //无风险收益率(年化)
             double riskFreeRate = 0.03;
+            double barsOfYear = 252;
             //account长度，account记录周期数
             int lengthOfAccount = accountHistory.Count;
             //初始资产
@@ -57,8 +59,8 @@ namespace BackTestingPlatform.Utilities.Common
             {
                 returnArray[i] = (netWorth[i + 1] - netWorth[i]) / netWorth[i];
                 returnArrayOfBenchmark[i] = (benchmark[i + 1] - benchmark[i]) / benchmark[i];
-                excessReturnToRf[i] = returnArray[i] - riskFreeRate;
-                benchmarkExcessReturn[i] = returnArrayOfBenchmark[i] - riskFreeRate;
+                excessReturnToRf[i] = returnArray[i] - riskFreeRate/ barsOfYear;
+                benchmarkExcessReturn[i] = returnArrayOfBenchmark[i] - riskFreeRate/ barsOfYear;
                 excessReturnToBenchmark[i] = returnArray[i] - returnArrayOfBenchmark[i];
                 timeIndexList[i] = i;
             }
@@ -117,10 +119,10 @@ namespace BackTestingPlatform.Utilities.Common
 
             //anualReturn
             double daysOfBackTesting = accountHistory.Count;
-            performanceStats.anualReturn = performanceStats.totalReturn / (daysOfBackTesting / 252);
+            performanceStats.anualReturn = performanceStats.totalReturn / (daysOfBackTesting / barsOfYear);
 
             //anualSharpe
-            performanceStats.anualSharpe = (returnArray.Average() - riskFreeRate) / Statistics.StandardDeviation(returnArray) * Math.Sqrt(252);
+            performanceStats.anualSharpe = (returnArray.Average() - riskFreeRate/ barsOfYear) / Statistics.StandardDeviation(returnArray) * Math.Sqrt(252);
 
             //winningRate
             performanceStats.winningRate = numOfSuccess / numOfTrades;
@@ -140,7 +142,7 @@ namespace BackTestingPlatform.Utilities.Common
             //informationRatio
 
 
-            performanceStats.informationRatio = excessReturnToBenchmark.Average() / Statistics.StandardDeviation(excessReturnToBenchmark) * Math.Sqrt(252);
+            performanceStats.informationRatio = excessReturnToBenchmark.Average() / Statistics.StandardDeviation(excessReturnToBenchmark) * Math.Sqrt(barsOfYear);
 
             //alpha
             var regstats = SimpleRegression.Fit(benchmarkExcessReturn, excessReturnToRf);
