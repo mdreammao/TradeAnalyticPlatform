@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Strategies.Option.MaoHeng
 {
-    public class CoveredOptionStrategy
+    public class BullAndBearSpreadStrategy
     {
         static Logger log = LogManager.GetCurrentClassLogger();
         private DateTime startDate, endDate;
@@ -33,7 +33,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         private double initialCapital = 10000000;
         private double slipPoint = 0.000;
         private string targetVariety = "510050.SH";
-        public CoveredOptionStrategy(int start, int end)
+        public BullAndBearSpreadStrategy(int start, int end)
         {
             startDate = Kit.ToDate(start);
             endDate = Kit.ToDate(end);
@@ -86,10 +86,10 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     dataToday.Add(targetVariety, etfData.Cast<KLine>().ToList());
                     DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(tradeDays[day]), 4);
                     double averagePrice = (etfData[0].close + etfData[1].close + etfData[2].close + etfData[3].close + etfData[4].close) / 5;
-                    MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = 10000, time = now, tradingVarieties = "stock", price =averagePrice, minuteIndex = day };
-                    signal.Add(targetVariety, openSignal);
+                    //MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = 10000, time = now, tradingVarieties = "stock", price =averagePrice, minuteIndex = day };
+                    //signal.Add(targetVariety, openSignal);
                     //选取指定的看涨期权
-                    var list =OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice+0.1,lastETFPrice+0.2);
+                    var list =OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice,lastETFPrice+0.2);
 
                    // MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                 }
