@@ -1,4 +1,6 @@
 ﻿using BackTestingPlatform.AccountOperator;
+using BackTestingPlatform.AccountOperator.Minute;
+using BackTestingPlatform.AccountOperator.Tick;
 using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
@@ -9,9 +11,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BackTestingPlatform.Transaction.TransactionWithSlip
+namespace BackTestingPlatform.Transaction
 {
-    public static class MinuteTransactionWithSlip3
+    public static class TickTransactionWithSlip
     {
         /// <summary>
         /// 该成交判断方法，开仓与平仓分开
@@ -33,12 +35,12 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="now"></param>
         /// <param name="slipPoint"></param>
         /// <returns></returns>
-        public static DateTime computeMinuteClosePositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
+        public static DateTime computeTickClosePositions(Dictionary<string, TickSignal> signal,Dictionary<string,List<TickFromMssql>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
         {
             //若signal为空或无信号，返回下一时刻时间
             if (signal == null || signal.Count == 0)
             {
-                return now.AddMinutes(1);
+                return now.AddMilliseconds(500);
             }
             //否则在信号价格上，朝不利方向加一个滑点成交
             Dictionary<string, PositionsWithDetail> positionShot = new Dictionary<string, PositionsWithDetail>();
@@ -90,10 +92,10 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //-------------------------------------------------------------------                 
                     //验资，检查当前剩余资金或持仓是否足够执行信号
                     //查询当前持仓数量
-                    double nowHoldingVolume = position0.volume;
-                    //若持仓数量与信号数量不匹配，则以持仓数量为成交数量
-                    if (nowHoldingVolume != signal0.volume)
-                        transactionVolume = nowHoldingVolume;
+                    double nowHoldingVolume = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].volume : 0;
+                    //若持仓数量小于信号数量，则以持仓数量为成交数量，全部清仓
+                    if (Math.Abs(nowHoldingVolume) < Math.Abs(signal0.volume))
+                        transactionVolume = - nowHoldingVolume;
                     //------------------------------------------------------------------- 
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
@@ -249,7 +251,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     position0.totalCashFlow += -transactionPrice * transactionVolume - nowTransactionCost;
 
                     //交易记录添加
-                    position0.record = new List<TransactionRecord>();
+                    position0.record = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].record : new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
                     {
                         time = now,
@@ -265,15 +267,20 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                    //账户信息更新
-                    //根据当前交易记录和持仓情况更新账户
-                    if (positions.Count != 0)
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
                 }
+                //每处理一个信号，positions更新，myAccount更新（便于验资）
+                //若当前时间键值已存在，则加1毫秒
+                if (positions.ContainsKey(now))
+                    positions.Add(now.AddMilliseconds(1), positionShot);
+                else
+                    positions.Add(now, positionShot);
+                //账户信息更新
+                //根据当前交易记录和持仓情况更新账户
+                if (positions.Count != 0)
+                    AccountUpdatingForTick.computeAccountUpdating(ref myAccount, positions, now, data);
 
             }
-            positions.Add(now, positionShot);
-            return now.AddMinutes(1);
+            return now.AddMilliseconds(500);
         }
 
         /// <summary>
@@ -287,7 +294,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="now"></param>
         /// <param name="slipPoint"></param>
         /// <returns></returns>
-        public static DateTime computeMinuteOpenPositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
+        public static DateTime computeTickOpenPositions(Dictionary<string, TickSignal> signal, Dictionary<string, List<TickFromMssql>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
         {
 
             //若signal为空或无信号，返回下一时刻时间
@@ -348,12 +355,12 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     //-------------------------------------------------------------------                 
                     //验资，检查当前剩余资金是否足够执行信号
                     //计算当前信号占用资金
-                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMargin.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
+                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMarginForTick.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
                     //若资金不足，则跳过当前信号（*需要记录）
                     /**/
                     if (nowSignalCapitalOccupy > myAccount.freeCash)
                         continue;
-                        
+
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
                     {
@@ -508,7 +515,7 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     position0.totalCashFlow += -transactionPrice * transactionVolume - nowTransactionCost;
 
                     //交易记录添加
-                    position0.record = new List<TransactionRecord>();
+                    position0.record = positionShot.ContainsKey(position0.code) ? positionShot[position0.code].record : new List<TransactionRecord>();
                     position0.record.Add(new TransactionRecord
                     {
                         time = now,
@@ -524,15 +531,23 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
                     {
                         positionShot.Add(signal0.code, position0);
                     }
-                    //账户信息更新
-                    //根据当前交易记录和持仓情况更新账户
-                    if (positions.Count != 0)
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+
                 }
+                //每处理一个信号，positions更新，myAccount更新（便于验资）
+                //若当前时间键值已存在，则加1毫秒
+                if (positions.ContainsKey(now))
+                    positions.Add(now.AddMilliseconds(1), positionShot);
+                else
+                    positions.Add(now, positionShot);
+
+                //账户信息更新
+                //根据当前交易记录和持仓情况更新账户
+                if (positions.Count != 0)
+                    AccountUpdatingForTick.computeAccountUpdating(ref myAccount, positions, now,data);
 
             }
-            positions.Add(now, positionShot);
-            return now.AddMinutes(1);
+
+            return now.AddMilliseconds(500);
 
         }
 

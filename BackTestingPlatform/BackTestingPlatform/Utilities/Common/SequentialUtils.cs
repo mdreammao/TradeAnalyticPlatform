@@ -127,11 +127,26 @@ namespace BackTestingPlatform.Utilities.Common
             int n = timelineInMillis.Count;
             var res = new T[n];
             int i, j = 0;
+            int sign = 1;
             //将src筛选,到res
             for (i = 0; i < n; i++)
             {
-                for (; j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]; j++) ;
-                if (j > 0) res[i] = src[j - 1];
+                // for (; j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]; j++) ;
+                if (j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]) j++;
+                if (j > 0)
+                {
+                    if (sign == 1 && i != 0) // 前面有为null的值
+                    {
+                        for (int jj = 0;jj < i;jj ++)
+                            res[jj] = src[j - 1];
+                        sign = 0;
+                    }
+                        
+                    res[i] = src[j - 1];
+    
+                }
+                   
+
             }
 
             return res.ToList();

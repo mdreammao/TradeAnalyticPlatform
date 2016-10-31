@@ -57,7 +57,7 @@ namespace BackTestingPlatform.Utilities.Option
             foreach (var item in list)
             {
                 double duration = DateUtils.GetSpanOfTradeDays(today,item.endDate);
-                if (durationList.Contains(duration)==false)
+                if (durationList.Contains(duration)==false && duration>=0)
                 {
                     durationList.Add(duration);
                 }
@@ -156,6 +156,22 @@ namespace BackTestingPlatform.Utilities.Option
             return list.FindAll(delegate (OptionInfo item)
             {
                 if (Convert.ToInt32(item.startDate.ToString("yyyyMMdd")) <= date && Convert.ToInt32(item.endDate.ToString("yyyyMMdd")) >= date)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            );
+        }
+
+        public static List<OptionInfo> getOptionListByDuration(List<OptionInfo> list, DateTime today,double duration)
+        {
+            return list.FindAll(delegate (OptionInfo item)
+            {
+                if (DateUtils.GetSpanOfTradeDays(today, item.endDate)==duration)
                 {
                     return true;
                 }

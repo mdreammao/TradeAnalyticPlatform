@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using BackTestingPlatform.AccountOperator.Minute;
+using BackTestingPlatform.AccountOperator.Tick;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess;
 using BackTestingPlatform.DataAccess.Futures;
@@ -10,7 +12,7 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Transaction;
-using BackTestingPlatform.Transaction.TransactionWithSlip;
+using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TimeList;
@@ -112,7 +114,7 @@ namespace BackTestingPlatform.Strategies.Option
                             index = nextIndex;
                             continue;
                         }
-                        */    
+                        */
                         //持仓查询，先平后开
                         //若当前有持仓 且 允许平仓
                         //是否是空仓,若position中所有品种volum都为0，则说明是空仓     
@@ -182,13 +184,13 @@ namespace BackTestingPlatform.Strategies.Option
                                 signal.Add(putFront.code, putFront);
                                 signal.Add(callNext.code, callNext);
                                 signal.Add(putNext.code, putNext);
-                                DateTime next = MinuteTransactionWithSlip2.computeMinutePositions2(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                                DateTime next = MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
                                 nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
 
                             }
                         }
                         //账户信息更新
-                        AccountUpdating.computeAccountUpdating(ref myAccount, ref positions, now, ref data);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now, data);
                     }
 
                     catch (Exception)

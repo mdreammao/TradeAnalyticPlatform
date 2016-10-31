@@ -1,0 +1,75 @@
+﻿using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Positions;
+using BackTestingPlatform.Model.Signal;
+using BackTestingPlatform.Utilities.TimeList;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NLog;
+
+namespace BackTestingPlatform.AccountOperator.Tick
+{
+    public class AccountUpdatingForTick
+    {
+        //初始化log组件
+        static Logger log = LogManager.GetCurrentClassLogger();
+        //起始资金
+        public static double intialCapital = 10000000;
+
+        /// <summary>
+        /// 账户信息更新，包括计算保证金，持仓数据汇总
+        /// </summary>
+        /// <param name="myAccount"></param>当前账户
+        /// <param name="nowPosition"></param>当前持仓，用于计算保证金及持仓价值
+        /// <param name="now"></param>当前时间
+        /// <param name="data"></param>当天行情数据
+        public static void computeAccountUpdating(ref BasicAccount myAccount, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, Dictionary<string, List<TickFromMssql>> data)
+        {
+            //若position为null，直接跳过
+            if (positions.Count == 0)
+            {
+                //log.Info("初始持仓为空！");
+                return;
+            }
+            Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();
+            nowPosition = positions[positions.Keys.Last()];
+            //计算保证金
+            double totalMargin = CalculatePositionsMarginForTick.calculateMargin(nowPosition, now, ref data);
+            //计算剩余可用资金
+            //持仓的资金流加总
+            double totalCashFlow = 0;
+            //记录空头开仓价值
+            double openShortValue = 0;
+            //计算持仓总价值
+            //持仓价值（实时）
+            //当前时间对应data中timeList 的序号
+            int index = TimeListUtility.TickToIndex(now);
+            double totalPositionValue = 0;
+            foreach (var position0 in nowPosition.Values)
+            {
+                //累加持仓现金流
+                //position0.totalCashFlow记录的个股上的cashFlow（不考虑保证金）
+                totalCashFlow += position0.volume < 0 ? position0.totalCashFlow - Math.Abs(position0.ShortPosition.totalCost) : position0.totalCashFlow;
+                //累加持仓价值（实时）
+                //当前持仓成本价
+                double nowPositionAveragePrice = position0.volume > 0 ? position0.LongPosition.averagePrice : position0.ShortPosition.averagePrice;
+                //若当前品种持仓量为0，则持仓价值+0，否则按当前市值计算
+                totalPositionValue += position0.volume != 0 ? (data[position0.code][index].lastPrice - nowPositionAveragePrice) * position0.volume + Math.Abs(nowPositionAveragePrice * position0.volume) : 0;
+                //空头开仓价值加总
+                openShortValue += position0.volume > 0 ? 0 : nowPositionAveragePrice * position0.volume;
+            }
+            totalCashFlow -= totalMargin;
+            //剩余可用资金 = 初始资本 + 持仓的资金流加总（开仓、手续费、保证金支出为负，平仓为正）
+            double freeCash = intialCapital + totalCashFlow;
+            myAccount.freeCash = freeCash;
+            myAccount.margin = totalMargin;
+            myAccount.positionValue = totalPositionValue;
+            //总资产 = 持仓价值 + 保证金 + 剩余可用资金 - 空头开仓价值（不含手续费，因已在freeCash中结算）
+            myAccount.totalAssets = totalPositionValue + totalMargin + freeCash - Math.Abs(openShortValue);
+            //当前时间
+            myAccount.time = now;
+        }
+    }
+}

@@ -13,6 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,8 +36,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Accord, Version=3.3.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.3.3.0\lib\net45\Accord.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Autofac">
       <HintPath>E:\TradeAnalyticPlatform\trunk\BackTestingPlatform\LocalTester\bin\Debug\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=3.13.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.13.1\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NLog">
       <HintPath>E:\TradeAnalyticPlatform\trunk\BackTestingPlatform\LocalTester\bin\Debug\NLog.dll</HintPath>
@@ -44,26 +54,47 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TA-Lib-Core, Version=1.0.4998.21369, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TA-Lib.0.5.0.3\lib\TA-Lib-Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WAPIWrapperCSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\WAPIWrapperCSharp.dll</HintPath>
     </Reference>
+    <Reference Include="ZedGraph, Version=5.1.5.28844, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>References\ZedGraph.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountOperator\CalculateOnesMargin.cs" />
+    <Compile Include="AccountOperator\Minute\AccountUpdatingForMinute.cs" />
+    <Compile Include="AccountOperator\Minute\CalculateOnesMarginForMinute.cs" />
+    <Compile Include="AccountOperator\Minute\CalculatePositionsMarginForMinute.cs" />
     <Compile Include="AccountOperator\QueryPositons.cs" />
+    <Compile Include="AccountOperator\Tick\AccountUpdatingForTick.cs" />
+    <Compile Include="AccountOperator\Tick\CalculateOnesMarginForTick.cs" />
+    <Compile Include="AccountOperator\Tick\CalculatePositionsMarginForTick.cs" />
+    <Compile Include="Charts\CandleStick.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Charts\PLChart.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
@@ -78,6 +109,7 @@
     <Compile Include="DataAccess\Option\OptionInfoRepository.cs" />
     <Compile Include="DataAccess\Option\OptionMinuteRepository.cs" />
     <Compile Include="DataAccess\Option\OptionTickRepository.cs" />
+    <Compile Include="DataAccess\Stock\StockDailyFactorRepository.cs" />
     <Compile Include="DataAccess\Stock\StockDailyRepository.cs" />
     <Compile Include="DataAccess\Common\SequentialByDayRepository.cs" />
     <Compile Include="DataAccess\Stock\StockInfoRepository.cs" />
@@ -85,22 +117,25 @@
     <Compile Include="DataAccess\Stock\StockTickRepository.cs" />
     <Compile Include="Model\Common\Constants.cs" />
     <Compile Include="Model\Common\KLine.cs" />
+    <Compile Include="Model\Common\PerformanceStatisics.cs" />
     <Compile Include="Model\Common\Position.cs" />
     <Compile Include="Model\Common\Sequential.cs" />
     <Compile Include="Model\Common\Tick.cs" />
     <Compile Include="Model\Futures\FuturesDaily.cs" />
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
+    <Compile Include="Model\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
     <Compile Include="Model\Positions\BasicPositions.cs" />
-    <Compile Include="AccountOperator\CalculatePositionsMargin.cs" />
     <Compile Include="Model\Positions\MinutePositions.cs" />
     <Compile Include="Model\Positions\PositionDetail.cs" />
     <Compile Include="Model\Positions\PositionsWithDetail.cs" />
     <Compile Include="Model\Positions\TransactionRecord.cs" />
     <Compile Include="Model\Signal\BasicSignal.cs" />
     <Compile Include="Model\Signal\MinuteSignal.cs" />
+    <Compile Include="Model\Signal\TickSignal.cs" />
+    <Compile Include="Model\Stock\StockDailyWithFactor.cs" />
     <Compile Include="Model\Stock\StockInfo.cs" />
     <Compile Include="Model\Stock\StockTick.cs" />
     <Compile Include="Model\Futures\FuturesMinute.cs" />
@@ -109,23 +144,33 @@
     <Compile Include="Model\Option\OptionDaily.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
+    <Compile Include="Model\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
-    <Compile Include="Strategies\Option\OptionSample.cs" />
-    <Compile Include="Strategies\Option\OptionSample2.cs" />
-    <Compile Include="Strategies\Option\OptionSample3.cs" />
-    <Compile Include="Strategies\Option\OptionSample4.cs" />
+    <Compile Include="Strategies\Alpha\Class1.cs" />
+    <Compile Include="Strategies\MA_Strategy\GenSignal.cs" />
+    <Compile Include="Strategies\MA_Strategy\GetData.cs" />
+    <Compile Include="Strategies\MA_Strategy\MAtest.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\BullAndBearSpreadStrategy.cs" />
+    <Compile Include="Strategies\Option\OptionSample\OptionSample4.cs" />
+    <Compile Include="Strategies\Stock\StockSample\StockSample02.cs" />
+    <Compile Include="Strategies\Stock\StockSample\StockSampleOne.cs" />
     <Compile Include="Strategies\Stock\StockSample\ComputeReversionPoint.cs" />
+    <Compile Include="Strategies\Stock\StockSample\DoubleMAForTick.cs" />
+    <Compile Include="Strategies\Stock\StockSample\MA.cs" />
+    <Compile Include="Strategies\Stock\StockSample\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSample01.cs" />
-    <Compile Include="AccountOperator\AccountUpdating.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteCloseAllPositons.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip2.cs" />
-    <Compile Include="Transaction\TransactionWithSlip\MinuteTransactionWithSlip3.cs" />
+    <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
+    <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
+    <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />
+    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
+    <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
+    <Compile Include="Transaction\Tick\TickTransactionWtihSlip.cs" />
     <Compile Include="Utilities\Common\MinuteFrequencyTransferUtils.cs" />
     <Compile Include="Utilities\Common\FreqTransferUtils.cs" />
     <Compile Include="Strategies\Sample\Sample2.cs" />
+    <Compile Include="Utilities\Common\PerformanceStatisicsUtils.cs" />
     <Compile Include="Utilities\Common\SequentialUtils.cs" />
     <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
@@ -154,7 +199,6 @@
   <ItemGroup>
     <Folder Include="Positions\" />
     <Folder Include="Utilities\Stock\" />
-    <Folder Include="Utilities\Transaction\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Task\HeFeiying.txt" />
@@ -168,6 +212,13 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Accord.3.3.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.3.0\build\Accord.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Accord.3.3.0\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.3.0\build\Accord.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

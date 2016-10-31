@@ -7,11 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
 
-namespace BackTestingPlatform.Transaction.TransactionWithSlip
+namespace BackTestingPlatform.AccountOperator.Minute
 {
-    public class AccountUpdating
+    public class AccountUpdatingForMinute
     {
+        //初始化log组件
+        static Logger log = LogManager.GetCurrentClassLogger();
         //起始资金
         public static double intialCapital = 10000000;
 
@@ -22,15 +25,18 @@ namespace BackTestingPlatform.Transaction.TransactionWithSlip
         /// <param name="nowPosition"></param>当前持仓，用于计算保证金及持仓价值
         /// <param name="now"></param>当前时间
         /// <param name="data"></param>当天行情数据
-        public static void computeAccountUpdating(ref BasicAccount myAccount, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, ref Dictionary<string, List<KLine>> data)
+        public static void computeAccountUpdating(ref BasicAccount myAccount, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, Dictionary<string, List<KLine>> data)
         {
             //若position为null，直接跳过
             if (positions.Count == 0)
+            {
+                //log.Info("初始持仓为空！");
                 return;
+            }
             Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();
             nowPosition = positions[positions.Keys.Last()];
             //计算保证金
-            double totalMargin = CalculatePositionsMargin.calculateMargin(nowPosition, now, ref data);
+            double totalMargin = CalculatePositionsMarginForMinute.calculateMargin(nowPosition, now, ref data);
             //计算剩余可用资金
             //持仓的资金流加总
             double totalCashFlow = 0;
