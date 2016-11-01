@@ -47,7 +47,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
 
         //策略参数设定
         private int period = 1;//应用周期
-        private int NDays = 6 * 5;//5分钟级别
+        private int NDays = 6 * 1;//5分钟级别
         private int lengthOfBackLooking = 120;//回看周期
         private double toleranceDegree = 0.01;//容忍度，允许破位的幅度
         string targetVariety = "510050.SH";
@@ -215,10 +215,19 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             PerformanceStatisics myStgStats = new PerformanceStatisics();
             myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
 
+            //统计指标在console 上输出
+            Console.WriteLine("--------Strategy Performance Statistics--------\n");
+            Console.WriteLine(" netProfit:{0,-3:F} \n totalReturn:{1,-3:F} \n anualReturn:{2,-3:F} \n anualSharpe :{3,-3:F} \n winningRate:{4,-3:F} \n PnLRatio:{5,-3:F} \n maxDrawDown:{6,-3:F} \n maxProfitRatio:{7,-3:F} \n informationRatio:{8,-3:F} \n alpha:{9,-3:F} \n beta:{10,-3:F} \n averageHoldingRate:{11,-3:F} \n",myStgStats.netProfit,myStgStats.totalReturn,myStgStats.anualReturn,myStgStats.anualSharpe,myStgStats.winningRate,myStgStats.PnLRatio,myStgStats.maxDrawDown,myStgStats.maxProfitRatio,myStgStats.informationRatio,myStgStats.alpha,myStgStats.beta,myStgStats.averageHoldingRate);
+            Console.WriteLine("-----------------------------------------------\n");
+
             //画图
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
             line.Add("NetWorth", netWorth);
+
+            //benchmark净值
+            List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
+            line.Add("50ETF", netWorthOfBenchmark.ToArray());
 
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
             Application.Run(new PLChart(line, datestr));
@@ -227,8 +236,8 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";
             var dt = DataTableUtils.ToDataTable(accountHistory);          // List<MyModel> -> DataTable
             CsvFileUtils.WriteToCsvFile(resultPath, dt);	// DataTable -> CSV File
-
            */
+
             Console.ReadKey();
         }
     }
