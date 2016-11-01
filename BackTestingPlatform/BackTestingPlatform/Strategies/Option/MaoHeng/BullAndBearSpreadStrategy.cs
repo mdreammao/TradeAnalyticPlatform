@@ -89,7 +89,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     //MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = 10000, time = now, tradingVarieties = "stock", price =averagePrice, minuteIndex = day };
                     //signal.Add(targetVariety, openSignal);
                     //选取指定的看涨期权
-                    var list =OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice,lastETFPrice+0.5);
+                    var list =OptionUtilities.getOptionListByDate(OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice,lastETFPrice+0.5),Kit.ToInt_yyyyMMdd(today));
                     //如果可以构成看涨期权牛市价差，就开仓
                     if (list.Count()>=2)
                     {
@@ -97,14 +97,16 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         var option2 = list[list.Count() - 1];
                         var option1Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(option1.optionCode, today);
                         var option2Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(option2.optionCode, today);
+                        dataToday.Add(option1.optionCode, option1Data.Cast<KLine>().ToList());
+                        dataToday.Add(option2.optionCode, option2Data.Cast<KLine>().ToList());
                         MinuteSignal openSignal1 = new MinuteSignal() { code = option1.optionCode, volume = 10000, time = now, tradingVarieties = "option", price =option1Data[0].close , minuteIndex = 0 };
                         MinuteSignal openSignal2 = new MinuteSignal() { code = option2.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = option2Data[0].close, minuteIndex = 0 };
                         signal.Add(option1.optionCode, openSignal1);
                         signal.Add(option2.optionCode, openSignal2);
                     }
                     MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now.AddMinutes(100), dataToday);
                 }
-                // MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
             }
         }
     }
