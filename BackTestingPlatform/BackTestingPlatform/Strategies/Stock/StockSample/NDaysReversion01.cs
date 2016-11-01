@@ -127,6 +127,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                     DateTime next = new DateTime();
                     //int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
                     double nowClose = dataToday[targetVariety][index].close;
+                    double nowDownReversionPoint = 0;
+                    double nowUpReversionPoint = 0;
+
+
                     //实际操作从第一个回望期后开始
                     if (indexOfNow < lengthOfBackLooking - 1)
                     {

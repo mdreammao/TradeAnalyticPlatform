@@ -169,7 +169,6 @@
     <Compile Include="Transaction\Tick\TickTransactionWtihSlip.cs" />
     <Compile Include="Utilities\Common\MinuteFrequencyTransferUtils.cs" />
     <Compile Include="Utilities\Common\FreqTransferUtils.cs" />
-    <Compile Include="Strategies\Sample\Sample2.cs" />
     <Compile Include="Utilities\Common\PerformanceStatisicsUtils.cs" />
     <Compile Include="Utilities\Common\SequentialUtils.cs" />
     <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
