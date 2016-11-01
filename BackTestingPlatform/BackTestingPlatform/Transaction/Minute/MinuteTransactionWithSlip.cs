@@ -326,7 +326,6 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                 {
                     positionShot = new Dictionary<string, PositionsWithDetail>(positionLast);
                 }
-
                 //当前信号委托数量不为0，需进行下单操作
                 if (signal0.volume != 0)
                 {

@@ -44,7 +44,6 @@ namespace BackTestingPlatform.Transaction
             }
             //否则在信号价格上，朝不利方向加一个滑点成交
             Dictionary<string, PositionsWithDetail> positionShot = new Dictionary<string, PositionsWithDetail>();
-            Dictionary<string, PositionsWithDetail> positionLast = (positions.Count == 0 ? null : positions[positions.Keys.Last()]);
             //合约乘数初始化
             int contractTimes = 100;
             //成交价初始化，在当前模式下为信号价格朝不利方向加一个滑点
@@ -55,13 +54,16 @@ namespace BackTestingPlatform.Transaction
             double nowTransactionCost = 0;
             //当前后续费初始化
             double nowBrokerFeeRatio = 0;
-            //若上一时刻持仓不为空，上刻持仓先赋给此刻持仓，再根据信号调仓
-            if (positionLast != null)
-            {
-                positionShot = new Dictionary<string, PositionsWithDetail>(positionLast);
-            }
+
             foreach (var signal0 in signal.Values)
             {
+                //检查最新的position状态
+                Dictionary<string, PositionsWithDetail> positionLast = (positions.Count == 0 ? null : positions[positions.Keys.Last()]);
+                //若上一时刻持仓不为空，上刻持仓先赋给此刻持仓，再根据信号调仓
+                if (positionLast != null)
+                {
+                    positionShot = new Dictionary<string, PositionsWithDetail>(positionLast);
+                }
                 //当前信号委托数量不为0，需进行下单操作
                 if (signal0.volume != 0)
                 {
