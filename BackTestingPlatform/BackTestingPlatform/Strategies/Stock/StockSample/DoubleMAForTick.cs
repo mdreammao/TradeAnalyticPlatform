@@ -55,10 +55,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
         private static int contractTimes = 100;
 
         //策略参数设定
-        private int shortLength = 70;//短周期均线参数
-        private int longLength = 500;//长周期均线参数
+        private int shortLength = 600*24;//短周期均线参数
+        private int longLength = 600*45;//长周期均线参数
 
-        string targetVariety = "IF1607.CFE";
+        string targetVariety = "IF1608.CFE";
 
         /// <summary>
         /// 50ETF，Tick级双均线策略
@@ -99,14 +99,15 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             //（2）回测期短均线
             List<double> longMA = new List<double>();
             List<double> shortMA = new List<double>();
+            List<double> benchmark = new List<double>();
 
             var lastPrice = data[targetVariety].Select(x => x.lastPrice).ToArray();
-            longMA = TA_MA.EMA(lastPrice, longLength).ToList();
-            shortMA = TA_MA.EMA(lastPrice, shortLength).ToList();
+            longMA = TA_MA.SMA(lastPrice, longLength).ToList();
+            shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
             int indexOfNow = -1;//记录整个data的索引
-
+ 
             /**/
-            
+
             ///回测循环
             //回测循环--By Day
             foreach (var day in tradeDays)
@@ -140,6 +141,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                     DateTime next = new DateTime();
                    // int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
                     double nowPrice = dataToday[targetVariety][index].lastPrice;
+                    myAccount.time = now;
 
                     //实际操作从第一个回望期后开始    
                     if (indexOfNow < longLength - 1)
@@ -212,6 +214,8 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 tempAccount.positionValue = myAccount.positionValue;
                 tempAccount.totalAssets = myAccount.totalAssets;
                 accountHistory.Add(tempAccount);
+                //抓取benchmark
+                benchmark.Add(dataToday[targetVariety].Last().lastPrice);
 
                 //显示当前信息
                 Console.WriteLine("Time:{0,-8:F},netWorth:{1,-8:F3}", day, myAccount.totalAssets / initialCapital);
@@ -228,16 +232,24 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             var dt = DataTableUtils.ToDataTable(accountHistory);          // List<MyModel> -> DataTable
             CsvFileUtils.WriteToCsvFile(resultPath, dt);    // DataTable -> CSV File
             */
-            //画图测试
+            //统计指标在console 上输出
+            PerformanceStatisics myStgStats = new PerformanceStatisics();
+            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
+            Console.WriteLine("--------Strategy Performance Statistics--------\n");
+            Console.WriteLine(" netProfit:{0,-3:F} \n totalReturn:{1,-3:F} \n anualReturn:{2,-3:F} \n anualSharpe :{3,-3:F} \n winningRate:{4,-3:F} \n PnLRatio:{5,-3:F} \n maxDrawDown:{6,-3:F} \n maxProfitRatio:{7,-3:F} \n informationRatio:{8,-3:F} \n alpha:{9,-3:F} \n beta:{10,-3:F} \n averageHoldingRate:{11,-3:F} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);
+            Console.WriteLine("-----------------------------------------------\n");
 
+            //画图
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
-         //   double[] y2 = { 100, 66, 77, 40, 198, 20 };
             line.Add("NetWorth", netWorth);
-            //   line.Add("text2", y2);
+
+            //benchmark净值
+            List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
+            line.Add("50ETF", netWorthOfBenchmark.ToArray());
 
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
-            Application.Run(new PLChart(line,datestr));
+            Application.Run(new PLChart(line, datestr));
 
             Console.ReadKey();
             
