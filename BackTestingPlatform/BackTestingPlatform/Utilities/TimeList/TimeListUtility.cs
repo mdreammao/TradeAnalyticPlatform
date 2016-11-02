@@ -31,9 +31,9 @@ namespace BackTestingPlatform.Utilities.TimeList
         public static DateTime IndexToTickDateTime(int today, int index)
         {
             DateTime time = Kit.ToDate(today);
-            if (index <= 1)
+            if (index <= 0)
             {
-                index = 1;
+                index = 0;
             }
             if (index >= 28801)
             {
@@ -41,11 +41,11 @@ namespace BackTestingPlatform.Utilities.TimeList
             }
             if (index <= 14400)
             {
-                return time.AddMinutes(570).AddMilliseconds((index - 1) * 500);
+                return time.AddMinutes(570).AddMilliseconds(index  * 500);
             }
             else
             {
-                return time.AddMinutes(570 + 90).AddMilliseconds((index - 1) * 500);
+                return time.AddMinutes(570 + 90).AddMilliseconds(index * 500);
             }
 
             return time;
@@ -69,9 +69,9 @@ namespace BackTestingPlatform.Utilities.TimeList
 
         public static DateTime IndexToMinuteDateTime(int today, int index, List<int> benchmark)
         {
-            if (index <= 1)
+            if (index <= 0)
             {
-                index = 1;
+                index = 0;
             }
             if (index >= 239)
             {
@@ -103,23 +103,23 @@ namespace BackTestingPlatform.Utilities.TimeList
         /// <returns></returns>
         public static DateTime IndexToMinuteDateTime(int today, int index)
         {
-            index = index + 1;
+          // index = index + 1;
             DateTime time = Kit.ToDate(today);
-            if (index <= 1)
+            if (index <= 0)
             {
-                index = 1;
+                index = 0;
             }
-            if (index >= 240)
+            if (index >= 239)
             {
-                index = 240;
+                index = 239;
             }
             if (index <= 120)
             {
-                return time.AddMinutes(index - 1 + 570);
+                return time.AddMinutes(index + 570);
             }
             else
             {
-                return time.AddMinutes(index - 1 + 570 + 90);
+                return time.AddMinutes(index + 570 + 90);
             }
             return time;
         }
