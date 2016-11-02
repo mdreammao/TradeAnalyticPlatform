@@ -74,7 +74,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             List<double> ema50 = TA_MA.EMA(closePrice, 50).ToList();
             for (int day = 1; day < tradeDays.Count(); day++)
             {
-                benchmark.Add(1);          
+                benchmark.Add(closePrice[day]);          
                 var today = tradeDays[day];
                 myAccount.time = today;
                 var dateStructure= OptionUtilities.getDurationStructure(optionInfoList, tradeDays[day]);

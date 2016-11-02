@@ -103,16 +103,17 @@ namespace BackTestingPlatform.Utilities.Common
                 headIndex = nowIndex;
                 //在起止时间戳间的最后一根1分钟bar
                 tailIndex = minuteData.FindLastIndex(s => s.time >= headStamp && s.time <= tailStamp);
+                var tempData = minuteData.GetRange(headIndex, tailIndex - headIndex + 1);
                 //记录新频率的k线
                 newMinuteData.Add(new KLine
                 {
                     time = tailStamp,
                     open = minuteData[headIndex].open,
-                    high = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Max(s => s.high),
-                    low = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Min(s => s.low),
+                    high = tempData.Max(s => s.high),
+                    low = tempData.Min(s => s.low),
                     close = minuteData[tailIndex].close,
-                    volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
-                    amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
+                    volume = tempData.Sum(x => x.volume),
+                    amount = tempData.Sum(x => x.amount),
                     openInterest = minuteData[tailIndex].openInterest
                 });
             }
