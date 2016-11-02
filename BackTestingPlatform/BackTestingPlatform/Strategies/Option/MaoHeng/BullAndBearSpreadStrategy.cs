@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BackTestingPlatform.AccountOperator.Minute;
+using BackTestingPlatform.Charts;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess;
 using BackTestingPlatform.DataAccess.Futures;
@@ -24,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BackTestingPlatform.Strategies.Option.MaoHeng
 {
@@ -32,7 +34,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         static Logger log = LogManager.GetCurrentClassLogger();
         private DateTime startDate, endDate;
         //回测参数设置
-        private double initialCapital = 10000000;
+        private double initialCapital = 1000000;
         private double slipPoint = 0.000;
         private string targetVariety = "510050.SH";
         public BullAndBearSpreadStrategy(int start, int end)
@@ -70,7 +72,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             List<double> ema50 = TA_MA.EMA(closePrice, 50).ToList();
             for (int day = 1; day < tradeDays.Count(); day++)
             {
-                benchmark.Add(initialCapital);
+                benchmark.Add(1);
                 var today = tradeDays[day];
                 var dateStructure= OptionUtilities.getDurationStructure(optionInfoList, tradeDays[day]);
                 double duration = 0;
@@ -145,11 +147,31 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     dataToday.Add(targetVariety, etfData.Cast<KLine>().ToList());
                     AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, thisTime, dataToday);
                 }
-                accountHistory.Add(myAccount);
+                BasicAccount tempAccount = new BasicAccount();
+                tempAccount.time = myAccount.time;
+                tempAccount.freeCash = myAccount.freeCash;
+                tempAccount.margin = myAccount.margin;
+                tempAccount.positionValue = myAccount.positionValue;
+                tempAccount.totalAssets = myAccount.totalAssets;
+                accountHistory.Add(tempAccount);
             }
             //策略绩效统计及输出
             PerformanceStatisics myStgStats = new PerformanceStatisics();
             myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
+            //画图
+            Dictionary<string, double[]> line = new Dictionary<string, double[]>();
+            double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
+            line.Add("NetWorth", netWorth);
+
+            //统计指标在console 上输出
+            Console.WriteLine("--------Strategy Performance Statistics--------\n");
+            Console.WriteLine(" netProfit:{0,-3:F} \n totalReturn:{1,-3:F} \n anualReturn:{2,-3:F} \n anualSharpe :{3,-3:F} \n winningRate:{4,-3:F} \n PnLRatio:{5,-3:F} \n maxDrawDown:{6,-3:F} \n maxProfitRatio:{7,-3:F} \n informationRatio:{8,-3:F} \n alpha:{9,-3:F} \n beta:{10,-3:F} \n averageHoldingRate:{11,-3:F} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);
+            Console.WriteLine("-----------------------------------------------\n");
+            //benchmark净值
+            List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
+            line.Add("NoChange", netWorthOfBenchmark.ToArray());
+            string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
+            Application.Run(new PLChart(line, datestr));
         }
     }
 }
