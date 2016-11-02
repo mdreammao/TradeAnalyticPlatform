@@ -11,9 +11,11 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Model.TALibrary;
+using BackTestingPlatform.Strategies.Option.MaoHeng.Model;
 using BackTestingPlatform.Transaction;
 using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TimeList;
 using NLog;
@@ -52,8 +54,10 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             myAccount.freeCash = myAccount.totalAssets;
             //记录历史账户信息
             List<BasicAccount> accountHistory = new List<BasicAccount>();
-
+            List<double> benchmark = new List<double>();
             ///数据准备
+            //记录牛市价差两条腿的信息
+            BullSpread myLegs = new BullSpread();
             //交易日信息
             List<DateTime> tradeDays = DateUtils.GetTradeDays(startDate, endDate);
             //50ETF的日线数据准备，从回测期开始之前100个交易开始取
@@ -66,6 +70,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             List<double> ema50 = TA_MA.EMA(closePrice, 50).ToList();
             for (int day = 1; day < tradeDays.Count(); day++)
             {
+                benchmark.Add(initialCapital);
                 var today = tradeDays[day];
                 var dateStructure= OptionUtilities.getDurationStructure(optionInfoList, tradeDays[day]);
                 double duration = 0;
@@ -78,11 +83,11 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     }
                 }
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
-                if (ema7[day+number-1]>ema50[day+number-1]) // EMA7日线上传50日线，开牛市价差
+                var etfData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tradeDays[day]);
+                if (ema7[day+number-1]>ema50[day+number-1] && myLegs.strike1==0) // EMA7日线上传50日线，开牛市价差
                 {
                     //取出指定日期
                     double lastETFPrice = dailyData[number + day - 1].close;
-                    var etfData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tradeDays[day]);
                     Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                     dataToday.Add(targetVariety, etfData.Cast<KLine>().ToList());
                     DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(tradeDays[day]), 0);
@@ -99,15 +104,52 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         var option2Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(option2.optionCode, today);
                         dataToday.Add(option1.optionCode, option1Data.Cast<KLine>().ToList());
                         dataToday.Add(option2.optionCode, option2Data.Cast<KLine>().ToList());
+                        var vol1 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option1.strike, duration/252.0, 0.04, 0, option1.optionType, option1Data[0].close, etfData[0].close);
+                        var vol2 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option2.strike, duration/252.0, 0.04, 0, option2.optionType, option2Data[0].close, etfData[0].close);
                         MinuteSignal openSignal1 = new MinuteSignal() { code = option1.optionCode, volume = 10000, time = now, tradingVarieties = "option", price =option1Data[0].close , minuteIndex = 0 };
                         MinuteSignal openSignal2 = new MinuteSignal() { code = option2.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = option2Data[0].close, minuteIndex = 0 };
                         signal.Add(option1.optionCode, openSignal1);
                         signal.Add(option2.optionCode, openSignal2);
+                        myLegs.code1 = option1.optionCode;
+                        myLegs.code2 = option2.optionCode;
+                        myLegs.strike1 = option1.strike;
+                        myLegs.strike2 = option2.strike;
+                        myLegs.endDate = option1.endDate;
                     }
                     MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
-                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now.AddMinutes(100), dataToday);
                 }
+                if (positions.Count()>0 && myLegs.strike1 != 0)
+                {
+                    Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
+                    dataToday.Add(targetVariety, etfData.Cast<KLine>().ToList());
+                    var option1Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(myLegs.code1, today);
+                    var option2Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(myLegs.code2, today);
+                    dataToday.Add(myLegs.code1, option1Data.Cast<KLine>().ToList());
+                    dataToday.Add(myLegs.code2, option2Data.Cast<KLine>().ToList());
+                    int thisIndex = 239;
+                    var thisTime = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), thisIndex);
+                    var etfPriceNow = etfData[thisIndex].close;
+                    var durationNow = DateUtils.GetSpanOfTradeDays(today, myLegs.endDate);
+                    if (etfPriceNow > myLegs.strike2 + 0.05 || etfPriceNow < myLegs.strike1 - 0.05 || durationNow <= 3)
+                    {
+                        myLegs = new BullSpread();
+                        MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, thisTime, slipPoint);
+                    }
+                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, thisTime, dataToday);
+                }
+                else
+                {
+                    int thisIndex = 239;
+                    var thisTime = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), thisIndex);
+                    Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
+                    dataToday.Add(targetVariety, etfData.Cast<KLine>().ToList());
+                    AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, thisTime, dataToday);
+                }
+                accountHistory.Add(myAccount);
             }
+            //策略绩效统计及输出
+            PerformanceStatisics myStgStats = new PerformanceStatisics();
+            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
         }
     }
 }
