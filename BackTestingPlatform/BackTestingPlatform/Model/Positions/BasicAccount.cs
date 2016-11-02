@@ -13,5 +13,6 @@ namespace BackTestingPlatform.Model.Positions
         public double freeCash { get; set; }
         public double positionValue { get; set; }
         public double margin { get; set; }
+        public double initialAssets { get; set; }
     }
 }

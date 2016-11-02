@@ -16,7 +16,7 @@ namespace BackTestingPlatform.AccountOperator.Minute
         //初始化log组件
         static Logger log = LogManager.GetCurrentClassLogger();
         //起始资金
-        public static double intialCapital = 10000000;
+       // public static double intialCapital;
 
         /// <summary>
         /// 账户信息更新，包括计算保证金，持仓数据汇总
@@ -27,12 +27,15 @@ namespace BackTestingPlatform.AccountOperator.Minute
         /// <param name="data"></param>当天行情数据
         public static void computeAccountUpdating(ref BasicAccount myAccount, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, Dictionary<string, List<KLine>> data)
         {
+            
             //若position为null，直接跳过
             if (positions.Count == 0)
             {
                 //log.Info("初始持仓为空！");
                 return;
             }
+            //提取初始资产
+            double intialCapital = myAccount.initialAssets;
             Dictionary<string, PositionsWithDetail> nowPosition = new Dictionary<string, PositionsWithDetail>();
             nowPosition = positions[positions.Keys.Last()];
             //计算保证金
