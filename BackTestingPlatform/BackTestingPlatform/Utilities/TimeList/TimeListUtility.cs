@@ -103,7 +103,6 @@ namespace BackTestingPlatform.Utilities.TimeList
         /// <returns></returns>
         public static DateTime IndexToMinuteDateTime(int today, int index)
         {
-          // index = index + 1;
             DateTime time = Kit.ToDate(today);
             if (index <= 0)
             {
@@ -113,7 +112,7 @@ namespace BackTestingPlatform.Utilities.TimeList
             {
                 index = 239;
             }
-            if (index <= 120)
+            if (index <= 119)
             {
                 return time.AddMinutes(index + 570);
             }

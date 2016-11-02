@@ -153,6 +153,7 @@
     <Compile Include="Strategies\MA_Strategy\GetData.cs" />
     <Compile Include="Strategies\MA_Strategy\MAtest.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullAndBearSpreadStrategy.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\Model\BullSpread.cs" />
     <Compile Include="Strategies\Option\OptionSample\OptionSample4.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
