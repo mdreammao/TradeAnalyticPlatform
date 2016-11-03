@@ -18,10 +18,12 @@ using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.Option;
+using BackTestingPlatform.Utilities.SaveResult;
 using BackTestingPlatform.Utilities.TimeList;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +33,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
 {
     public class BullAndBearSpreadStrategy
     {
+        
         static Logger log = LogManager.GetCurrentClassLogger();
         private DateTime startDate, endDate;
         //回测参数设置
@@ -44,6 +47,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         }
         public void compute()
         {
+            
+
             log.Info("开始回测(回测期{0}到{1})", Kit.ToInt_yyyyMMdd(startDate), Kit.ToInt_yyyyMMdd(endDate));
             var repo = Platforms.container.Resolve<OptionInfoRepository>();
             var optionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
@@ -74,7 +79,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             List<double> ema50 = TA_MA.EMA(closePrice, 50).ToList();
             for (int day = 1; day < tradeDays.Count(); day++)
             {
-                benchmark.Add(closePrice[day]);          
+                benchmark.Add(closePrice[day+number]);          
                 var today = tradeDays[day];
                 myAccount.time = today;
                 var dateStructure= OptionUtilities.getDurationStructure(optionInfoList, tradeDays[day]);
@@ -121,7 +126,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         myLegs.strike2 = option2.strike;
                         myLegs.endDate = option1.endDate;
                     }
-                    MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                    MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now,capitalVerification:false);
                 }
                 if (positions.Count()>0 && myLegs.strike1 != 0)
                 {
@@ -175,7 +180,22 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
             line.Add("Base", netWorthOfBenchmark.ToArray());
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
-            Application.Run(new PLChart(line, datestr));
+            // Application.Run(new PLChart(line, datestr));
+            var fullPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + ConfigurationManager.AppSettings["CacheData.StrategyPath"];
+            var tag = GetType().FullName;
+            var dateStr = Kit.ToInt_yyyyMMdd(DateTime.Now).ToString();
+            var type = "account";
+            var para = "EMA50_EMA7";
+            fullPath = ResultPathUtil.GetLocalPath(fullPath, tag, dateStr, type, para);
+            var dt = DataTableUtils.ToDataTable(accountHistory);
+            CsvFileUtils.WriteToCsvFile(fullPath, dt);
+            recordToCsv();
+        }
+
+
+        private void recordToCsv()
+        {
+            
         }
     }
 }

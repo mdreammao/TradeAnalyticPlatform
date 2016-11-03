@@ -295,7 +295,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
         /// <param name="now"></param>
         /// <param name="slipPoint"></param>
         /// <returns></returns>
-        public static DateTime computeMinuteOpenPositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003)
+        public static DateTime computeMinuteOpenPositions(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.003, bool capitalVerification=true)
         {
 
             //若signal为空或无信号，返回下一时刻时间
@@ -350,7 +350,14 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     //当前成交价，信号价格加滑点---注：此模型下信号价格即为现价
                     transactionPrice = signal0.price * (1 + slipPoint * longShortFlag);
                     //当前可成交量，若成交价因滑点而改变，成交量也会因此改变
-                    transactionVolume = Math.Truncate((signal0.volume * signal0.price) / transactionPrice / contractTimes) * contractTimes;
+                    if (capitalVerification==true)
+                    {
+                        transactionVolume = Math.Truncate((signal0.volume * signal0.price) / transactionPrice / contractTimes) * contractTimes;
+                    }
+                    else
+                    {
+                        transactionVolume = signal0.volume;
+                    }
                     //transactionVolume = signal0.volume;
                     //当前成交成本（交易费+佣金）
                     nowTransactionCost = 0;
