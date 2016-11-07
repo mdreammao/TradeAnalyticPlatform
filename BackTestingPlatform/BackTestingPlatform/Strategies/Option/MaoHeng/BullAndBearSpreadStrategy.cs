@@ -19,6 +19,8 @@ using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.SaveResult;
+using BackTestingPlatform.Utilities.SaveResult.Common;
+using BackTestingPlatform.Utilities.SaveResult.Option;
 using BackTestingPlatform.Utilities.TimeList;
 using NLog;
 using System;
@@ -75,8 +77,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             dailyData = Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, DateUtils.PreviousTradeDay(startDate,number), endDate);
             //计算50ETF的EMA
             var closePrice = dailyData.Select(x => x.close).ToArray();
-            List<double> ema7 = TA_MA.EMA(closePrice, 7).ToList();
-            List<double> ema50 = TA_MA.EMA(closePrice, 50).ToList();
+            List<double> ema7 = TA_MA.EMA(closePrice, 5).ToList();
+            List<double> ema50 = TA_MA.EMA(closePrice, 20).ToList();
             for (int day = 1; day < tradeDays.Count(); day++)
             {
                 benchmark.Add(closePrice[day+number]);          
@@ -175,29 +177,24 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
             line.Add("NetWorth", netWorth);
             //记录净值数据
-            recordToCsv(accountHistory);
+            RecordUtil.recordToCsv(accountHistory, GetType().FullName, "account",parameters:"EMA7_EMA50",performance:myStgStats.anualSharpe.ToString("N").Replace(".","_"));
+            //记录持仓变化
+            var positionStatus = OptionRecordUtil.Transfer(positions);
+            RecordUtil.recordToCsv(positionStatus, GetType().FullName, "positions", parameters: "EMA7_EMA50", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            //记录统计指标
+            var performanceList = new List<PerformanceStatisics>();
+            performanceList.Add(myStgStats);
+            RecordUtil.recordToCsv(performanceList, GetType().FullName, "performance", parameters: "EMA7_EMA50", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
             //统计指标在console 上输出
             Console.WriteLine("--------Strategy Performance Statistics--------\n");
             Console.WriteLine(" netProfit:{0,5:F4} \n totalReturn:{1,-5:F4} \n anualReturn:{2,-5:F4} \n anualSharpe :{3,-5:F4} \n winningRate:{4,-5:F4} \n PnLRatio:{5,-5:F4} \n maxDrawDown:{6,-5:F4} \n maxProfitRatio:{7,-5:F4} \n informationRatio:{8,-5:F4} \n alpha:{9,-5:F4} \n beta:{10,-5:F4} \n averageHoldingRate:{11,-5:F4} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);
             Console.WriteLine("-----------------------------------------------\n");
+            
             //benchmark净值
             List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
             line.Add("Base", netWorthOfBenchmark.ToArray());
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
              Application.Run(new PLChart(line, datestr));
-        }
-
-
-        private void recordToCsv<T>(IList<T> data)
-        {
-            var fullPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + ConfigurationManager.AppSettings["CacheData.StrategyPath"];
-            var tag = GetType().FullName;
-            var dateStr = Kit.ToInt_yyyyMMdd(DateTime.Now).ToString();
-            var type = "account";
-            var para = "EMA50_EMA7";
-            fullPath = ResultPathUtil.GetLocalPath(fullPath, tag, dateStr, type, para);
-            var dt = DataTableUtils.ToDataTable(data);
-            CsvFileUtils.WriteToCsvFile(fullPath, dt);
         }
     }
 }

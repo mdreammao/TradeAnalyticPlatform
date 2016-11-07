@@ -11,5 +11,6 @@ namespace BackTestingPlatform.Model.Positions
         public DateTime time { get; set; }
         public double volume { get; set; }
         public double price { get; set; }
+        public string code { get; set; }
     }
 }

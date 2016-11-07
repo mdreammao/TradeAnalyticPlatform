@@ -256,7 +256,8 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     {
                         time = now,
                         volume = transactionVolume,
-                        price = transactionPrice
+                        price = transactionPrice,
+                        code=position0.code
                     });
                     //存储当前持仓信息
                     if (positionShot.ContainsKey(position0.code))
@@ -531,7 +532,8 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     {
                         time = now,
                         volume = transactionVolume,
-                        price = transactionPrice
+                        price = transactionPrice,
+                        code = position0.code
                     });
                     //存储当前持仓信息
                     if (positionShot.ContainsKey(position0.code))

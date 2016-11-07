@@ -116,6 +116,7 @@
     <Compile Include="DataAccess\Stock\StockMinuteRepository.cs" />
     <Compile Include="DataAccess\Stock\StockTickRepository.cs" />
     <Compile Include="Model\Common\Constants.cs" />
+    <Compile Include="Model\Common\HoldingStatus.cs" />
     <Compile Include="Model\Common\KLine.cs" />
     <Compile Include="Model\Common\PerformanceStatisics.cs" />
     <Compile Include="Model\Common\Position.cs" />
@@ -186,6 +187,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Platforms.cs" />
     <Compile Include="Utilities\Common\DateUtils.cs" />
+    <Compile Include="Utilities\SaveResult\Common\RecordUtil.cs" />
+    <Compile Include="Utilities\SaveResult\Option\OptionRecordUtil.cs" />
     <Compile Include="Utilities\SaveResult\ResultPathUtil.cs" />
     <Compile Include="Utilities\TimeList\Alignment.cs" />
     <Compile Include="Utilities\TimeList\CreateTimeList.cs" />
