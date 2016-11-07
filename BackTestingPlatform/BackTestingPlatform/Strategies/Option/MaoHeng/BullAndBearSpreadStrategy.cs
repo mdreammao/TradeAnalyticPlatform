@@ -171,7 +171,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             }
             //策略绩效统计及输出
             PerformanceStatisics myStgStats = new PerformanceStatisics();
-            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
+            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions);
             //画图
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();

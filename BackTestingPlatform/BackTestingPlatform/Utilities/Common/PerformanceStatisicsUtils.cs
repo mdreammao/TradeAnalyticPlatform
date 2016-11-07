@@ -10,37 +10,37 @@ using MathNet.Numerics.LinearRegression;
 
 namespace BackTestingPlatform.Utilities.Common
 {
-    public class PerformanceStatisicsUtils
+    public static class PerformanceStatisicsUtils
     {
         /// <summary>
         /// 计算策略的各项性能指标，目前胜率等和交易次数相关的指标只针对非仓位管理型的策略
         /// 该性能统计默认为是对日频采样的统计，若为其他频率需调整barsOfYear
+        /// 所有指标保留四位小数
+        /// 若未穿入benchmark
         /// </summary>
         /// <param name="accountHistory"></param>
         /// <param name="positions"></param>
         /// <returns></returns>
-        //    public double netProfit { get; set; }
-        //    public double perNetProfit { get; set; }
-        //    public double totalReturn { get; set; }
-        //    public double anualReturn { get; set; }
-        //    public double anualSharpe { get; set; }
-        //    public double winningRate { get; set; }
-        //    public double PnLRatio { get; set; }
-        //    public double annualSharpe { get; set; }
-        //    public double maxDrawDown { get; set; }
-        //    public double maxProfitRate { get; set; }
-        //    public double ProfitMDDRatio { get; set; }//收益回撤比
-        //    public double informationRatio { get; set; }//信息比率
-        //    public double alpha { get; set; }//Jensen' alpha
-        //    public double beta { get; set; }//beta系数，CAPM模型
-        //    public double rSquare { get; set; }//R平方，线性拟合优度
-        //    public double averageHoldingRate { get; set; }//平均持仓比例
-        //    public double averagePositionRate { get; set; }//平均仓位
-        public static PerformanceStatisics compute(List<BasicAccount> accountHistory, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, double[] benchmark)
+        /// 
+
+        public static PerformanceStatisics compute(List<BasicAccount> accountHistory, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, double[] benchmark=null, double riskFreeRate=0.03)
         {
+            //若没有输入benchmark，构建默认的benchmark（全为1）3
+            int sign0 = 0;
+            if (benchmark == null)
+            {
+                benchmark = new double[accountHistory.Count];
+                for (; sign0 < accountHistory.Count; sign0++) benchmark[sign0] = 1;
+            }                     
+            //benchmark与净值数据不匹配时跳出
+            if (benchmark.Length != accountHistory.Count)
+            {
+                Console.WriteLine("The length of benchmark is not consistent with accountHistory!");
+                return null;
+            }
             PerformanceStatisics performanceStats = new PerformanceStatisics();
             //无风险收益率(年化)
-            double riskFreeRate = 0.03;
+            
             double barsOfYear = 252;
             //account长度，account记录周期数
             int lengthOfAccount = accountHistory.Count;
@@ -109,50 +109,49 @@ namespace BackTestingPlatform.Utilities.Common
             numOfFailure = numOfTrades - numOfSuccess;
 
             // netProfit
-            performanceStats.netProfit = accountHistory[lengthOfAccount - 1].totalAssets - intialAssets;
+            performanceStats.netProfit = Math.Round((accountHistory[lengthOfAccount - 1].totalAssets - intialAssets)*10000)/10000;
 
             //perNetProfit
-            performanceStats.perNetProfit = performanceStats.netProfit / numOfTrades;
+            performanceStats.perNetProfit = Math.Round((performanceStats.netProfit / numOfTrades)*10000)/10000;
 
             //totalReturn
-            performanceStats.totalReturn = performanceStats.netProfit / intialAssets;
+            performanceStats.totalReturn = Math.Round((performanceStats.netProfit / intialAssets)*10000)/10000;
 
             //anualReturn
             double daysOfBackTesting = accountHistory.Count;
-            performanceStats.anualReturn = performanceStats.totalReturn / (daysOfBackTesting / barsOfYear);
+            performanceStats.anualReturn = Math.Round((performanceStats.totalReturn / (daysOfBackTesting / barsOfYear))*10000)/10000;
 
             //anualSharpe
-            performanceStats.anualSharpe = (returnArray.Average() - riskFreeRate/ barsOfYear) / Statistics.StandardDeviation(returnArray) * Math.Sqrt(252);
+            performanceStats.anualSharpe = Math.Round(((returnArray.Average() - riskFreeRate/ barsOfYear) / Statistics.StandardDeviation(returnArray) * Math.Sqrt(252))*10000)/10000;
 
             //winningRate
-            performanceStats.winningRate = numOfSuccess / numOfTrades;
+            performanceStats.winningRate = Math.Round((numOfSuccess / numOfTrades)*10000)/10000;
 
             //PnLRatio
-            performanceStats.PnLRatio = cumProfit / Math.Abs(cumLoss);
+            performanceStats.PnLRatio = Math.Round((cumProfit / Math.Abs(cumLoss))*10000)/10000;
 
             //maxDrawDown
-            performanceStats.maxDrawDown = computeMaxDrawDown(netWorth.ToList());
+            performanceStats.maxDrawDown = Math.Round(computeMaxDrawDown(netWorth.ToList())*10000)/10000;
 
             //maxProfitRate
-            performanceStats.maxProfitRatio = computeMaxProfitRate(netWorth.ToList());
+            performanceStats.maxProfitRatio =Math.Round( computeMaxProfitRate(netWorth.ToList())*10000)/10000;
 
             //profitMDDRatio
-            performanceStats.profitMDDRatio = performanceStats.totalReturn / performanceStats.maxDrawDown;
+            performanceStats.profitMDDRatio =Math.Round(( performanceStats.totalReturn / performanceStats.maxDrawDown)*10000)/10000;
 
             //informationRatio
 
-
-            performanceStats.informationRatio = excessReturnToBenchmark.Average() / Statistics.StandardDeviation(excessReturnToBenchmark) * Math.Sqrt(barsOfYear);
+            performanceStats.informationRatio =Math.Round(( excessReturnToBenchmark.Average() / Statistics.StandardDeviation(excessReturnToBenchmark) * Math.Sqrt(barsOfYear))*10000)/10000;
 
             //alpha
             var regstats = SimpleRegression.Fit(benchmarkExcessReturn, excessReturnToRf);
             performanceStats.alpha = regstats.Item1;
 
             //beta
-            performanceStats.beta = regstats.Item2;
+            performanceStats.beta =Math.Round( regstats.Item2 *10000)/10000;
 
             //rSquare
-            performanceStats.rSquare = Math.Pow(Correlation.Pearson(timeIndexList, netWorth),2);
+            performanceStats.rSquare =Math.Round( Math.Pow(Correlation.Pearson(timeIndexList, netWorth),2) *10000)/10000;
 
             //averageHoldingRate 
             double barsOfHolding = 0;
@@ -165,10 +164,10 @@ namespace BackTestingPlatform.Utilities.Common
                 sign++;
             }
 
-            performanceStats.averageHoldingRate = barsOfHolding / accountHistory.Count;
+            performanceStats.averageHoldingRate = Math.Round((barsOfHolding / accountHistory.Count)*10000)/10000;
 
             //averagePositionRate
-            performanceStats.averagePositionRate = positionRate.Average();
+            performanceStats.averagePositionRate = Math.Round(positionRate.Average()*10000)*10000;
 
             return performanceStats;
         }
