@@ -18,7 +18,7 @@ using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.Option;
-//using BackTestingPlatform.Utilities.SaveResult;
+using BackTestingPlatform.Utilities.SaveResult;
 using BackTestingPlatform.Utilities.TimeList;
 using NLog;
 using System;
@@ -94,7 +94,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 }
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                 var etfData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tradeDays[day]);
-                if (ema7[day+number-1]>ema50[day+number-1] && myLegs.strike1==0) // EMA7日线上传50日线，开牛市价差
+                if (ema7[day+number-1]-ema50[day+number-1]>0  && myLegs.strike1==0) // EMA7日线上穿50日线，开牛市价差
                 {
                     //取出指定日期
                     double lastETFPrice = dailyData[number + day - 1].close;
@@ -112,19 +112,22 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         var option2 = list[list.Count() - 1];
                         var option1Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(option1.optionCode, today);
                         var option2Data = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(option2.optionCode, today);
-                        dataToday.Add(option1.optionCode, option1Data.Cast<KLine>().ToList());
-                        dataToday.Add(option2.optionCode, option2Data.Cast<KLine>().ToList());
-                        var vol1 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option1.strike, duration/252.0, 0.04, 0, option1.optionType, option1Data[0].close, etfData[0].close);
-                        var vol2 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option2.strike, duration/252.0, 0.04, 0, option2.optionType, option2Data[0].close, etfData[0].close);
-                        MinuteSignal openSignal1 = new MinuteSignal() { code = option1.optionCode, volume = 10000, time = now, tradingVarieties = "option", price =option1Data[0].close , minuteIndex = 0 };
-                        MinuteSignal openSignal2 = new MinuteSignal() { code = option2.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = option2Data[0].close, minuteIndex = 0 };
-                        signal.Add(option1.optionCode, openSignal1);
-                        signal.Add(option2.optionCode, openSignal2);
-                        myLegs.code1 = option1.optionCode;
-                        myLegs.code2 = option2.optionCode;
-                        myLegs.strike1 = option1.strike;
-                        myLegs.strike2 = option2.strike;
-                        myLegs.endDate = option1.endDate;
+                        if ((option1Data[0].close>0 && option2Data[0].close>0)==true)
+                        {
+                            dataToday.Add(option1.optionCode, option1Data.Cast<KLine>().ToList());
+                            dataToday.Add(option2.optionCode, option2Data.Cast<KLine>().ToList());
+                            var vol1 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option1.strike, duration / 252.0, 0.04, 0, option1.optionType, option1Data[0].close, etfData[0].close);
+                            var vol2 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option2.strike, duration / 252.0, 0.04, 0, option2.optionType, option2Data[0].close, etfData[0].close);
+                            MinuteSignal openSignal1 = new MinuteSignal() { code = option1.optionCode, volume = 10000, time = now, tradingVarieties = "option", price = option1Data[0].close, minuteIndex = 0 };
+                            MinuteSignal openSignal2 = new MinuteSignal() { code = option2.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = option2Data[0].close, minuteIndex = 0 };
+                            signal.Add(option1.optionCode, openSignal1);
+                            signal.Add(option2.optionCode, openSignal2);
+                            myLegs.code1 = option1.optionCode;
+                            myLegs.code2 = option2.optionCode;
+                            myLegs.strike1 = option1.strike;
+                            myLegs.strike2 = option2.strike;
+                            myLegs.endDate = option1.endDate;
+                        }
                     }
                     MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now,capitalVerification:false);
                 }
@@ -140,7 +143,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     var thisTime = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), thisIndex);
                     var etfPriceNow = etfData[thisIndex].close;
                     var durationNow = DateUtils.GetSpanOfTradeDays(today, myLegs.endDate);
-                    if (etfPriceNow > myLegs.strike2 + 0.05 || etfPriceNow < myLegs.strike1 - 0.05 || durationNow <= 3)
+                    if (etfPriceNow > myLegs.strike2 + 0.2 || etfPriceNow < myLegs.strike1-0.2  || durationNow <= 10 )
                     {
                         myLegs = new BullSpread();
                         MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, thisTime, slipPoint);
@@ -171,7 +174,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
             line.Add("NetWorth", netWorth);
-
+            //记录净值数据
+            recordToCsv(accountHistory);
             //统计指标在console 上输出
             Console.WriteLine("--------Strategy Performance Statistics--------\n");
             Console.WriteLine(" netProfit:{0,5:F4} \n totalReturn:{1,-5:F4} \n anualReturn:{2,-5:F4} \n anualSharpe :{3,-5:F4} \n winningRate:{4,-5:F4} \n PnLRatio:{5,-5:F4} \n maxDrawDown:{6,-5:F4} \n maxProfitRatio:{7,-5:F4} \n informationRatio:{8,-5:F4} \n alpha:{9,-5:F4} \n beta:{10,-5:F4} \n averageHoldingRate:{11,-5:F4} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);
@@ -180,22 +184,20 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
             line.Add("Base", netWorthOfBenchmark.ToArray());
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
-            // Application.Run(new PLChart(line, datestr));
+             Application.Run(new PLChart(line, datestr));
+        }
+
+
+        private void recordToCsv<T>(IList<T> data)
+        {
             var fullPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + ConfigurationManager.AppSettings["CacheData.StrategyPath"];
             var tag = GetType().FullName;
             var dateStr = Kit.ToInt_yyyyMMdd(DateTime.Now).ToString();
             var type = "account";
             var para = "EMA50_EMA7";
-       //     fullPath = ResultPathUtil.GetLocalPath(fullPath, tag, dateStr, type, para);
-            var dt = DataTableUtils.ToDataTable(accountHistory);
+            fullPath = ResultPathUtil.GetLocalPath(fullPath, tag, dateStr, type, para);
+            var dt = DataTableUtils.ToDataTable(data);
             CsvFileUtils.WriteToCsvFile(fullPath, dt);
-            recordToCsv();
-        }
-
-
-        private void recordToCsv()
-        {
-            
         }
     }
 }
