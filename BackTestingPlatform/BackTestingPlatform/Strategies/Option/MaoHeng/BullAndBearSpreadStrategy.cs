@@ -18,7 +18,7 @@ using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.Option;
-using BackTestingPlatform.Utilities.SaveResult;
+//using BackTestingPlatform.Utilities.SaveResult;
 using BackTestingPlatform.Utilities.TimeList;
 using NLog;
 using System;
@@ -186,7 +186,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             var dateStr = Kit.ToInt_yyyyMMdd(DateTime.Now).ToString();
             var type = "account";
             var para = "EMA50_EMA7";
-            fullPath = ResultPathUtil.GetLocalPath(fullPath, tag, dateStr, type, para);
+       //     fullPath = ResultPathUtil.GetLocalPath(fullPath, tag, dateStr, type, para);
             var dt = DataTableUtils.ToDataTable(accountHistory);
             CsvFileUtils.WriteToCsvFile(fullPath, dt);
             recordToCsv();

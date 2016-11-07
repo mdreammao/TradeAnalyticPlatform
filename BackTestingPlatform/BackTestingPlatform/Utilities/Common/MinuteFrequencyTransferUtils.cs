@@ -146,16 +146,17 @@ namespace BackTestingPlatform.Utilities.Common
                 tailStamp = new DateTime(headStamp.Year, headStamp.Month, headStamp.Day, 15, 0, 0);
                 headIndex = nowIndex;
                 tailIndex = minuteData.FindLastIndex(s => s.time >= headStamp && s.time <= tailStamp);
+                var tempData = minuteData.GetRange(headIndex, tailIndex - headIndex + 1);
                 //记录新频率的k线
                 newMinuteData.Add(new KLine
                 {
                     time = tailStamp,
                     open = minuteData[headIndex].open,
-                    high = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Max(s => s.high),
-                    low = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Min(s => s.low),
+                    high = tempData.Max(s => s.high),
+                    low = tempData.Min(s => s.low),
                     close = minuteData[tailIndex].close,
-                    volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
-                    amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
+                    volume = tempData.Sum(x => x.volume),
+                    amount = tempData.Sum(x => x.amount),
                     openInterest = minuteData[tailIndex].openInterest
                 });
             }
@@ -184,16 +185,17 @@ namespace BackTestingPlatform.Utilities.Common
                 tailIndex = minuteData.FindLastIndex(s => s.time.Year == headStamp.Year && GetWeekOfYear(s.time) == GetWeekOfYear(headStamp) );
                 tailStamp = headStamp;
                 tailStamp = minuteData[tailIndex].time;
+                var tempData = minuteData.GetRange(headIndex, tailIndex - headIndex + 1);
                 //记录新频率的k线
                 newMinuteData.Add(new KLine
                 {
                     time = tailStamp,
                     open = minuteData[headIndex].open,
-                    high = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Max(s => s.high),
-                    low = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Min(s => s.low),
+                    high = tempData.Max(s => s.high),
+                    low = tempData.Min(s => s.low),
                     close = minuteData[tailIndex].close,
-                    volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
-                    amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
+                    volume = tempData.Sum(x => x.volume),
+                    amount = tempData.Sum(x => x.amount),
                     openInterest = minuteData[tailIndex].openInterest
                 });
             }
@@ -221,16 +223,17 @@ namespace BackTestingPlatform.Utilities.Common
                 tailStamp = headStamp;
                 tailStamp = minuteData[tailIndex].time;
 
+                var tempData = minuteData.GetRange(headIndex, tailIndex - headIndex + 1);
                 //记录新频率的k线
                 newMinuteData.Add(new KLine
                 {
                     time = tailStamp,
                     open = minuteData[headIndex].open,
-                    high = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Max(s => s.high),
-                    low = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Min(s => s.low),
+                    high = tempData.Max(s => s.high),
+                    low = tempData.Min(s => s.low),
                     close = minuteData[tailIndex].close,
-                    volume = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.volume),
-                    amount = minuteData.Where(s => s.time >= headStamp && s.time <= tailStamp).Sum(x => x.amount),
+                    volume = tempData.Sum(x => x.volume),
+                    amount = tempData.Sum(x => x.amount),
                     openInterest = minuteData[tailIndex].openInterest
                 });
             }
