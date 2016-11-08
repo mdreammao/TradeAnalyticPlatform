@@ -35,7 +35,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
 {
     public class BullAndBearSpreadStrategy
     {
-        
+
         static Logger log = LogManager.GetCurrentClassLogger();
         private DateTime startDate, endDate;
         //回测参数设置
@@ -96,7 +96,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 }
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                 var etfData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tradeDays[day]);
-                if (ema7[day+number-1]-ema50[day+number-1]>0  && myLegs.strike1==0) // EMA7日线上穿50日线，开牛市价差
+                if (ema7[day+number-1]-ema50[day+number-1]>0  && myLegs.strike1==0) // EMA7日线大于EMA50日线，开牛市价差
                 {
                     //取出指定日期
                     double lastETFPrice = dailyData[number + day - 1].close;
@@ -118,10 +118,11 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         {
                             dataToday.Add(option1.optionCode, option1Data.Cast<KLine>().ToList());
                             dataToday.Add(option2.optionCode, option2Data.Cast<KLine>().ToList());
-                            var vol1 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option1.strike, duration / 252.0, 0.04, 0, option1.optionType, option1Data[0].close, etfData[0].close);
-                            var vol2 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option2.strike, duration / 252.0, 0.04, 0, option2.optionType, option2Data[0].close, etfData[0].close);
+                            //var vol1 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option1.strike, duration / 252.0, 0.04, 0, option1.optionType, option1Data[0].close, etfData[0].close);
+                            //var vol2 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option2.strike, duration / 252.0, 0.04, 0, option2.optionType, option2Data[0].close, etfData[0].close);
                             MinuteSignal openSignal1 = new MinuteSignal() { code = option1.optionCode, volume = 10000, time = now, tradingVarieties = "option", price = option1Data[0].close, minuteIndex = 0 };
                             MinuteSignal openSignal2 = new MinuteSignal() { code = option2.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = option2Data[0].close, minuteIndex = 0 };
+
                             signal.Add(option1.optionCode, openSignal1);
                             signal.Add(option2.optionCode, openSignal2);
                             myLegs.code1 = option1.optionCode;
@@ -129,6 +130,9 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                             myLegs.strike1 = option1.strike;
                             myLegs.strike2 = option2.strike;
                             myLegs.endDate = option1.endDate;
+                            myLegs.spreadPrice_Open = option1Data[0].close - option2Data[0].close;
+                            myLegs.etfPrice_Open = etfData[0].close;
+                            myLegs.spreadOpenDate = now;
                         }
                     }
                     MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now,capitalVerification:false);
@@ -145,8 +149,18 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     var thisTime = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), thisIndex);
                     var etfPriceNow = etfData[thisIndex].close;
                     var durationNow = DateUtils.GetSpanOfTradeDays(today, myLegs.endDate);
-                    if (etfPriceNow > myLegs.strike2 + 0.2 || etfPriceNow < myLegs.strike1-0.2  || durationNow <= 10 )
+                    log.Info("time: {0},etf: {1}, call1: {2} call1price: {3}, call2: {4}, call2price: {5}", thisTime, etfPriceNow, myLegs.strike1, option1Data[thisIndex].close, myLegs.strike2, option2Data[thisIndex].close);
+                    //多个退出条件①收益达到最大收益的60%以上②多日之内不上涨③迅速下跌
+                    double spreadPrice = option1Data[thisIndex].close - option2Data[thisIndex].close;
+                    double holdingDays= DateUtils.GetSpanOfTradeDays(myLegs.spreadOpenDate,today);
+                    //止盈
+                    bool profitTarget = (spreadPrice - myLegs.spreadPrice_Open) > 0.8 * (myLegs.strike2 - myLegs.strike1);
+                    //止损
+                    bool lossTarget1 = (spreadPrice - myLegs.spreadPrice_Open) < 0 && holdingDays > 7;
+                    bool lossTarget2 = etfPriceNow < myLegs.strike1 - 0.2 && durationNow <= 10;
+                    if (profitTarget || lossTarget1 || lossTarget2 || durationNow<=1)
                     {
+                        log.Info("平仓！");
                         myLegs = new BullSpread();
                         MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, thisTime, slipPoint);
                     }

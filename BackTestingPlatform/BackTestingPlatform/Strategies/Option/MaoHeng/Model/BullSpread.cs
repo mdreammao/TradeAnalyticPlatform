@@ -10,6 +10,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng.Model
     {
         public string code1, code2;
         public double strike1, strike2;
-        public DateTime endDate;
+        public DateTime endDate,spreadOpenDate;
+        public double etfPrice_Open, spreadPrice_Open;
     }
 }
