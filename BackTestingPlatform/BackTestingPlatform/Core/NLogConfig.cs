@@ -48,8 +48,8 @@ namespace BackTestingPlatform.Core
                 ConditionParser.ParseExpression("level == LogLevel.Error"),
                 ConsoleOutputColor.Red, ConsoleOutputColor.NoChange));
 
-            
-            config.AddTarget("console", con);
+            //不显示在console上  
+            //  config.AddTarget("console", con);
             config.AddTarget("f1", f1);
             config.AddTarget("f2", f2);
 
@@ -61,8 +61,9 @@ namespace BackTestingPlatform.Core
             f2.FileName = rootDir + "/error.${shortdate}.log";
             f2.Layout = fileLayout;
 
-            // Step 4. Define rules            
-            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, con));
+            // Step 4. Define rules     
+            //不显示在console上       
+         //   config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, con));
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, f1));           
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Error, f2));
 

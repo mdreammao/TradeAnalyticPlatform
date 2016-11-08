@@ -22,7 +22,8 @@ namespace BackTestingPlatform.DataAccess
         static Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        ///  尝试从Wind获取数据,可能会抛出异常
+        ///  尝试从Wind
+        ///  数据,可能会抛出异常
         /// </summary>
         /// <param name="code"></param>
         /// <param name="date"></param>
