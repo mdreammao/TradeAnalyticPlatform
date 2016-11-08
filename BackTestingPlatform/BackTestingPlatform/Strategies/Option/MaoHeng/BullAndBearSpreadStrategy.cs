@@ -79,6 +79,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             var closePrice = dailyData.Select(x => x.close).ToArray();
             List<double> ema7 = TA_MA.EMA(closePrice, 5).ToList();
             List<double> ema50 = TA_MA.EMA(closePrice, 20).ToList();
+            List<double> ema10 = TA_MA.EMA(closePrice, 10).ToList();
+            double maxProfit = 0;
             for (int day = 1; day < tradeDays.Count(); day++)
             {
                 benchmark.Add(closePrice[day+number]);          
@@ -96,7 +98,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 }
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                 var etfData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tradeDays[day]);
-                if (ema7[day+number-1]-ema50[day+number-1]>0  && myLegs.strike1==0) // EMA7日线大于EMA50日线，开牛市价差
+                if (ema7[day+number-1]-ema50[day+number-1]>0 && dailyData[number + day - 1].close>ema10[day+number-1] && myLegs.strike1==0) // EMA7日线大于EMA50日线，并且ETF价格站上EMA10,开牛市价差
                 {
                     //取出指定日期
                     double lastETFPrice = dailyData[number + day - 1].close;
@@ -106,7 +108,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     //MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = 10000, time = now, tradingVarieties = "stock", price =averagePrice, minuteIndex = day };
                     //signal.Add(targetVariety, openSignal);
                     //选取指定的看涨期权
-                    var list =OptionUtilities.getOptionListByDate(OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice,lastETFPrice+0.5),Kit.ToInt_yyyyMMdd(today));
+                    var list =OptionUtilities.getOptionListByDate(OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration),"认购"),lastETFPrice,lastETFPrice+0.5),Kit.ToInt_yyyyMMdd(today)).OrderBy(x=>x.strike).ToList();
                     //如果可以构成看涨期权牛市价差，就开仓
                     if (list.Count()>=2)
                     {
@@ -122,7 +124,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                             //var vol2 = ImpliedVolatilityUtilities.ComputeImpliedVolatility(option2.strike, duration / 252.0, 0.04, 0, option2.optionType, option2Data[0].close, etfData[0].close);
                             MinuteSignal openSignal1 = new MinuteSignal() { code = option1.optionCode, volume = 10000, time = now, tradingVarieties = "option", price = option1Data[0].close, minuteIndex = 0 };
                             MinuteSignal openSignal2 = new MinuteSignal() { code = option2.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = option2Data[0].close, minuteIndex = 0 };
-
+                            Console.WriteLine("开仓！");
                             signal.Add(option1.optionCode, openSignal1);
                             signal.Add(option2.optionCode, openSignal2);
                             myLegs.code1 = option1.optionCode;
@@ -133,6 +135,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                             myLegs.spreadPrice_Open = option1Data[0].close - option2Data[0].close;
                             myLegs.etfPrice_Open = etfData[0].close;
                             myLegs.spreadOpenDate = now;
+                            maxProfit = 0;
+                            Console.WriteLine("time: {0},etf: {1}, call1: {2} call1price: {3}, call2: {4}, call2price: {5}", now, etfData[0].close, myLegs.strike1, option1Data[0].close, myLegs.strike2, option2Data[0].close);
                         }
                     }
                     MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now,capitalVerification:false);
@@ -149,18 +153,22 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     var thisTime = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), thisIndex);
                     var etfPriceNow = etfData[thisIndex].close;
                     var durationNow = DateUtils.GetSpanOfTradeDays(today, myLegs.endDate);
-                    log.Info("time: {0},etf: {1}, call1: {2} call1price: {3}, call2: {4}, call2price: {5}", thisTime, etfPriceNow, myLegs.strike1, option1Data[thisIndex].close, myLegs.strike2, option2Data[thisIndex].close);
+                    Console.WriteLine("time: {0},etf: {1}, call1: {2} call1price: {3}, call2: {4}, call2price: {5}", thisTime, etfPriceNow, myLegs.strike1, option1Data[thisIndex].close, myLegs.strike2, option2Data[thisIndex].close);
                     //多个退出条件①收益达到最大收益的60%以上②多日之内不上涨③迅速下跌
                     double spreadPrice = option1Data[thisIndex].close - option2Data[thisIndex].close;
+                    maxProfit = (spreadPrice - myLegs.spreadPrice_Open) > maxProfit ? spreadPrice - myLegs.spreadPrice_Open : maxProfit;
                     double holdingDays= DateUtils.GetSpanOfTradeDays(myLegs.spreadOpenDate,today);
                     //止盈
-                    bool profitTarget = (spreadPrice - myLegs.spreadPrice_Open) > 0.8 * (myLegs.strike2 - myLegs.strike1);
-                    //止损
-                    bool lossTarget1 = (spreadPrice - myLegs.spreadPrice_Open) < 0 && holdingDays > 7;
-                    bool lossTarget2 = etfPriceNow < myLegs.strike1 - 0.2 && durationNow <= 10;
-                    if (profitTarget || lossTarget1 || lossTarget2 || durationNow<=1)
+                    bool profitTarget = (spreadPrice) > 0.6 * (myLegs.strike2 - myLegs.strike1) && durationNow>=10;
+                                     //止损
+                    bool lossTarget1 = (spreadPrice - myLegs.spreadPrice_Open) < 0 && holdingDays > 20;
+                    bool lossTarget2 = etfPriceNow < myLegs.strike1 - 0.2;
+                    bool lossTarget3 = spreadPrice / myLegs.spreadPrice_Open < 0.6;
+                    bool lossTarget4 = maxProfit>0.02 && (spreadPrice - myLegs.spreadPrice_Open) / maxProfit < 0.8;
+                    if (profitTarget || lossTarget1 || lossTarget2 || lossTarget3 || lossTarget4 ||  durationNow<=1)
                     {
-                        log.Info("平仓！");
+                        Console.WriteLine("平仓！");
+                        maxProfit = 0;
                         myLegs = new BullSpread();
                         MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, thisTime, slipPoint);
                     }
