@@ -165,7 +165,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     bool lossTarget2 = etfPriceNow < myLegs.strike1 - 0.2;
                     bool lossTarget3 = spreadPrice / myLegs.spreadPrice_Open < 0.6;
                     bool lossTarget4 = maxProfit>0.02 && (spreadPrice - myLegs.spreadPrice_Open) / maxProfit < 0.8;
-                    if (profitTarget || lossTarget1 || lossTarget2 || lossTarget3 || lossTarget4 ||  durationNow<=1)
+                    if (profitTarget || lossTarget1 || lossTarget2 || lossTarget3 || lossTarget4 ||  durationNow<=1 || holdingDays>=7)
                     {
                         Console.WriteLine("平仓！");
                         maxProfit = 0;
