@@ -146,6 +146,7 @@
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
     <Compile Include="Model\TALibrary\TA_MA.cs" />
+    <Compile Include="Model\TALibrary\TA_MACD.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
