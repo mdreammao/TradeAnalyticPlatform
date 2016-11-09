@@ -26,13 +26,13 @@ using System.Threading.Tasks;
 using BackTestingPlatform.Strategies.Stock.StockSample;
 using BackTestingPlatform.Strategies.Stock.StockSample01;
 using BackTestingPlatform.Utilities.Common;
-using BackTestingPlatform.Model.TALibrary;
 using BackTestingPlatform.Model.Futures;
 using BackTestingPlatform.Transaction.TickTransaction;
 using BackTestingPlatform.Model.LogicFunction;
 using BackTestingPlatform.AccountOperator.Tick;
 using System.Windows.Forms;
 using BackTestingPlatform.Charts;
+using BackTestingPlatform.Utilities.TALibrary;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
@@ -104,7 +104,12 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             var lastPrice = data[targetVariety].Select(x => x.lastPrice).ToArray();
             longMA = TA_MA.SMA(lastPrice, longLength).ToList();
             shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
-            double[] macd = TA_MACD.compute(lastPrice, new int[] { 26, 12, 9 });
+
+            double[] dif = new double[lastPrice.Length];
+            double[] dea = new double[lastPrice.Length];
+            double[] macdHist = new double[lastPrice.Length];
+            TA_MACD.compute(lastPrice, new int[] { 26, 12, 9 }, out dif, out dea, out macdHist);
+
             int indexOfNow = -1;//记录整个data的索引
  
             /**/
