@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static TicTacTec.TA.Library.Core;
 
-namespace BackTestingPlatform.Model.TALibrary
+namespace BackTestingPlatform.Utilities.TALibrary
 {
     public static class TA_MA
     {
