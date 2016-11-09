@@ -37,10 +37,31 @@ namespace BackTestingPlatform.Model.Common
         public double preClose { get; set; }
         
         //包含交易日字段和自然日字段
-        public int date,ndate;
+        public int date { get; set; }
+        public int ndate { get; set; }
 
-        public int moment;
+        public int moment { get; set; }
 
-        
+        public double ask1 { get; set; }
+        public double askv1 { get; set; }
+        public double ask2 { get; set; }
+        public double askv2 { get; set; }
+        public double ask3 { get; set; }
+        public double askv3 { get; set; }
+        public double ask4 { get; set; }
+        public double askv4 { get; set; }
+        public double ask5 { get; set; }
+        public double askv5 { get; set; }
+        public double bid1 { get; set; }
+        public double bidv1 { get; set; }
+        public double bid2 { get; set; }
+        public double bidv2 { get; set; }
+        public double bid3 { get; set; }
+        public double bidv3 { get; set; }
+        public double bid4 { get; set; }
+        public double bidv4 { get; set; }
+        public double bid5 { get; set; }
+        public double bidv5 { get; set; } 
+
     }
 }

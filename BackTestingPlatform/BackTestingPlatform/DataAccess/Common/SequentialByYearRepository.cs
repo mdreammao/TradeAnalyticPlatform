@@ -234,7 +234,14 @@ namespace BackTestingPlatform.DataAccess
                     var path = _buildCacheDataFilePath(code, year + "0101", year + "*", tag);
                     var dirPath = Path.GetDirectoryName(path);
                     var fileName = Path.GetFileName(path);
-                    pathThisYear = Directory.EnumerateFiles(dirPath, fileName).FirstOrDefault();
+                    if (Directory.Exists(dirPath))
+                    {
+                        pathThisYear = Directory.EnumerateFiles(dirPath, fileName).FirstOrDefault();
+                    }
+                    else
+                    {
+                        pathThisYear = null;
+                    }
                 }
                 else
                 {
