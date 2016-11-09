@@ -156,10 +156,8 @@
     <Compile Include="Strategies\Option\MaoHeng\BullAndBearSpreadStrategy.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\BullSpread.cs" />
     <Compile Include="Strategies\Option\OptionSample\OptionSample4.cs" />
+    <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint.cs" />
-    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
-    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\NDaysReversion01.cs" />
-    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\StockSample01.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSample02.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSampleOne.cs" />
     <Compile Include="Strategies\Stock\StockSample\DoubleMAForTick.cs" />
