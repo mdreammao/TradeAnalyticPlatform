@@ -35,7 +35,7 @@ namespace BackTestingPlatform.Core
             con.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
                 ConditionParser.ParseExpression("level == LogLevel.Debug"),
                 ConsoleOutputColor.DarkGray, ConsoleOutputColor.NoChange));
-
+       
             con.RowHighlightingRules.Add(new ConsoleRowHighlightingRule(
                ConditionParser.ParseExpression("level == LogLevel.Info"),
                ConsoleOutputColor.Gray, ConsoleOutputColor.NoChange));
@@ -49,7 +49,7 @@ namespace BackTestingPlatform.Core
                 ConsoleOutputColor.Red, ConsoleOutputColor.NoChange));
 
             //不显示在console上  
-            //  config.AddTarget("console", con);
+            config.AddTarget("console", con);
             config.AddTarget("f1", f1);
             config.AddTarget("f2", f2);
 
@@ -62,11 +62,12 @@ namespace BackTestingPlatform.Core
             f2.Layout = fileLayout;
 
             // Step 4. Define rules     
-            //不显示在console上       
-         //   config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, con));
+            //不显示在console上  .
+            
+            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Warn, con));
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, f1));           
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Error, f2));
-
+            
 
             // Step 5. Activate the configuration
             LogManager.Configuration = config;

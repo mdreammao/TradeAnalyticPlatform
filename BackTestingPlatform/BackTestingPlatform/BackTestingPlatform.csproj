@@ -125,7 +125,8 @@
     <Compile Include="Model\Futures\FuturesDaily.cs" />
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
-    <Compile Include="Model\LogicFunction\Cross.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
+    <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
     <Compile Include="Model\Positions\BasicPositions.cs" />
@@ -145,7 +146,7 @@
     <Compile Include="Model\Option\OptionDaily.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
-    <Compile Include="Model\TALibrary\TA_MA.cs" />
+    <Compile Include="Utilities\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="Strategies\Stock\StockSample\MA.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
+    <Compile Include="Transaction\MinuteWithTick\MinuteTransactionWithTickData.cs" />
     <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
@@ -188,6 +190,7 @@
     <Compile Include="Utilities\SaveResult\Common\RecordUtil.cs" />
     <Compile Include="Utilities\SaveResult\Option\OptionRecordUtil.cs" />
     <Compile Include="Utilities\SaveResult\ResultPathUtil.cs" />
+    <Compile Include="Utilities\TALibrary\TA_MACD.cs" />
     <Compile Include="Utilities\TimeList\Alignment.cs" />
     <Compile Include="Utilities\TimeList\CreateTimeList.cs" />
     <Compile Include="Utilities\TimeList\TimeListUtility.cs" />
@@ -197,6 +200,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

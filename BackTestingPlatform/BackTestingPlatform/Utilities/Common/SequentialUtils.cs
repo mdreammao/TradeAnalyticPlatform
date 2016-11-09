@@ -132,10 +132,7 @@ namespace BackTestingPlatform.Utilities.Common
             for (i = 0; i < n; i++)
             {
                 for (; j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]; j++) ;
-                //if (j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i] && (int)src[j].time.TimeOfDay.TotalMilliseconds>= timelineInMillis[0])
-                //{
-                //    j++;
-                //}
+              //  if (j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]) j++;
                 if (j > 0)
                 {
                     if (sign == 1 && i != 0) // 前面有为null的值

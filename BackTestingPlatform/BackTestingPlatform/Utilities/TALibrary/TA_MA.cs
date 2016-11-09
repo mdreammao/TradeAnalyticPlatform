@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static TicTacTec.TA.Library.Core;
 
-namespace BackTestingPlatform.Model.TALibrary
+namespace BackTestingPlatform.Utilities.TALibrary
 {
     public static class TA_MA
     {
@@ -51,7 +51,7 @@ namespace BackTestingPlatform.Model.TALibrary
             int outNbElement = -1;
             int lookback = -1;
             double[] output = new double[data.Length];
-            lookback = MovingAverageLookback(length, MAType.Sma);
+            lookback = MovingAverageLookback(length, MAType.Ema);
             retCode = MovingAverage(0, data.Length - 1, data, lookback + 1, MAType.Ema, out outBegIdx, out outNbElement, output);
             Array.Copy(output, 0, indexValue, length - 1, output.Length - (length - 1));
 
@@ -59,5 +59,22 @@ namespace BackTestingPlatform.Model.TALibrary
 
         }
 
+        public static double[] KAMA(double[] data, int length)
+        {
+            double[] indexValue = new double[data.Length];
+
+            RetCode retCode = new RetCode();
+            retCode = RetCode.InternalError;
+
+            int outBegIdx = -1;
+            int outNbElement = -1;
+            int lookback = -1;
+            double[] output = new double[data.Length];
+            lookback = MovingAverageLookback(length, MAType.Kama);
+            retCode = MovingAverage(0, data.Length - 1, data, lookback + 1, MAType.Kama, out outBegIdx, out outNbElement, output);
+            Array.Copy(output, 0, indexValue, length - 1, output.Length - (length - 1));
+
+            return indexValue;
+        }
     }
 }

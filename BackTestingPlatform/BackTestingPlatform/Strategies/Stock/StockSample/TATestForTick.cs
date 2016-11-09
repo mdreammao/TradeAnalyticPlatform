@@ -27,8 +27,8 @@ using BackTestingPlatform.Strategies.Stock.StockSample01;
 using BackTestingPlatform.Utilities.Common;
 using TicTacTec.TA.Library;
 using System.Diagnostics;
-using BackTestingPlatform.Model.TALibrary;
 using BackTestingPlatform.Model.Futures;
+using BackTestingPlatform.Utilities.TALibrary;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
