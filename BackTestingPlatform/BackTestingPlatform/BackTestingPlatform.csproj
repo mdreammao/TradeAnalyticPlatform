@@ -125,9 +125,8 @@
     <Compile Include="Model\Futures\FuturesDaily.cs" />
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
-    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
-    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\NDaysReversion01.cs" />
-    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\StockSample01.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
+    <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
     <Compile Include="Model\Positions\BasicPositions.cs" />
@@ -147,6 +146,8 @@
     <Compile Include="Model\Option\OptionDaily.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
+    <Compile Include="Utilities\TALibrary\TA_MA.cs" />
+    <Compile Include="Utilities\TALibrary\TA_MACD.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
     <Compile Include="Service\Common\TradeDaysService.cs" />
@@ -155,7 +156,6 @@
     <Compile Include="Strategies\MA_Strategy\GetData.cs" />
     <Compile Include="Strategies\MA_Strategy\MAtest.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullAndBearSpreadStrategy.cs" />
-    <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\BullSpread.cs" />
     <Compile Include="Strategies\Option\OptionSample\OptionSample4.cs" />
     <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
@@ -176,7 +176,6 @@
     <Compile Include="Utilities\Common\PerformanceStatisicsUtils.cs" />
     <Compile Include="Utilities\Common\SequentialUtils.cs" />
     <Compile Include="Utilities\Futures\StockIndexFutures.cs" />
-    <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Utilities\Option\ImpliedVolatilityUtilities.cs" />
     <Compile Include="Utilities\Option\OptionUtilities.cs" />
     <Compile Include="Utilities\Common\CsvFileUtils.cs" />
@@ -192,8 +191,6 @@
     <Compile Include="Utilities\SaveResult\Common\RecordUtil.cs" />
     <Compile Include="Utilities\SaveResult\Option\OptionRecordUtil.cs" />
     <Compile Include="Utilities\SaveResult\ResultPathUtil.cs" />
-    <Compile Include="Utilities\TALibrary\TA_MA.cs" />
-    <Compile Include="Utilities\TALibrary\TA_MACD.cs" />
     <Compile Include="Utilities\TimeList\Alignment.cs" />
     <Compile Include="Utilities\TimeList\CreateTimeList.cs" />
     <Compile Include="Utilities\TimeList\TimeListUtility.cs" />
