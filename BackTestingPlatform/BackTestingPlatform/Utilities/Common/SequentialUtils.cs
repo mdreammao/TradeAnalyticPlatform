@@ -131,8 +131,8 @@ namespace BackTestingPlatform.Utilities.Common
             //将src筛选,到res
             for (i = 0; i < n; i++)
             {
-                // for (; j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]; j++) ;
-                if (j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]) j++;
+                for (; j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]; j++) ;
+              //  if (j < src.Count && (int)src[j].time.TimeOfDay.TotalMilliseconds <= timelineInMillis[i]) j++;
                 if (j > 0)
                 {
                     if (sign == 1 && i != 0) // 前面有为null的值

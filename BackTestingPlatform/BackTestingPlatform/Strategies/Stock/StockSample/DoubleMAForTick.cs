@@ -104,7 +104,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             var lastPrice = data[targetVariety].Select(x => x.lastPrice).ToArray();
             longMA = TA_MA.SMA(lastPrice, longLength).ToList();
             shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
-            double[] macd = TA_MACD.compute(lastPrice, new int[] { 12, 26, 9 });
+            double[] macd = TA_MACD.compute(lastPrice, new int[] { 26, 12, 9 });
             int indexOfNow = -1;//记录整个data的索引
  
             /**/
