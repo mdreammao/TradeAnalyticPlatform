@@ -21,7 +21,6 @@ using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.SaveResult;
 using BackTestingPlatform.Utilities.SaveResult.Common;
 using BackTestingPlatform.Utilities.SaveResult.Option;
-using BackTestingPlatform.Utilities.TALibrary;
 using BackTestingPlatform.Utilities.TimeList;
 using NLog;
 using System;
