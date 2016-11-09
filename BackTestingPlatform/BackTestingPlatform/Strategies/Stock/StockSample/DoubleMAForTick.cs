@@ -26,13 +26,13 @@ using System.Threading.Tasks;
 using BackTestingPlatform.Strategies.Stock.StockSample;
 using BackTestingPlatform.Strategies.Stock.StockSample01;
 using BackTestingPlatform.Utilities.Common;
-using BackTestingPlatform.Model.TALibrary;
 using BackTestingPlatform.Model.Futures;
 using BackTestingPlatform.Transaction.TickTransaction;
 using BackTestingPlatform.Model.LogicFunction;
 using BackTestingPlatform.AccountOperator.Tick;
 using System.Windows.Forms;
 using BackTestingPlatform.Charts;
+using BackTestingPlatform.Utilities.TALibrary;
 
 namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
