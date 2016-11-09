@@ -38,8 +38,8 @@ namespace BackTestingPlatform.Test
             //    //for (int j = 0; j < 44444; j++) x1 += Math.Sin(i);
             //           // Console.Write(i);
             //}
-
             
+
             //测试PLChart
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] y1 = { 120, 125, 100, 40, 105, 75 };

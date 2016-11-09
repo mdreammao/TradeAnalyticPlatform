@@ -167,6 +167,7 @@
     <Compile Include="Strategies\Stock\StockSample\MA.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
+    <Compile Include="Transaction\MinuteWithTick\MinuteTransactionWithTickData.cs" />
     <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
