@@ -126,6 +126,7 @@
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
+    <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Model\Option\OptionDaily.cs" />
     <Compile Include="Model\Stock\StockDaily.cs" />
     <Compile Include="Model\Stock\StockMinute.cs" />
+    <Compile Include="Utilities\TALibrary\Volatility.cs" />
     <Compile Include="Utilities\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
@@ -157,7 +159,6 @@
     <Compile Include="Strategies\Option\MaoHeng\BullAndBearSpreadStrategy.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\BullSpread.cs" />
     <Compile Include="Strategies\Option\OptionSample\OptionSample4.cs" />
-    <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSample02.cs" />
     <Compile Include="Strategies\Stock\StockSample\StockSampleOne.cs" />
