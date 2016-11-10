@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using ZedGraph;
 
 namespace BackTestingPlatform.Utilities.SaveResult.Common
 {
@@ -16,6 +17,12 @@ namespace BackTestingPlatform.Utilities.SaveResult.Common
             fullPath = ResultPathUtil.GetLocalPath(fullPath, tag, dateStr, type, parameters, performance);
             var dt = DataTableUtils.ToDataTable(data);
             CsvFileUtils.WriteToCsvFile(fullPath, dt);
+        }
+
+        public static void recordToPng(ZedGraphControl zedG, string path = "")
+        {
+            var fullPath = path;
+            zedG.GetImage().Save(fullPath);
         }
     }
 }

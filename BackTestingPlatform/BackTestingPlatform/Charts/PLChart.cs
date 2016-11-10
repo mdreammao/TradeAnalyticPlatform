@@ -34,6 +34,11 @@ namespace BackTestingPlatform.Charts
             date = datePeriod;
         }
 
+        public ZedGraphControl GetZedG()
+        {
+            return zedG;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
