@@ -154,7 +154,6 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             }
 
             return 0;
-
         }
     }
 }
