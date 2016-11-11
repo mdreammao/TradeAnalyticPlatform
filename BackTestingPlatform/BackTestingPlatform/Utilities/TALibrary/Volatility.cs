@@ -40,12 +40,12 @@ namespace BackTestingPlatform.Utilities.TALibrary
                 movingFirstMoment0 += logData[i]/step;
                 movingSecondaryMoment0 += logData[i] * logData[i]/step;
             }
-            HV[step] = Math.Sqrt(movingSecondaryMoment0 - Math.Pow(movingFirstMoment0, 2));
+            HV[step] = Math.Sqrt(movingSecondaryMoment0 - Math.Pow(movingFirstMoment0, 2))*Math.Sqrt(252);
             for (int i = step+1; i < length; i++)
             {
                 movingFirstMoment0 += (logData[i]-logData[i-step])/step;
                 movingSecondaryMoment0 += (Math.Pow(logData[i],2)-Math.Pow(logData[i-step],2)) / step;
-                HV[i] = Math.Sqrt(movingSecondaryMoment0 - Math.Pow(movingFirstMoment0, 2));
+                HV[i] = Math.Sqrt(movingSecondaryMoment0 - Math.Pow(movingFirstMoment0, 2))*Math.Sqrt(252);
             }
             return HV;
         }
