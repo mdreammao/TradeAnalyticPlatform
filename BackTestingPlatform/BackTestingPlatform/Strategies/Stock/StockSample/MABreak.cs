@@ -137,6 +137,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                 //上穿买入信号
                 if ((MA1_array[count] > MA2_array[count]) && openingOn && tradingOn)
                 {
+                    //设置signal信号，设置时间等参数
                     MinuteSignal openSignal = new MinuteSignal()
                     {
                         code = stockCode,
@@ -157,9 +158,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                     signal.Clear();
                 }               
 
-                ////下穿卖出信号
+                ////下穿卖出信号，当存量volumeNow大于0时做卖出操作
                 if ((MA1_array[count] < MA2_array[count]) && closingOn && tradingOn && (volumeNow > 0))
                 {
+                    //设置signal信号，设置时间等参数
                     MinuteSignal closeSignal = new MinuteSignal()
                     {
                         code = stockCode,
@@ -219,7 +221,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             //List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
             //line.Add("Base", netWorthOfBenchmark.ToArray());
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
-            Application.Run(new PLChart(line, datestr));
+            //初始化净值曲线类
+            PLChart plc = new PLChart(line, datestr);
+            Application.Run(plc);
+            plc.SaveZed("D:\\BTP\\Result\\BackTestingPlatform.Strategies.Stock.StockSample.MABreak\\aa.png");
 
             return 0;
         }
