@@ -124,6 +124,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                     signal.Add(stockCode, openSignal);
 
 
+
                     //开仓下单
                     MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: timeNow.AddDays(1), capitalVerification: false);
                 }               
