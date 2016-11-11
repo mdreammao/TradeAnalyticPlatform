@@ -1,8 +1,11 @@
 ﻿using Autofac;
 using BackTestingPlatform.Core;
+using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.DataAccess.Stock;
+using BackTestingPlatform.Model.Option;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.Option;
 using BackTestingPlatform.Utilities.TALibrary;
 using System;
 using System.Collections.Generic;
@@ -20,6 +23,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         private int step;
         private int backTestingDuration;
         private double[] etfVol;
+        private double[] optionVol;
+        private List<OptionInfo> optionInfoList;
         public VolatilityTrade(int startDate,int endDate,int step=20)
         {
             this.startDate = Kit.ToDate(startDate);
@@ -28,12 +33,15 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             this.step = step;
             etfDailyData = getETFHistoricalDailyData();
             startIndex=etfDailyData.Count()- backTestingDuration;
+            optionInfoList = Platforms.container.Resolve<OptionInfoRepository>().fetchFromLocalCsvOrWindAndSaveAndCache(1);
         }
         public void compute()
         {
             //统计历史波动率分位数,从回测期开始前一天，统计到最后一天
             double[][] fractile = new double[backTestingDuration+1][];
             fractile = computeFractile(startIndex-1,etfDailyData.Count()-1);
+            //统计隐含波动率
+            computeImpv();
             //按时间遍历，从2015年02月09日50ETF期权上市开始
             for (int i = startIndex; i <startIndex+ backTestingDuration; i++)
             {
@@ -42,6 +50,69 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             }
         }
 
+        private void computeImpv()
+        {
+            optionVol = new double[etfDailyData.Count()];
+            for (int i = startIndex; i < etfDailyData.Count(); i++)
+            {
+                DateTime today = etfDailyData[i].time;
+                double etfPrice = etfDailyData[i].close;
+                double volThisMonth;
+                double volNextMonth;
+                double duration;
+                //获取当日期限结构,选取当月合约
+                List<double> dateStructure = OptionUtilities.getDurationStructure(optionInfoList, today);
+                double duration0 = dateStructure[0]==0?dateStructure[1]:dateStructure[0];
+                duration = duration0;
+                var call = OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, today, duration),"认购").OrderBy(x=>Math.Abs(x.strike-etfPrice)).Where(x=>x.startDate<=today).ToList();
+                var callATM = call[0];
+                var callPrice=Platforms.container.Resolve<OptionDailyRepository>().fetchFromLocalCsvOrWindAndSave(callATM.optionCode, today,today);
+                double callImpv= ImpliedVolatilityUtilities.ComputeImpliedVolatility(callATM.strike, duration / 252.0, 0.04, 0, callATM.optionType, callPrice[0].close, etfPrice);
+                var put = OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, today, duration), "认沽").OrderBy(x => Math.Abs(x.strike - callATM.strike)).ToList();
+                var putATM = put[0];
+                var putPrice = Platforms.container.Resolve<OptionDailyRepository>().fetchFromLocalCsvOrWindAndSave(putATM.optionCode, today, today);
+                double putImpv = ImpliedVolatilityUtilities.ComputeImpliedVolatility(putATM.strike, duration / 252.0, 0.04, 0, putATM.optionType, putPrice[0].close, etfPrice);
+                if (callImpv*putImpv==0)
+                {
+                    volThisMonth = callImpv + putImpv;
+                }
+                else
+                {
+                    volThisMonth = (callImpv + putImpv) / 2;
+                }
+                //获取当日期限结构,选取下月合约,若下月合约不存在，就获取季月合约
+                double duration1 = dateStructure[0] == 0 ? dateStructure[2] : dateStructure[1];
+                duration = duration1;
+                call = OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, today, duration), "认购").OrderBy(x => Math.Abs(x.strike - etfPrice)).Where(x => x.startDate <= today).ToList();
+                callATM = call[0];
+                callPrice = Platforms.container.Resolve<OptionDailyRepository>().fetchFromLocalCsvOrWindAndSave(callATM.optionCode, today, today);
+                callImpv = ImpliedVolatilityUtilities.ComputeImpliedVolatility(callATM.strike, duration / 252.0, 0.04, 0, callATM.optionType, callPrice[0].close, etfPrice);
+                put = OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, today, duration), "认沽").OrderBy(x => Math.Abs(x.strike - callATM.strike)).ToList();
+                putATM = put[0];
+                putPrice = Platforms.container.Resolve<OptionDailyRepository>().fetchFromLocalCsvOrWindAndSave(putATM.optionCode, today, today);
+                putImpv = ImpliedVolatilityUtilities.ComputeImpliedVolatility(putATM.strike, duration / 252.0, 0.04, 0, putATM.optionType, putPrice[0].close, etfPrice);
+                if (callImpv * putImpv == 0)
+                {
+                    volNextMonth = callImpv + putImpv;
+                }
+                else
+                {
+                    volNextMonth = (callImpv + putImpv) / 2;
+                }
+                if (duration0 >= step)
+                {
+                    optionVol[i] = Math.Sqrt(step / duration0) * volThisMonth;
+                }
+                else if ((duration0 < step && duration1 > step))
+                {
+                    optionVol[i] = Math.Sqrt((duration1 - step) / (duration1 - duration0)) * volThisMonth + Math.Sqrt((step - duration0) / (duration1 - duration0)) * volNextMonth;
+                }
+                else if (duration1 <= step)
+                {
+                    optionVol[i] = volNextMonth;
+                }
+            }
+        }
         private List<StockDaily> getETFHistoricalDailyData()
         {
             return Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", Kit.ToDate(20130101), endDate);
@@ -114,8 +185,6 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 }
             }
             return disArr;
-
         }
-
     }
 }
