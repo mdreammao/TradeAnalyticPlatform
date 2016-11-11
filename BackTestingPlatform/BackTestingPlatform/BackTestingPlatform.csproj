@@ -126,6 +126,7 @@
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\VolatilityTrade.cs" />
     <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
