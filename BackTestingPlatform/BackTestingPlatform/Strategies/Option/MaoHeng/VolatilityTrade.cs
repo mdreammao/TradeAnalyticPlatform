@@ -3,6 +3,7 @@ using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Stock;
 using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.TALibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,36 +17,44 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         private DateTime startDate, endDate;
         private List<StockDaily> etfDailyData;
         private int startIndex;
-        private class distribution
+        private int step;
+        private int backTestingDuration;
+        private double[] etfVol;
+        public VolatilityTrade(int startDate,int endDate,int step=20)
         {
-            public double[] fractile = new double[11];
-        }
-        public VolatilityTrade(int startDate,int endDate)
-        {
-            this.startDate = Kit.ToDateTime(startDate);
-            this.endDate = Kit.ToDateTime(endDate);
+            this.startDate = Kit.ToDate(startDate);
+            this.endDate = Kit.ToDate(endDate);
+            backTestingDuration= DateUtils.GetSpanOfTradeDays(this.startDate, this.endDate);
+            this.step = step;
             etfDailyData = getETFHistoricalDailyData();
-
+            startIndex=etfDailyData.Count()- backTestingDuration;
         }
         public void compute()
         {
-            //统计历史波动率分位数
-            distribution[] fractile = computeFractile();
+            //统计历史波动率分位数,从回测期开始前一天，统计到最后一天
+            double[][] fractile = new double[backTestingDuration+1][];
+            fractile = computeFractile(startIndex-1,etfDailyData.Count()-1);
+            //按时间遍历，从2015年02月09日50ETF期权上市开始
+            for (int i = startIndex; i <startIndex+ backTestingDuration; i++)
+            {
+                double fractile70Yesterday = fractile[i - 1][7];
+                double volYesterday = etfVol[i - 1];
+            }
         }
 
         private List<StockDaily> getETFHistoricalDailyData()
         {
-            return Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050SH", Kit.ToDateTime(20070104), endDate);
+            return Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", Kit.ToDate(20130101), endDate);
         }
 
         /// <summary>
         /// 计算历史波动率的分位数
         /// </summary>
         /// <returns></returns>
-        private distribution[] computeFractile()
+        private double[][] computeFractile(int start,int end)
         {
-            int length= DateUtils.GetSpanOfTradeDays(startDate,endDate);
-            distribution[] disArr = new distribution[length];
+
+            double[][] disArr = new double[etfDailyData.Count()][];
             //获取前复权的价格
             double[] etfPrice=new double[etfDailyData.Count()];
             for (int i = 0; i < etfDailyData.Count(); i++)
@@ -54,13 +63,11 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             }
             //获取ETF每日年化波动率
             double[] etfVol = new double[etfDailyData.Count()];
-            for (int i = 1; i < etfPrice.Length; i++)
-            {
-                etfVol[i] = Math.Log(etfPrice[i] / etfPrice[i - 1]) * Math.Sqrt(252);
-            }
+            etfVol = Volatility.HVYearly(etfPrice, step);
+            this.etfVol = etfVol;
             //统计每日波动率分位数
             List<double> volList = new List<double>();
-            for (int i = 1; i < length; i++)
+            for (int i = 1; i < etfPrice.Count(); i++)
             {
                 //按循序依次向数组中插入波动率
                 if (volList.Count()==0)
@@ -89,20 +96,21 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         }
                     }
                 }
-                if (i>=100)
+                if (i>=start)
                 {
                     int L = volList.Count() - 1;
-                    disArr[i].fractile[0] = volList[0];
-                    disArr[i].fractile[1] = volList[(int)Math.Ceiling(L * 0.1)];
-                    disArr[i].fractile[2] = volList[(int)Math.Ceiling(L * 0.2)];
-                    disArr[i].fractile[3] = volList[(int)Math.Ceiling(L * 0.3)];
-                    disArr[i].fractile[4] = volList[(int)Math.Ceiling(L * 0.4)];
-                    disArr[i].fractile[5] = volList[(int)Math.Ceiling(L * 0.5)];
-                    disArr[i].fractile[6] = volList[(int)Math.Ceiling(L * 0.6)];
-                    disArr[i].fractile[7] = volList[(int)Math.Ceiling(L * 0.7)];
-                    disArr[i].fractile[8] = volList[(int)Math.Ceiling(L * 0.8)];
-                    disArr[i].fractile[9] = volList[(int)Math.Ceiling(L * 0.9)];
-                    disArr[i].fractile[10] = volList[L];
+                    disArr[i] = new double[11];
+                    disArr[i][0] = volList[0];
+                    disArr[i][1] = volList[(int)Math.Ceiling(L * 0.1)];
+                    disArr[i][2] = volList[(int)Math.Ceiling(L * 0.2)];
+                    disArr[i][3] = volList[(int)Math.Ceiling(L * 0.3)];
+                    disArr[i][4] = volList[(int)Math.Ceiling(L * 0.4)];
+                    disArr[i][5] = volList[(int)Math.Ceiling(L * 0.5)];
+                    disArr[i][6] = volList[(int)Math.Ceiling(L * 0.6)];
+                    disArr[i][7] = volList[(int)Math.Ceiling(L * 0.7)];
+                    disArr[i][8] = volList[(int)Math.Ceiling(L * 0.8)];
+                    disArr[i][9] = volList[(int)Math.Ceiling(L * 0.9)];
+                    disArr[i][10] = volList[L];
                 }
             }
             return disArr;
