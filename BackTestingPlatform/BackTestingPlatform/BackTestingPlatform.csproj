@@ -159,6 +159,7 @@
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
     <Compile Include="Strategies\Option\MaoHeng\VolatilityTrade.cs" />
     <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
@@ -224,6 +225,7 @@
     <Compile Include="Utilities\SaveResult\Option\OptionRecordUtil.cs" />
     <Compile Include="Utilities\SaveResult\ResultPathUtil.cs" />
     <Compile Include="Utilities\TALibrary\TA_MACD.cs" />
+    <Compile Include="Utilities\TALibrary\Volatility.cs" />
     <Compile Include="Utilities\TimeList\Alignment.cs" />
     <Compile Include="Utilities\TimeList\CreateTimeList.cs" />
     <Compile Include="Utilities\TimeList\TimeListUtility.cs" />
