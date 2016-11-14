@@ -162,6 +162,7 @@
     <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
     <Compile Include="Strategies\Option\MaoHeng\VolatilityTrade.cs" />
     <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
+    <Compile Include="Strategies\Stock\StockSample\MeanReverting15K.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
