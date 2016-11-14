@@ -161,6 +161,9 @@
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
     <Compile Include="Strategies\Option\MaoHeng\VolatilityTrade.cs" />
     <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
+    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
+    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\NDaysReversion01.cs" />
+    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\StockSample01.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />

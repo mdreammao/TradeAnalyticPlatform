@@ -525,14 +525,22 @@ namespace BackTestingPlatform.Transaction
                         price = transactionPrice
                     });
                     //存储当前持仓信息
-                    if (positionShot.ContainsKey(position0.code))
+                    int tempTimeTiker = 0;
+                    while (true)
                     {
-                        positionShot[position0.code] = position0;
+                        if (positions.ContainsKey(now.AddMilliseconds(tempTimeTiker)))
+                        {
+                            tempTimeTiker++;
+                            positions.Add(now.AddMilliseconds(tempTimeTiker), positionShot);
+                            break;
+                        }
+                        else
+                        {
+                            positions.Add(now.AddMilliseconds(tempTimeTiker), positionShot);
+                            break;
+                        }
                     }
-                    else
-                    {
-                        positionShot.Add(signal0.code, position0);
-                    }
+
 
                 }
                 //每处理一个信号，positions更新，myAccount更新（便于验资）
