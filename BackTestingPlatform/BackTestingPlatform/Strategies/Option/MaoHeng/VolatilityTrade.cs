@@ -124,7 +124,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 
                 //指定平仓时间为开盘第一个分钟。
                 DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), 0);
-                Console.WriteLine("time: {0}, 昨日历史波动率: {1}, 历史波动率70分位数: {2}, 昨日隐含波动率: {3}", now, volYesterday, fractile70Yesterday, optionVol[i - 1]);
+                Console.WriteLine("time: {0}, 昨日历史波动率: {1}, 历史波动率70分位数: {2}, 昨日隐含波动率: {3}", now, volYesterday.ToString("N"), fractile70Yesterday.ToString("N"), optionVol[i - 1].ToString("N"));
                 //如果有持仓先判断持仓状态和信号方向是否相同，如果不同先平仓
                 if (holdingStatus.callPosition != 0 ) 
                 {
@@ -235,7 +235,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             //记录统计指标
             var performanceList = new List<PerformanceStatisics>();
             performanceList.Add(myStgStats);
-            RecordUtil.recordToCsv(performanceList, GetType().FullName, "performance", parameters: "EMA7_EMA50", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            RecordUtil.recordToCsv(performanceList, GetType().FullName, "performance", parameters: "straddle", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
             //统计指标在console 上输出
             Console.WriteLine("--------Strategy Performance Statistics--------\n");
             Console.WriteLine(" netProfit:{0,5:F4} \n totalReturn:{1,-5:F4} \n anualReturn:{2,-5:F4} \n anualSharpe :{3,-5:F4} \n winningRate:{4,-5:F4} \n PnLRatio:{5,-5:F4} \n maxDrawDown:{6,-5:F4} \n maxProfitRatio:{7,-5:F4} \n informationRatio:{8,-5:F4} \n alpha:{9,-5:F4} \n beta:{10,-5:F4} \n averageHoldingRate:{11,-5:F4} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);
