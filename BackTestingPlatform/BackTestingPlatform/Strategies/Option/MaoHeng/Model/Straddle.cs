@@ -12,5 +12,6 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng.Model
         public double callPosition, putPosition;
         public DateTime endDate, straddleOpenDate;
         public double etfPrice_open, straddlePrice_open;
+        public double strike;
     }
 }
