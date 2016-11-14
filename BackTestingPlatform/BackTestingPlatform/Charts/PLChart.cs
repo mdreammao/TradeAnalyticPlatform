@@ -18,6 +18,9 @@ namespace BackTestingPlatform.Charts
     public partial class PLChart : Form
     {
         private ZedGraphControl zedG;
+
+        //Image对象，保存图片使用
+        private Image imageZed;
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -105,16 +108,28 @@ namespace BackTestingPlatform.Charts
             // Set the XAxis to Text type
             myPane.XAxis.Type = AxisType.Text;
 
+            //设置X轴和Y轴的名称
+            myPane.XAxis.Title.Text = "时间";//X轴
+            myPane.YAxis.Title.Text = "净值";//Y轴
+
+            //设置图的title
+            myPane.Title.Text = "净值曲线";
+
             // Fill the axis area with a gradient
             //myPane.AxisFill = new Fill(Color.White,
-                 //Color.FromArgb(255, 255, 166), 90F);
+            //Color.FromArgb(255, 255, 166), 90F);
             // Fill the pane area with a solid color
             //myPane.PaneFill = new Fill(Color.FromArgb(250, 250, 255));
 
             //绩效指标图统计
 
-
             zedG.AxisChange();
+            imageZed = zedG.GetImage();
+        }
+
+        public void SaveZed(string path)
+        {
+            imageZed.Save(path);
         }
     }
 }
