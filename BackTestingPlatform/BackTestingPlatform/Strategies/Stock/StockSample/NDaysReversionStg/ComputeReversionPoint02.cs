@@ -146,11 +146,13 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
 
                     double nowUpReversionPoint = ComputeReversionPoint02.findUpReversionPoint(data_5min, indexOf5min, NDays, lengthOfBackLooking);
 
+                    /*
                     if (nowDownReversionPoint < 0 || nowUpReversionPoint < 0)
                     {
                         index = nextIndex;
                         continue;
                     }
+                    */
 
 
 
