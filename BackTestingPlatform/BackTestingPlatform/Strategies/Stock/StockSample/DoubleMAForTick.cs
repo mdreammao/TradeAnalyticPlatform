@@ -105,10 +105,10 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             longMA = TA_MA.SMA(lastPrice, longLength).ToList();
             shortMA = TA_MA.SMA(lastPrice, shortLength).ToList();
 
-            double[] dif = new double[lastPrice.Length];
-            double[] dea = new double[lastPrice.Length];
-            double[] macdHist = new double[lastPrice.Length];
-            TA_MACD.compute(lastPrice, new int[] { 26, 12, 9 }, out dif, out dea, out macdHist);
+        //   double[] dif = new double[lastPrice.Length];
+        //   double[] dea = new double[lastPrice.Length];
+        //   double[] macdHist = new double[lastPrice.Length];
+        //   TA_MACD.compute(lastPrice, new int[] { 26, 12, 9 }, out dif, out dea, out macdHist);
 
             int indexOfNow = -1;//记录整个data的索引
  
@@ -158,7 +158,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
 
                     try
                     {
-                        //持仓查询，先平后开
+                        //持仓查询，先平后开.
                         //若当前有持仓 且 允许平仓
                         //是否是空仓,若position中所有品种volum都为0，则说明是空仓     
                         bool isEmptyPosition = positions.Count != 0 ? positions[positions.Keys.Last()].Values.Sum(x => Math.Abs(x.volume)) == 0 : true;
@@ -254,6 +254,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
             line.Add("50ETF", netWorthOfBenchmark.ToArray());
 
+            
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
             Application.Run(new PLChart(line, datestr));
 

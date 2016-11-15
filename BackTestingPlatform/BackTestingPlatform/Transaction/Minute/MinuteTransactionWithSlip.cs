@@ -564,8 +564,7 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                 }
 
 
-  
-
+ 
                 //账户信息更新
                 //根据当前交易记录和持仓情况更新账户
                 if (positions.Count != 0)
