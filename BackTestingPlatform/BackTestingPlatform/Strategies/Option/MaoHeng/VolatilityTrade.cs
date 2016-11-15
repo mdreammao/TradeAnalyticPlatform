@@ -25,7 +25,6 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             this.startDate = Kit.ToDateTime(startDate);
             this.endDate = Kit.ToDateTime(endDate);
             etfDailyData = getETFHistoricalDailyData();
-
         }
         public void compute()
         {
