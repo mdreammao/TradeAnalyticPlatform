@@ -547,10 +547,24 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                 }
                 //每处理一个信号，positions更新，myAccount更新（便于验资）
                 //若当前时间键值已存在，则加1毫秒
-                if (positions.ContainsKey(now))
-                    positions.Add(now.AddMilliseconds(1), positionShot);
-                else
-                    positions.Add(now, positionShot);
+                int tempTimeTiker = 0;
+                while(true)
+                {
+                    if (positions.ContainsKey(now.AddMilliseconds(tempTimeTiker)))
+                    {
+                        tempTimeTiker++;
+                        positions.Add(now.AddMilliseconds(tempTimeTiker), positionShot);
+                        break;
+                    }
+                    else
+                    {
+                        positions.Add(now.AddMilliseconds(tempTimeTiker), positionShot);
+                        break;
+                    }                 
+                }
+
+
+  
 
                 //账户信息更新
                 //根据当前交易记录和持仓情况更新账户

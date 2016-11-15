@@ -1,53 +1,266 @@
-ï»¿using BackTestingPlatform.Model.Common;
+using Autofac;
+using BackTestingPlatform.Core;
+using BackTestingPlatform.DataAccess;
+using BackTestingPlatform.DataAccess.Futures;
+using BackTestingPlatform.DataAccess.Option;
+using BackTestingPlatform.DataAccess.Stock;
+using BackTestingPlatform.Model.Common;
+using BackTestingPlatform.Model.Option;
+using BackTestingPlatform.Model.Positions;
+using BackTestingPlatform.Model.Signal;
+using BackTestingPlatform.Model.Stock;
+using BackTestingPlatform.Transaction;
+using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
+using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.Option;
+using BackTestingPlatform.Utilities.TimeList;
+using NLog;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BackTestingPlatform.Strategies.Stock.StockSample;
+using BackTestingPlatform.Strategies.Stock.StockSample01;
+using BackTestingPlatform.Utilities.Common;
+using BackTestingPlatform.AccountOperator.Minute;
+using System.Windows.Forms;
+using BackTestingPlatform.Charts;
+using BackTestingPlatform.Strategies.Stock.StockSample.NDaysReversionStg;
 
-namespace BackTestingPlatform.Strategies.Stock.StockSample.NDaysReversionStg
+namespace BackTestingPlatform.Strategies.Stock.StockSample
 {
-    public static class ComputeReversionPoint02
+    public class NDaysReversion01
     {
-        /// <summary>
-        /// è®¡ç®—å‘ä¸Šçš„åè½¬ç‚¹ï¼Œæ•°æ®é•¿åº¦å°äºå›æœ›å‘¨æœŸæ—¶ä¸º0ï¼Œä»£è¡¨ç©ºå€¼
-        /// </summary>
-        /// <param name="dataSeries"></param>æ•°æ®åºåˆ—ï¼ŒKLineæ ¼å¼,å¯èƒ½æ˜¯ä»»æ„é¢‘ç‡
-        /// <param name="Ndays"></param>
-        /// <param name="lengthOfBackLooking"></param>
-        /// <returns></returns>
-        public static double findUpReversionPoint(List<KLine> dataSeries, int indexOfNow, int Ndays, int lengthOfBackLooking)
+        static Logger log = LogManager.GetCurrentClassLogger();
+        private DateTime startDate, endDate;
+        public NDaysReversion01(int start, int end)
         {
-            double upReversionPoint = 0;
-            var tempData = dataSeries.GetRange(indexOfNow - lengthOfBackLooking + 1, lengthOfBackLooking);
-            var lowestPoint = tempData.Select((m, index) => new { m, index }).OrderBy(n => n.m.low).Take(1);
-            int indexOfLowPoint = lowestPoint.Select(n => n.index).First();
-            upReversionPoint = dataSeries[indexOfLowPoint - Ndays].high;
+            startDate = Kit.ToDate(start);
+            endDate = Kit.ToDate(end);
+        }
+        //»Ø²â²ÎÊıÉèÖÃ
+        private double initialCapital = 10000000;
+        private double slipPoint = 0.001;
+        private static int contractTimes = 100;
 
-            return upReversionPoint;
+        //²ßÂÔ²ÎÊıÉè¶¨
+        private int period = 1;//Ó¦ÓÃÖÜÆÚ
+        private int NDays = 6 * 1;//5·ÖÖÓ¼¶±ğ
+        private int lengthOfBackLooking = 20;//»Ø¿´ÖÜÆÚ
+        private double toleranceDegree = 0.005;//ÈİÈÌ¶È£¬ÔÊĞíÆÆÎ»µÄ·ù¶È
+        string targetVariety = "510050.SH";
+        /// <summary>
+        /// 50ETFÔñÊ±²ßÂÔ²âÊÔ£¬N-Days Reversion£¬µ¥±ß¶à
+        /// </summary>
+        public void compute()
+        {
+            log.Info("¿ªÊ¼»Ø²â(»Ø²âÆÚ{0}µ½{1})", Kit.ToInt_yyyyMMdd(startDate), Kit.ToInt_yyyyMMdd(endDate));
 
+            ///ÕË»§³õÊ¼»¯
+            //³õÊ¼»¯positions
+            SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions = new SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>>();
+            //³õÊ¼»¯AccountĞÅÏ¢
+            BasicAccount myAccount = new BasicAccount();
+            myAccount.totalAssets = initialCapital;
+            myAccount.freeCash = myAccount.totalAssets;
+            myAccount.initialAssets = initialCapital;
+            //¼ÇÂ¼ÀúÊ·ÕË»§ĞÅÏ¢
+            List<BasicAccount> accountHistory = new List<BasicAccount>();
+            //¼ÇÂ¼benchmarkÊı¾İ
+            List<double> benchmark = new List<double>();
+
+            ///Êı¾İ×¼±¸
+            //½»Ò×ÈÕĞÅÏ¢
+            List<DateTime> tradeDays = DateUtils.GetTradeDays(startDate, endDate);
+            //50etf·ÖÖÓÊı¾İ×¼±¸£¬È¡È«»Ø²âÆÚµÄÊı¾İ´æ·ÅÓÚdata
+            Dictionary<string, List<KLine>> data = new Dictionary<string, List<KLine>>();
+            foreach (var tempDay in tradeDays)
+            {
+                var ETFData = Platforms.container.Resolve<StockMinuteRepository>().fetchFromLocalCsvOrWindAndSave(targetVariety, tempDay);
+                if (!data.ContainsKey(targetVariety))
+                    data.Add(targetVariety, ETFData.Cast<KLine>().ToList());
+                else
+                    data[targetVariety].AddRange(ETFData.Cast<KLine>().ToList());
+            }
+
+            //ÆµÂÊ×ª»»²âÊÔ
+            List<KLine> data_5min = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Minutely", 5);
+            List<KLine> data_15min = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Minutely", 15);
+            //List<KLine> data_1Day = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Daily", 1);
+            //List<KLine> data_1Month = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Monthly", 1);
+            // List<KLine> data_1Week = MinuteFrequencyTransferUtils.MinuteToNPeriods(data[targetVariety], "Weekly", 1);
+
+            int indexOfNow = -1;//¼ÇÂ¼Õû¸ödataµÄË÷Òı£¬Ò»·ÖÖÓKÏßÉÏµÄË÷Òı
+            int indexOf5min = 0;//Îå·ÖÖÓKÏßÉÏµÄË÷Òı
+            int indexOf15min = 0;//Ê®Îå·ÖÖÓKÏßÉÏµÄË÷Òı
+
+            ///»Ø²âÑ­»·
+            //»Ø²âÑ­»·--By Day
+            foreach (var day in tradeDays)
+            {
+                //È¡³öµ±ÌìµÄÊı¾İ
+                Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
+                foreach (var variety in data)
+                {
+                    dataToday.Add(variety.Key, data[variety.Key].FindAll(s => s.time.Year == day.Year && s.time.Month == day.Month && s.time.Day == day.Day));
+                }
+
+                int index = 0;
+                //½»Ò×¿ª¹ØÉèÖÃ£¬¿ØÖÆday¼¶µÄ½»Ò×¿ª¹Ø
+                bool tradingOn = true;//×Ü½»Ò×¿ª¹Ø
+                bool openingOn = true;//¿ª²Ö¿ª¹Ø
+                bool closingOn = true;//Æ½²Ö¿ª¹Ø
+
+                //ÊÇ·ñÎª»Ø²â×îºóÒ»Ìì
+                bool isLastDayOfBackTesting = day.Equals(endDate);
+
+                //»Ø²âÑ­»· -- By Minute
+                //²»ÔÊĞíÔÚÍ¬Ò»¸ù1minBarÉÏ¿ªÆ½²Ö
+                while (index < 240)
+                {
+                    int nextIndex = index + 1;
+                    //¸üĞÂË÷ÒıÖµ
+                    indexOfNow++;
+                    //N·ÖÖÓkÏßµÄµ±Ç°Ë÷ÒıÖµÊÇµ±Ç°Ê±¼äµÄÖ®Ç°µÚÒ»¸öÍêÕûµÄkÏß£¬Îª±ÜÃâdata snooping²»È¡µ±Ç°Ê±¼äµÄË÷Òı
+                    indexOf5min = indexOfNow / 5;
+                    indexOf15min = indexOfNow / 15;
+
+                    //Êµ¼Ê²Ù×÷´ÓµÚÒ»¸ö»ØÍûÆÚºó¿ªÊ¼
+
+                    if (indexOfNow < lengthOfBackLooking - 1 || indexOf5min < lengthOfBackLooking - 1)
+                    {
+                        index = nextIndex;
+                        continue;
+                    }
+
+                    DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(day), index);
+                    Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
+                    DateTime next = new DateTime();
+                    myAccount.time = now;
+                    //int indexOfNow = data[targetVariety].FindIndex(s => s.time == now);
+                    double nowClose = dataToday[targetVariety][index].close;
+                    //Îå·ÖÖÓ·´×ªµã
+
+                    double nowUpReversionPoint = ComputeReversionPoint02.findUpReversionPoint(data_5min, indexOf5min, NDays, lengthOfBackLooking);
+
+                    if (nowDownReversionPoint < 0 || nowUpReversionPoint < 0)
+                    {
+                        index = nextIndex;
+                        continue;
+                    }
+
+
+
+                    try
+                    {
+                        //³Ö²Ö²éÑ¯£¬ÏÈÆ½ºó¿ª
+                        //Èôµ±Ç°ÓĞ³Ö²Ö ÇÒ ÔÊĞíÆ½²Ö
+                        //ÊÇ·ñÊÇ¿Õ²Ö,ÈôpositionÖĞËùÓĞÆ·ÖÖvolum¶¼Îª0£¬ÔòËµÃ÷ÊÇ¿Õ²Ö     
+                        bool isEmptyPosition = positions.Count != 0 ? positions[positions.Keys.Last()].Values.Sum(x => Math.Abs(x.volume)) == 0 : true;
+                        //Èôµ±Ç°ÓĞ³Ö²ÖÇÒÔÊĞí½»Ò×
+                        if (!isEmptyPosition && closingOn)
+                        {
+                            ///Æ½²ÖÌõ¼ş
+                            /// £¨1£©Èôµ±Ç°Îª »Ø²â½áÊøÈÕ »ò tradingOn Îªfalse£¬Æ½²Ö
+                            /// £¨2£©Èôµ±Ç°ÏÂ´©ÏÂ·´×ªµã*£¨1-ÈİÈÌ¶È£©£¬Æ½¶à                    
+                            //£¨1£©Èôµ±Ç°Îª »Ø²â½áÊøÈÕ »ò tradingOn Îªfalse£¬Æ½²Ö
+                            if (isLastDayOfBackTesting || tradingOn == false)
+                                next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+                            //£¨2£©Èôµ±Ç°ÏÂ´©ÏÂ·´×ªµã*£¨1-ÈİÈÌ¶È£©£¬Æ½¶à
+                            else
+                            {
+                                //¼ÆËãÏÂ·´×ªµã
+                                double nowDownReversionPoint = ComputeReversionPoint02.findDownReversionPoint(data_5min, indexOf5min, NDays, lengthOfBackLooking);
+
+                                if (data[targetVariety][indexOfNow - 1].close >= nowDownReversionPoint * (1 - toleranceDegree) && nowClose < nowDownReversionPoint * (1 - toleranceDegree))
+                                    next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
+ 
+                            }
+                        }
+                        //¿Õ²Ö ÇÒ¿É½»Ò× ¿É¿ª²Ö
+                        else if (isEmptyPosition && tradingOn && openingOn)
+                        {
+                            ///¿ª²ÖÌõ¼ş
+                            /// ¿ÉÓÃ×Ê½ğ×ã¹»£¬ÇÒ³öÏÖÉÏ·´×ªĞÅºÅ
+                            double nowFreeCash = myAccount.freeCash;
+                            //¿ª²ÖÁ¿£¬Âú²ÖËó¹ş
+                            double openVolume = Math.Truncate(nowFreeCash / data[targetVariety][indexOfNow].close / contractTimes) * contractTimes;
+                            //ÈôÊ£Óà×Ê½ğÖÁÉÙ¹ºÂòÒ»ÊÖ ÇÒ ³öÉÏ·´×ªĞÅºÅ ¿ª²Ö
+                            if (openVolume >= 1 && data[targetVariety][indexOfNow - 1].close <= nowUpReversionPoint * (1 + toleranceDegree) && nowClose > nowUpReversionPoint * (1 + toleranceDegree))
+                            {
+                                MinuteSignal openSignal = new MinuteSignal() { code = targetVariety, volume = openVolume, time = now, tradingVarieties = "stock", price = dataToday[targetVariety][index].close, minuteIndex = index };
+                                signal.Add(targetVariety, openSignal);
+                                next = MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                                //µ±ÌìÂòÈë²»¿ÉÂô³ö
+                                closingOn = false;
+                            }
+                        }
+
+                        //ÕË»§ĞÅÏ¢¸üĞÂ
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, now, dataToday);
+                    }
+
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    nextIndex = Math.Max(nextIndex, TimeListUtility.MinuteToIndex(next));
+                    index = nextIndex;
+                }
+                //ÕË»§ĞÅÏ¢¼ÇÂ¼By Day            
+                //ÓÃÓÚ¼ÇÂ¼µÄÁÙÊ±ÕË»§
+                BasicAccount tempAccount = new BasicAccount();
+                tempAccount.time = myAccount.time;
+                tempAccount.freeCash = myAccount.freeCash;
+                tempAccount.margin = myAccount.margin;
+                tempAccount.positionValue = myAccount.positionValue;
+                tempAccount.totalAssets = myAccount.totalAssets;
+                accountHistory.Add(tempAccount);
+                //×¥È¡benchmark
+                benchmark.Add(dataToday[targetVariety].Last().close);
+
+                //ÏÔÊ¾µ±Ç°ĞÅÏ¢
+                Console.WriteLine("Time:{0,-8:F},netWorth:{1,-8:F3}", day, myAccount.totalAssets / initialCapital);
+            }
+
+            //±éÀúÊä³öµ½console   
+            /*
+            foreach (var account in accountHistory)
+                Console.WriteLine("time:{0,-8:F}, netWorth:{1,-8:F3}\n", account.time, account.totalAssets / initialCapital);
+             */
+            //²ßÂÔ¼¨Ğ§Í³¼Æ¼°Êä³ö
+            PerformanceStatisics myStgStats = new PerformanceStatisics();
+            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
+
+            //Í³¼ÆÖ¸±êÔÚconsole ÉÏÊä³ö
+            Console.WriteLine("--------Strategy Performance Statistics--------\n");
+            Console.WriteLine(" netProfit:{0,-3:F} \n totalReturn:{1,-3:F} \n anualReturn:{2,-3:F} \n anualSharpe :{3,-3:F} \n winningRate:{4,-3:F} \n PnLRatio:{5,-3:F} \n maxDrawDown:{6,-3:F} \n maxProfitRatio:{7,-3:F} \n informationRatio:{8,-3:F} \n alpha:{9,-3:F} \n beta:{10,-3:F} \n averageHoldingRate:{11,-3:F} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);
+            Console.WriteLine("-----------------------------------------------\n");
+
+            //»­Í¼
+            Dictionary<string, double[]> line = new Dictionary<string, double[]>();
+            double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
+            line.Add("NetWorth", netWorth);
+
+            //benchmark¾»Öµ
+            List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
+            line.Add("50ETF", netWorthOfBenchmark.ToArray());
+
+            string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
+            Application.Run(new PLChart(line, datestr));
+            /*
+            //½«accountHistoryÊä³öµ½csv
+            var resultPath = ConfigurationManager.AppSettings["CacheData.ResultPath"] + "accountHistory.csv";
+            var dt = DataTableUtils.ToDataTable(accountHistory);          // List<MyModel> -> DataTable
+            CsvFileUtils.WriteToCsvFile(resultPath, dt);	// DataTable -> CSV File
+           */
+
+            Console.ReadKey();
         }
 
-        /// <summary>
-        /// è®¡ç®—å‘ä¸‹çš„åè½¬ç‚¹ï¼Œæ•°æ®é•¿åº¦å°äºå›æœ›å‘¨æœŸæ—¶ä¸º0ï¼Œä»£è¡¨ç©ºå€¼
-        /// </summary>
-        /// <param name="dataSeries"></param>
-        /// <param name="Ndays"></param>
-        /// <param name="lengthOfBackLooking"></param>
-        /// <returns></returns>
-        public static double findDownReversionPoint(List<KLine> dataSeries, int indexOfNow, int Ndays, int lengthOfBackLooking)
-        {
-            double downReversionPoint = 0;
-            var tempData = dataSeries.GetRange(indexOfNow - lengthOfBackLooking + 1, lengthOfBackLooking);
-            var highestPoint = tempData.Select((m, index) => new { m, index }).OrderByDescending(n => n.m.high).Take(1);
-            int indexOfHighPoint = highestPoint.Select(n => n.index).First();
-            downReversionPoint = dataSeries[indexOfHighPoint - Ndays].high;
-
-
-            return downReversionPoint;
-
-
-        }
 
     }
 }
