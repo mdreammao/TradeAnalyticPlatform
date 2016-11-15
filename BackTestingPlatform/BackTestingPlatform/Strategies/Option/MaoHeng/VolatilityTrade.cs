@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using BackTestingPlatform.AccountOperator.Minute;
+using BackTestingPlatform.Charts;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.DataAccess.Stock;
@@ -11,7 +12,10 @@ using BackTestingPlatform.Model.Stock;
 using BackTestingPlatform.Strategies.Option.MaoHeng.Model;
 using BackTestingPlatform.Transaction.MinuteTransactionWithSlip;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.Option;
+using BackTestingPlatform.Utilities.SaveResult.Common;
+using BackTestingPlatform.Utilities.SaveResult.Option;
 using BackTestingPlatform.Utilities.TALibrary;
 using BackTestingPlatform.Utilities.TimeList;
 using NLog;
@@ -20,6 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BackTestingPlatform.Strategies.Option.MaoHeng
 {
@@ -38,7 +43,6 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         private double[] optionVol;//记录50etf期权的隐含波动率(利用当月和下月期权插值算出20天的隐含波动率)
         private double[] epsilon;//max[E(IV-HV),0]
         private List<OptionInfo> optionInfoList;
-        private object straddle;
 
         public VolatilityTrade(int startDate,int endDate,int step=20)
         {
@@ -117,11 +121,23 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     //卖出跨式期权
                     orignalSignal = -1;
                 }
-                //指定开平仓时间为开盘第一个分钟。
+                
+                //指定平仓时间为开盘第一个分钟。
                 DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), 0);
+                Console.WriteLine("time: {0}, 昨日历史波动率: {1}, 历史波动率70分位数: {2}, 昨日隐含波动率: {3}", now, volYesterday.ToString("N"), fractile70Yesterday.ToString("N"), optionVol[i - 1].ToString("N"));
                 //如果有持仓先判断持仓状态和信号方向是否相同，如果不同先平仓
-                if (holdingStatus.callPosition != 0 && orignalSignal != 0) 
+                if (holdingStatus.callPosition != 0 ) 
                 {
+                    if (dataToday.ContainsKey(holdingStatus.callCode) == false)
+                    {
+                        var callLastDay = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(holdingStatus.callCode, today);
+                        dataToday.Add(holdingStatus.callCode, callLastDay.Cast<KLine>().ToList());
+                    }
+                    if (dataToday.ContainsKey(holdingStatus.putCode) == false)
+                    {
+                        var putLastDay = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(holdingStatus.putCode, today);
+                        dataToday.Add(holdingStatus.putCode, putLastDay.Cast<KLine>().ToList());
+                    }
                     if (holdingStatus.callPosition*orignalSignal<0) //仓位和信号相反，强制平仓
                     {
                         Console.WriteLine("平仓！");
@@ -135,6 +151,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         holdingStatus = new Straddle();
                     }
                 }
+                //指定开仓时间为开盘第10分钟。错开开平仓的时间。
+                now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), 10);
                 if (holdingStatus.callPosition==0 && orignalSignal!=0) //无仓位有信号，开仓
                 {
                     if (orignalSignal==1) //做多跨式期权
@@ -153,6 +171,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         holdingStatus.straddlePrice_open = callPrice[0].close+putPrice[0].close;
                         holdingStatus.straddleOpenDate = today;
                         holdingStatus.endDate=callATM.endDate;
+                        holdingStatus.strike = callATM.strike;
                     }
                     else if (orignalSignal==-1) //做空跨式期权
                     {
@@ -170,12 +189,14 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         holdingStatus.straddlePrice_open = callPrice[0].close + putPrice[0].close;
                         holdingStatus.straddleOpenDate = today;
                         holdingStatus.endDate = callATM.endDate;
+                        holdingStatus.strike = callATM.strike;
                     }
                     MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, capitalVerification: false);
                 }
                 //每日收盘前，整理持仓情况
                 int thisIndex = 239;
                 var thisTime = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), thisIndex);
+                benchmark.Add(etfData[thisIndex].close);
                 if (holdingStatus.callPosition!=0)
                 {
                     if (dataToday.ContainsKey(holdingStatus.callCode)==false)
@@ -186,13 +207,44 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     if (dataToday.ContainsKey(holdingStatus.putCode) == false)
                     {
                         var putLastDay = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(holdingStatus.putCode, today);
-                        dataToday.Add(holdingStatus.callCode, putLastDay.Cast<KLine>().ToList());
+                        dataToday.Add(holdingStatus.putCode, putLastDay.Cast<KLine>().ToList());
                     }
                 }
                 AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, thisTime, dataToday);
                 //记录历史仓位信息
                 accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
+                //在控制台上数据每日持仓信息
+                if (holdingStatus.callPosition!=0)
+                {
+                    Console.WriteLine("time: {0},etf: {1}, strike: {2}, position: {3}, call: {4}, put: {5}, endDate: {6}", thisTime, etfData[thisIndex].close, holdingStatus.strike, holdingStatus.callPosition, dataToday[holdingStatus.callCode][thisIndex].close, dataToday[holdingStatus.putCode][thisIndex].close,holdingStatus.endDate);
+                }
+                Console.WriteLine("time: {0}, total: {1}, cash: {2}, option: {3}, margin: {4}", thisTime,myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin);
             }
+            //策略绩效统计及输出
+            PerformanceStatisics myStgStats = new PerformanceStatisics();
+            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions);
+            //画图
+            Dictionary<string, double[]> line = new Dictionary<string, double[]>();
+            double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
+            line.Add("NetWorth", netWorth);
+            //记录净值数据
+            RecordUtil.recordToCsv(accountHistory, GetType().FullName, "account", parameters: "straddle", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            //记录持仓变化
+            var positionStatus = OptionRecordUtil.Transfer(positions);
+            RecordUtil.recordToCsv(positionStatus, GetType().FullName, "positions", parameters: "straddle", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            //记录统计指标
+            var performanceList = new List<PerformanceStatisics>();
+            performanceList.Add(myStgStats);
+            RecordUtil.recordToCsv(performanceList, GetType().FullName, "performance", parameters: "straddle", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            //统计指标在console 上输出
+            Console.WriteLine("--------Strategy Performance Statistics--------\n");
+            Console.WriteLine(" netProfit:{0,5:F4} \n totalReturn:{1,-5:F4} \n anualReturn:{2,-5:F4} \n anualSharpe :{3,-5:F4} \n winningRate:{4,-5:F4} \n PnLRatio:{5,-5:F4} \n maxDrawDown:{6,-5:F4} \n maxProfitRatio:{7,-5:F4} \n informationRatio:{8,-5:F4} \n alpha:{9,-5:F4} \n beta:{10,-5:F4} \n averageHoldingRate:{11,-5:F4} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);
+            Console.WriteLine("-----------------------------------------------\n");
+            //benchmark净值
+            List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
+            line.Add("Base", netWorthOfBenchmark.ToArray());
+            string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
+            Application.Run(new PLChart(line, datestr));
         }
         private void computeEpsilon()
         {
