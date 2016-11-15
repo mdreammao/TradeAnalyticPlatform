@@ -145,6 +145,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                     //五分钟反转点
 
                     double nowUpReversionPoint = ComputeReversionPoint02.findUpReversionPoint(data_5min, indexOf5min, NDays, lengthOfBackLooking);
+                    double nowDownReversionPoint = ComputeReversionPoint02.findDownReversionPoint(data_5min, indexOf5min, NDays, lengthOfBackLooking);
 
                     if (nowDownReversionPoint < 0 || nowUpReversionPoint < 0)
                     {
@@ -173,7 +174,7 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
                             else
                             {
                                 //计算下反转点
-                                double nowDownReversionPoint = ComputeReversionPoint02.findDownReversionPoint(data_5min, indexOf5min, NDays, lengthOfBackLooking);
+
 
                                 if (data[targetVariety][indexOfNow - 1].close >= nowDownReversionPoint * (1 - toleranceDegree) && nowClose < nowDownReversionPoint * (1 - toleranceDegree))
                                     next = MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now: now, slipPoint: slipPoint);
