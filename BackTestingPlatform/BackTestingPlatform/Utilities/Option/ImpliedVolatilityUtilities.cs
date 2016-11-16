@@ -9,6 +9,18 @@ namespace BackTestingPlatform.Utilities.Option
 {
     public class ImpliedVolatilityUtilities
     {
+        public static double ComputeOptionDelta(double strike, double duration, double riskFreeRate, double StockRate, string optionType, double optionVolatility, double underlyingPrice)
+        {
+            double d1 = (Math.Log(underlyingPrice / strike) + (riskFreeRate + Math.Pow(optionVolatility, 2) / 2) * duration) / (optionVolatility * Math.Sqrt(duration));
+            if (optionType=="认购")
+            {
+                return normcdf(d1);
+            }
+            else
+            {
+                return normcdf(d1)-1;
+            }
+        }
         public static double ComputeOptionPrice(double strike, double duration, double riskFreeRate, double StockRate, string optionType, double optionVolatility, double underlyingPrice)
         {
             double etfPirce = underlyingPrice * Math.Exp(-StockRate * duration);
@@ -82,6 +94,10 @@ namespace BackTestingPlatform.Utilities.Option
         /// <returns>返回隐含波动率</returns>
         private static double sigmaOfPut(double putPrice, double spotPrice, double strike, double duration, double r)
         {
+            if ((putPrice + spotPrice - strike * Math.Exp(-r * duration)) < 0) // put价格太高，返回200%
+            {
+                return 2;
+            }
             return sigmaOfCall(putPrice + spotPrice - strike * Math.Exp(-r * duration), spotPrice, strike, duration, r); 
         }
 

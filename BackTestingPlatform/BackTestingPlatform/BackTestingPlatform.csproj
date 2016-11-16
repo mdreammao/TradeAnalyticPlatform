@@ -165,6 +165,7 @@
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\StockSample01.cs" />
+    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />
@@ -204,7 +205,6 @@
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
     <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />
-    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
     <Compile Include="Transaction\Tick\TickTransactionWtihSlip.cs" />
     <Compile Include="Utilities\Common\MinuteFrequencyTransferUtils.cs" />

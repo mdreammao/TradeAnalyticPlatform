@@ -2,6 +2,7 @@
 using BackTestingPlatform.AccountOperator.Minute;
 using BackTestingPlatform.Charts;
 using BackTestingPlatform.Core;
+using BackTestingPlatform.DataAccess.Futures;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.DataAccess.Stock;
 using BackTestingPlatform.Model.Common;
@@ -32,7 +33,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
     {
         static Logger log = LogManager.GetCurrentClassLogger();
         //回测参数设置
-        private double initialCapital = 10000;
+        private double initialCapital = 2000000;
+        private double optionVolume = 1000000;
         private double slipPoint = 0.001;
         private DateTime startDate, endDate;
         private List<StockDaily> etfDailyData;
@@ -70,7 +72,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             Straddle holdingStatus = new Straddle();
             //统计历史波动率分位数,从回测期开始前一天，统计到最后一天
             double[][] fractile = new double[backTestingDuration+1][];
-            fractile = computeFractile(startIndex-1,etfDailyData.Count()-1);
+            fractile =computeRollingFractile(startIndex-1,etfDailyData.Count()-1,252);
             //统计隐含波动率
             computeImpv();
             //统计隐含波动率和历史波动率之差 epsilon=max[E(IV-HV),0]
@@ -78,9 +80,9 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             //按时间遍历，2015年02月09日50ETF期权上市开始,2月10日开始昨日收盘的隐含波动率数据。
             for (int i = startIndex+1; i <startIndex+ backTestingDuration; i++)
             {
-
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                 double fractile70Yesterday = fractile[i - 1][7]; //昨日历史波动率70分位数
+                double fractile30Yesterday = fractile[i - 1][3]; //昨日历史波动率30分位数
                 double volYesterday = etfVol[i - 1]; //昨日历史波动率
                 //获取当日ATM期权合约代码
                 DateTime today = etfDailyData[i].time;
@@ -104,6 +106,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 dataToday.Add("510050.SH", etfData.Cast<KLine>().ToList());
                 dataToday.Add(callATM.optionCode, callPrice.Cast<KLine>().ToList());
                 dataToday.Add(putATM.optionCode, putPrice.Cast<KLine>().ToList());
+                
                 //策略信号处理
                 orignalSignal = 0;
                 if (volYesterday>=fractile70Yesterday)
@@ -111,7 +114,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     //卖出跨式期权
                     orignalSignal = -1;
                 }
-                else if (optionVol[i-1]<volYesterday)
+                else if (optionVol[i-1]< fractile30Yesterday)
                 {
                     //买入跨式期权
                     orignalSignal = 1;
@@ -128,6 +131,12 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 //如果有持仓先判断持仓状态和信号方向是否相同，如果不同先平仓
                 if (holdingStatus.callPosition != 0 ) 
                 {
+                    //平仓之前获取IH数据
+                    if (holdingStatus.IHCode!=null)
+                    {
+                        var IHData = Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(holdingStatus.IHCode, today);
+                        dataToday.Add(holdingStatus.IHCode, IHData.Cast<KLine>().ToList());
+                    }
                     if (dataToday.ContainsKey(holdingStatus.callCode) == false)
                     {
                         var callLastDay = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(holdingStatus.callCode, today);
@@ -141,6 +150,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     if (holdingStatus.callPosition*orignalSignal<0) //仓位和信号相反，强制平仓
                     {
                         Console.WriteLine("平仓！");
+
                         MinuteCloseAllPositonsWithSlip.closeAllPositions(dataToday, ref positions, ref myAccount, now, slipPoint);
                         holdingStatus = new Straddle();
                     }
@@ -152,46 +162,65 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     }
                 }
                 //指定开仓时间为开盘第10分钟。错开开平仓的时间。
-                now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), 10);
+                int openIndex = 10;
+                now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), openIndex);
                 if (holdingStatus.callPosition==0 && orignalSignal!=0) //无仓位有信号，开仓
                 {
                     if (orignalSignal==1) //做多跨式期权
                     {
-                        MinuteSignal openSignalCall = new MinuteSignal() { code = callATM.optionCode, volume = 10000, time = now, tradingVarieties = "option", price = callPrice[0].close, minuteIndex = 0 };
-                        MinuteSignal openSignalPut= new MinuteSignal() { code = putATM.optionCode, volume = 10000, time = now, tradingVarieties = "option", price = putPrice[0].close, minuteIndex = 0 };
+                        MinuteSignal openSignalCall = new MinuteSignal() { code = callATM.optionCode, volume = optionVolume, time = now, tradingVarieties = "option", price = callPrice[openIndex].close, minuteIndex = openIndex };
+                        MinuteSignal openSignalPut= new MinuteSignal() { code = putATM.optionCode, volume = optionVolume, time = now, tradingVarieties = "option", price = putPrice[openIndex].close, minuteIndex = openIndex };
                         Console.WriteLine("做多跨式期权！");
                         signal.Add(callATM.optionCode, openSignalCall);
                         signal.Add(putATM.optionCode,openSignalPut);
                         //变更持仓状态
                         holdingStatus.callCode = callATM.optionCode;
                         holdingStatus.putCode = putATM.optionCode;
-                        holdingStatus.callPosition = 10000;
-                        holdingStatus.putPosition = 10000;
-                        holdingStatus.etfPrice_open = etfData[0].close;
-                        holdingStatus.straddlePrice_open = callPrice[0].close+putPrice[0].close;
+                        holdingStatus.callPosition = optionVolume;
+                        holdingStatus.putPosition = optionVolume;
+                        holdingStatus.etfPrice_open = etfData[openIndex].close;
+                        holdingStatus.straddlePrice_open = callPrice[openIndex].close+putPrice[openIndex].close;
                         holdingStatus.straddleOpenDate = today;
                         holdingStatus.endDate=callATM.endDate;
                         holdingStatus.strike = callATM.strike;
                     }
                     else if (orignalSignal==-1) //做空跨式期权
                     {
-                        MinuteSignal openSignalCall = new MinuteSignal() { code = callATM.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = callPrice[0].close, minuteIndex = 0 };
-                        MinuteSignal openSignalPut = new MinuteSignal() { code = putATM.optionCode, volume = -10000, time = now, tradingVarieties = "option", price = putPrice[0].close, minuteIndex = 0 };
+                        MinuteSignal openSignalCall = new MinuteSignal() { code = callATM.optionCode, volume = -optionVolume, time = now, tradingVarieties = "option", price = callPrice[openIndex].close, minuteIndex = openIndex };
+                        MinuteSignal openSignalPut = new MinuteSignal() { code = putATM.optionCode, volume = -optionVolume, time = now, tradingVarieties = "option", price = putPrice[openIndex].close, minuteIndex = openIndex };
                         Console.WriteLine("做空跨式期权！");
                         signal.Add(callATM.optionCode, openSignalCall);
                         signal.Add(putATM.optionCode, openSignalPut);
                         //变更持仓状态
                         holdingStatus.callCode = callATM.optionCode;
                         holdingStatus.putCode = putATM.optionCode;
-                        holdingStatus.callPosition = -10000;
-                        holdingStatus.putPosition = -10000;
-                        holdingStatus.etfPrice_open = etfData[0].close;
-                        holdingStatus.straddlePrice_open = callPrice[0].close + putPrice[0].close;
+                        holdingStatus.callPosition = -optionVolume;
+                        holdingStatus.putPosition = -optionVolume;
+                        holdingStatus.etfPrice_open = etfData[openIndex].close;
+                        holdingStatus.straddlePrice_open = callPrice[openIndex].close + putPrice[openIndex].close;
                         holdingStatus.straddleOpenDate = today;
                         holdingStatus.endDate = callATM.endDate;
                         holdingStatus.strike = callATM.strike;
                     }
                     MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, capitalVerification: false);
+                    //开仓进行对冲
+                    string IHCode = OptionUtilities.getCorrespondingIHCode(OptionUtilities.getSpecifiedOption(optionInfoList, holdingStatus.endDate, "认购", holdingStatus.strike)[0], Kit.ToInt_yyyyMMdd(today));
+                    var IHToday = Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(IHCode, today);
+                    if (dataToday.ContainsKey(IHCode) == false)
+                    {
+                        dataToday.Add(IHCode, IHToday.Cast<KLine>().ToList());
+                    }
+                    double cashDelta = computeOptionCashDelta(positions.Last().Value, holdingStatus, today, dataToday, openIndex);
+                    //double increment = Math.Round(-cashDelta / 1000) - holdingStatus.IHPosition;
+                    //if (Math.Abs(increment) >= 0)
+                    //{
+                    //    MinuteSignal IHSignal = new MinuteSignal() { code = IHCode, volume = increment, time = now, tradingVarieties = "futures", price = IHToday[openIndex].close, minuteIndex = openIndex };
+                    //    signal = new Dictionary<string, MinuteSignal>();
+                    //    signal.Add(IHCode, IHSignal);
+                    //    holdingStatus.IHCode = IHCode;
+                    //    holdingStatus.IHPosition += increment;
+                    //    MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, capitalVerification: false);
+                    //}
                 }
                 //每日收盘前，整理持仓情况
                 int thisIndex = 239;
@@ -210,6 +239,51 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         dataToday.Add(holdingStatus.putCode, putLastDay.Cast<KLine>().ToList());
                     }
                 }
+                if (holdingStatus.callPosition!=0)
+                {
+                    //获取对应的IH的数据
+                    string IHCode = OptionUtilities.getCorrespondingIHCode(OptionUtilities.getSpecifiedOption(optionInfoList, holdingStatus.endDate, "认购", holdingStatus.strike)[0], Kit.ToInt_yyyyMMdd(today));
+                    var IHToday = Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(IHCode, today);
+                    if (dataToday.ContainsKey(IHCode) == false)
+                    {
+                        dataToday.Add(IHCode, IHToday.Cast<KLine>().ToList());
+                    }
+                    if (IHCode != holdingStatus.IHCode && holdingStatus.IHPosition != 0) //期权对应的期货合约发生变化，那么进行移仓操作
+                    {
+                        var IHLast = Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(holdingStatus.IHCode, today);
+                        if (dataToday.ContainsKey(holdingStatus.IHCode) == false)
+                        {
+                            dataToday.Add(holdingStatus.IHCode, IHLast.Cast<KLine>().ToList());
+                        }
+                        MinuteSignal IHCloseSignal = new MinuteSignal() { code = holdingStatus.IHCode, volume = -holdingStatus.IHPosition, time = thisTime, tradingVarieties = "futures", price = IHLast[thisIndex].close, minuteIndex = thisIndex };
+                        signal = new Dictionary<string, MinuteSignal>();
+                        signal.Add(holdingStatus.IHCode, IHCloseSignal);
+                        holdingStatus.IHCode = "";
+                        holdingStatus.IHPosition = 0;
+                        MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: thisTime, capitalVerification: false);
+                        AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, thisTime, dataToday);
+                    }
+
+                    //计算期权持仓的delta值
+                    double cashDelta= computeOptionCashDelta(positions.Last().Value, holdingStatus, today, dataToday,thisIndex);
+                    //收盘前对冲
+                    if (cashDelta!=0)
+                    {
+                        Console.WriteLine("time; {0}, delta: {1}", today, cashDelta);
+                        //delta = 0;
+                    }
+                    //double increment = Math.Round(-cashDelta / 1000) - holdingStatus.IHPosition;
+                    //if (Math.Abs(increment)>0)
+                    //{
+                    //    MinuteSignal IHSignal = new MinuteSignal() { code = IHCode, volume = increment, time = thisTime, tradingVarieties = "futures", price = IHToday[thisIndex].close, minuteIndex = thisIndex };
+                    //    signal = new Dictionary<string, MinuteSignal>();
+                    //    signal.Add(IHCode, IHSignal);
+                    //    holdingStatus.IHCode = IHCode;
+                    //    holdingStatus.IHPosition += increment;
+                    //    MinuteTransactionWithSlip.computeMinuteOpenPositions(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: thisTime, capitalVerification: false);
+                    //}
+                }
+                //更新当日属性信息
                 AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, thisTime, dataToday);
                 //记录历史仓位信息
                 accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
@@ -222,7 +296,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             }
             //策略绩效统计及输出
             PerformanceStatisics myStgStats = new PerformanceStatisics();
-            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions);
+            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions,benchmark.ToArray());
             //画图
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
@@ -246,6 +320,36 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
             Application.Run(new PLChart(line, datestr));
         }
+
+        /// <summary>
+        /// 计算期权持仓的delta值
+        /// </summary>
+        /// <param name="positionLast">最后持仓状态</param>
+        /// <param name="holdingStatus">记录的跨式期权情况</param>
+        /// <param name="today">今日日期</param>
+        /// <param name="dataToday">今日数据</param>
+        /// <param name="index">交易时间对应的下标</param>
+        /// <returns></returns>
+        private double computeOptionCashDelta(Dictionary<string,PositionsWithDetail> positionLast,Straddle holdingStatus,DateTime today,Dictionary<string,List<KLine>> dataToday,int index)
+        {
+            double delta = 0;
+            foreach (var item in positionLast)
+            {
+                if (item.Key == holdingStatus.callCode)
+                {
+                    var callDelta = ImpliedVolatilityUtilities.ComputeOptionDelta(holdingStatus.strike, DateUtils.GetSpanOfTradeDays(today, holdingStatus.endDate) / 252.0, 0.04, 0, "认购", ImpliedVolatilityUtilities.ComputeImpliedVolatility(holdingStatus.strike, DateUtils.GetSpanOfTradeDays(today, holdingStatus.endDate) / 252.0, 0.04, 0, "认购", dataToday[item.Key][index].close, dataToday["510050.SH"][index].close), dataToday["510050.SH"][index].close);
+                    delta += holdingStatus.callPosition * callDelta;
+                }
+                if (item.Key == holdingStatus.putCode)
+                {
+                    var putDelta = ImpliedVolatilityUtilities.ComputeOptionDelta(holdingStatus.strike, DateUtils.GetSpanOfTradeDays(today, holdingStatus.endDate) / 252.0, 0.04, 0, "认沽", ImpliedVolatilityUtilities.ComputeImpliedVolatility(holdingStatus.strike, DateUtils.GetSpanOfTradeDays(today, holdingStatus.endDate) / 252.0, 0.04, 0, "认沽", dataToday[item.Key][index].close, dataToday["510050.SH"][index].close), dataToday["510050.SH"][index].close);
+                    delta += holdingStatus.putPosition * putDelta;
+                }
+            }
+            return delta;
+        }
+
+
         private void computeEpsilon()
         {
             double[] epsilon = new double[etfDailyData.Count()];
@@ -328,6 +432,46 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             return Platforms.container.Resolve<StockDailyRepository>().fetchFromLocalCsvOrWindAndSave("510050.SH", Kit.ToDate(20130101), endDate);
         }
 
+        
+        private double[][] computeRollingFractile(int start,int end,int period)
+        {
+            double[][] disArr = new double[etfDailyData.Count()][];
+            //获取前复权的价格
+            double[] etfPrice = new double[etfDailyData.Count()];
+            for (int i = 0; i < etfDailyData.Count(); i++)
+            {
+                etfPrice[i] = etfDailyData[i].close * etfDailyData[i].adjustFactor / etfDailyData.Last().adjustFactor;
+            }
+            //获取ETF每日年化波动率
+            double[] etfVol = new double[etfDailyData.Count()];
+            etfVol = Volatility.HVYearly(etfPrice, step);
+            this.etfVol = etfVol;
+            //统计每日波动率分位数
+            List<double> volList = new List<double>();
+            for (int i = start; i < etfPrice.Count(); i++)
+            {
+                //按周期向前推算历史波动率
+                volList = etfVol.ToList().GetRange(start - period + 1, period).OrderBy(x=>x).ToList();
+                if (i >= start)
+                {
+                    int L = volList.Count() - 1;
+                    disArr[i] = new double[11];
+                    disArr[i][0] = volList[0];
+                    disArr[i][1] = volList[(int)Math.Ceiling(L * 0.1)];
+                    disArr[i][2] = volList[(int)Math.Ceiling(L * 0.2)];
+                    disArr[i][3] = volList[(int)Math.Ceiling(L * 0.3)];
+                    disArr[i][4] = volList[(int)Math.Ceiling(L * 0.4)];
+                    disArr[i][5] = volList[(int)Math.Ceiling(L * 0.5)];
+                    disArr[i][6] = volList[(int)Math.Ceiling(L * 0.6)];
+                    disArr[i][7] = volList[(int)Math.Ceiling(L * 0.7)];
+                    disArr[i][8] = volList[(int)Math.Ceiling(L * 0.8)];
+                    disArr[i][9] = volList[(int)Math.Ceiling(L * 0.9)];
+                    disArr[i][10] = volList[L];
+                }
+            }
+            return disArr;
+        }
+        
         /// <summary>
         /// 计算历史波动率的分位数
         /// </summary>
