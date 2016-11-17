@@ -160,6 +160,7 @@
     <Compile Include="Service\Model\Futures\FuturesTick.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\StraddleWithHedge.cs" />
     <Compile Include="Strategies\Option\MaoHeng\StraddleWithoutHedge.cs" />
     <Compile Include="Strategies\Option\MaoHeng\VolatilityTrade.cs" />
     <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />

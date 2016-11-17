@@ -419,8 +419,8 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                                 else if ((position0.LongPosition.volume + transactionVolume) < 0)
                                 {
                                     //多头头寸更新，平多头
-                                    transactionVolume = position0.LongPosition.volume + transactionVolume;
-                                    position0.totalCashFlow += position0.ShortPosition.volume * transactionPrice;
+                                    transactionVolume += position0.LongPosition.volume;
+                                    position0.totalCashFlow += position0.LongPosition.volume * transactionPrice;
                                     position0.LongPosition.averagePrice = 0;
                                     position0.LongPosition.volume = 0;
                                     position0.LongPosition.totalCost = 0;
