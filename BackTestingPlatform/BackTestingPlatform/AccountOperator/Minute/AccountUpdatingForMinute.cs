@@ -32,6 +32,7 @@ namespace BackTestingPlatform.AccountOperator.Minute
             if (positions.Count == 0)
             {
                 //log.Info("初始持仓为空！");
+                myAccount.time = now;
                 return;
             }
             //提取初始资产

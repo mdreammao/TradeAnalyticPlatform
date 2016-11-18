@@ -46,7 +46,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         private double[] epsilon;//max[E(IV-HV),0]
         private List<OptionInfo> optionInfoList;
 
-        public StraddleWithHedge(int startDate, int endDate, int step = 20)
+        public StraddleWithHedge(int startDate, int endDate, int step = 25)
         {
             this.startDate = Kit.ToDate(startDate);
             this.endDate = Kit.ToDate(endDate);
@@ -131,12 +131,12 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 //}
                 //信号2
                 orignalSignal = 0;
-                if (volYesterday - impvYesterday > 0 && volYesterday <= fractile70Yesterday)
+                if (volYesterday - impvYesterday > 0)// && volYesterday <= fractile50Yesterday)
                 {
                     //买入跨式期权
                     orignalSignal = 1;
                 }
-                else if (impvYesterday - volYesterday >  epsilon[i - 1])
+                else if (impvYesterday - volYesterday > epsilon[i - 1])
                 {
                     //卖出跨式期权
                     orignalSignal = -1;
