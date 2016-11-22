@@ -18,7 +18,8 @@ namespace BackTestingPlatform.Model.Option
 
     public class OptionDaily : KLine
     {
-
+        public double settle { get; set; } //结算价
+        public double preSettle { get; set; } //前结算价
     }
 
 }
