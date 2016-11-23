@@ -21,22 +21,19 @@ namespace BackTestingPlatform.Utilities.Futures
         }
 
         /// <summary>
-        /// 计算维持保证金
+        /// 计算实时保证金计算带来的现金流
         /// </summary>
-        /// <param name="underlyingSettlePrice">标的结算价</param>
+        /// <param name="underlyingPrice">标的价格</param>
         /// <param name="marginRatio">保证金比例</param>
         /// <param name="multiplier">乘数</param>
-        /// <param name="underlyingOpenPrice">开仓时标的价格</param>
         /// <param name="longOrShort">多空方向</param>
-        /// <param name="floatingPnL">结算时浮动盈亏</param>
+        /// <param name="lastMargin">上次计算时的保证金</param>
+        /// <param name="lastUnderlyingPrice">上次计算时标的价格</param>
         /// <returns></returns>
-        public static double ComputeMaintenanceMargin(double underlyingSettlePrice,double marginRatio,double multiplier,double underlyingOpenPrice,double longOrShort,ref double floatingPnL)
+        public static double ComputeCashFlow(double underlyingPrice,double marginRatio,double multiplier,double longOrShort,double lastMargin,double lastUnderlyingPrice)
         {
-            double openMargin = ComputeOpenMargin(underlyingOpenPrice, marginRatio, multiplier);
-            double PnLBeforeSettle = longOrShort * (underlyingSettlePrice - underlyingOpenPrice)*multiplier;
-            double maintenanceMargin= ComputeOpenMargin(underlyingSettlePrice, marginRatio, multiplier);
-            floatingPnL = openMargin + PnLBeforeSettle - maintenanceMargin;
-            return maintenanceMargin;
+            double margin = ComputeOpenMargin(underlyingPrice, marginRatio, multiplier);//实时保证金
+            return (lastMargin+ longOrShort * (underlyingPrice - lastUnderlyingPrice) * multiplier)-margin; //浮动盈亏带来的现金流
         }
         
     }
