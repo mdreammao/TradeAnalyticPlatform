@@ -168,6 +168,7 @@
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\StockSample01.cs" />
+    <Compile Include="Transaction\Minute\maoheng\MinuteTransactionWithBar.cs" />
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Utilities\Futures\FutureMargin.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
