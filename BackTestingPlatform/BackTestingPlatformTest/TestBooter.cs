@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using BackTestingPlatform.Charts;
 using System.Windows.Forms;
 
+
 namespace BackTestingPlatform.Test
 {
     class TestBooter
