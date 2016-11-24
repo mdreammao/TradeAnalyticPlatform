@@ -25,7 +25,7 @@ namespace BackTestingPlatform.DataAccess.Option
         protected override List<OptionDaily> readFromWind(string code, DateTime dateStart, DateTime dateEnd, string tag = null, IDictionary<string, object> options = null)
         {
             WindAPI w = Platforms.GetWindAPI();
-            WindData wd = w.wsd(code, "open,high,low,close,volume,amt", dateStart, dateEnd, "Fill=Previous");
+            WindData wd = w.wsd(code, "open,high,low,close,volume,amt,settle,pre_settle", dateStart, dateEnd, "Fill=Previous");
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
 
@@ -44,7 +44,9 @@ namespace BackTestingPlatform.DataAccess.Option
                         low = (double)dataList[k * fieldLen + 2],
                         close = (double)dataList[k * fieldLen + 3],
                         volume = (double)dataList[k * fieldLen + 4],
-                        amount = (double)dataList[k * fieldLen + 5]
+                        amount = (double)dataList[k * fieldLen + 5],
+                        settle = (double)dataList[k * fieldLen + 6],
+                        preSettle = (double)dataList[k * fieldLen + 7]
                     });
                 }
             }

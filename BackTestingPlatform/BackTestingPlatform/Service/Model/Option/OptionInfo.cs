@@ -13,6 +13,7 @@ namespace BackTestingPlatform.Model.Option
         public string executeType { get; set; }
         public double strike { get; set; }
         public string optionType { get; set; }
+        public double contractMultiplier { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
 

@@ -43,9 +43,44 @@
     <Reference Include="Autofac">
       <HintPath>E:\TradeAnalyticPlatform\trunk\BackTestingPlatform\LocalTester\bin\Debug\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="IronPython, Version=2.7.5.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IronPython.2.7.5\lib\Net45\IronPython.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IronPython.Modules, Version=2.7.5.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IronPython.2.7.5\lib\Net45\IronPython.Modules.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IronPython.SQLite, Version=2.7.5.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IronPython.2.7.5\lib\Net45\IronPython.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IronPython.Wpf, Version=2.7.5.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IronPython.2.7.5\lib\Net45\IronPython.Wpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MathNet.Numerics, Version=3.13.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MathNet.Numerics.3.13.1\lib\net40\MathNet.Numerics.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IronPython.2.7.5\lib\Net45\Microsoft.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Scripting, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IronPython.2.7.5\lib\Net45\Microsoft.Scripting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.AspNet, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IronPython.2.7.5\lib\Net45\Microsoft.Scripting.AspNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Metadata, Version=1.1.0.20, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\IronPython.2.7.5\lib\Net45\Microsoft.Scripting.Metadata.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>E:\TradeAnalyticPlatform\trunk\BackTestingPlatform\LocalTester\bin\Debug\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -92,6 +127,7 @@
     <Compile Include="Charts\PLChart.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Charts\PythonDraw.cs" />
     <Compile Include="Core\Caches.cs" />
     <Compile Include="Core\NLogConfig.cs" />
     <Compile Include="DataAccess\Common\BasicDataRepository.cs" />
@@ -112,38 +148,51 @@
     <Compile Include="DataAccess\Stock\StockInfoRepository.cs" />
     <Compile Include="DataAccess\Stock\StockMinuteRepository.cs" />
     <Compile Include="DataAccess\Stock\StockTickRepository.cs" />
-    <Compile Include="Model\Common\Constants.cs" />
-    <Compile Include="Model\Common\HoldingStatus.cs" />
-    <Compile Include="Model\Common\KLine.cs" />
-    <Compile Include="Model\Common\PerformanceStatisics.cs" />
-    <Compile Include="Model\Common\Position.cs" />
-    <Compile Include="Model\Common\Sequential.cs" />
-    <Compile Include="Model\Common\Tick.cs" />
-    <Compile Include="Model\Futures\FuturesDaily.cs" />
-    <Compile Include="Model\Futures\FuturesInfo.cs" />
-    <Compile Include="Model\Futures\FuturesTick.cs" />
+    <Compile Include="Service\Model\Common\Constants.cs" />
+    <Compile Include="Service\Model\Common\HoldingStatus.cs" />
+    <Compile Include="Service\Model\Common\KLine.cs" />
+    <Compile Include="Service\Model\Common\PerformanceStatisics.cs" />
+    <Compile Include="Service\Model\Common\Position.cs" />
+    <Compile Include="Service\Model\Common\Sequential.cs" />
+    <Compile Include="Service\Model\Common\Tick.cs" />
+    <Compile Include="Service\Model\Futures\FuturesDaily.cs" />
+    <Compile Include="Service\Model\Futures\FuturesInfo.cs" />
+    <Compile Include="Service\Model\Futures\FuturesTick.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\StraddleWithHedge.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\StraddleWithoutHedge.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\VolatilityTrade.cs" />
     <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
+    <Compile Include="Strategies\Stock\StockSample\MeanReverting15K.cs" />
+    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
+    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\NDaysReversion01.cs" />
+    <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\StockSample01.cs" />
+    <Compile Include="Transaction\Minute\maoheng\MinuteTransactionWithBar.cs" />
+    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
+    <Compile Include="Utilities\Futures\FutureMargin.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
-    <Compile Include="Model\Option\OptionInfo.cs" />
-    <Compile Include="Model\Positions\BasicAccount.cs" />
-    <Compile Include="Model\Positions\BasicPositions.cs" />
-    <Compile Include="Model\Positions\MinutePositions.cs" />
-    <Compile Include="Model\Positions\PositionDetail.cs" />
-    <Compile Include="Model\Positions\PositionsWithDetail.cs" />
-    <Compile Include="Model\Positions\TransactionRecord.cs" />
-    <Compile Include="Model\Signal\BasicSignal.cs" />
-    <Compile Include="Model\Signal\MinuteSignal.cs" />
-    <Compile Include="Model\Signal\TickSignal.cs" />
-    <Compile Include="Model\Stock\StockDailyWithFactor.cs" />
-    <Compile Include="Model\Stock\StockInfo.cs" />
-    <Compile Include="Model\Stock\StockTick.cs" />
-    <Compile Include="Model\Futures\FuturesMinute.cs" />
-    <Compile Include="Model\Option\OptionTick.cs" />
-    <Compile Include="Model\Option\OptionMinute.cs" />
-    <Compile Include="Model\Option\OptionDaily.cs" />
-    <Compile Include="Model\Stock\StockDaily.cs" />
-    <Compile Include="Model\Stock\StockMinute.cs" />
+    <Compile Include="Service\Model\Option\OptionInfo.cs" />
+    <Compile Include="Service\Model\Positions\BasicAccount.cs" />
+    <Compile Include="Service\Model\Positions\BasicPositions.cs" />
+    <Compile Include="Service\Model\Positions\MinutePositions.cs" />
+    <Compile Include="Service\Model\Positions\PositionDetail.cs" />
+    <Compile Include="Service\Model\Positions\PositionsWithDetail.cs" />
+    <Compile Include="Service\Model\Positions\TransactionRecord.cs" />
+    <Compile Include="Service\Model\Signal\BasicSignal.cs" />
+    <Compile Include="Service\Model\Signal\MinuteSignal.cs" />
+    <Compile Include="Service\Model\Signal\TickSignal.cs" />
+    <Compile Include="Service\Model\Stock\StockDailyWithFactor.cs" />
+    <Compile Include="Service\Model\Stock\StockInfo.cs" />
+    <Compile Include="Service\Model\Stock\StockTick.cs" />
+    <Compile Include="Service\Model\Futures\FuturesMinute.cs" />
+    <Compile Include="Service\Model\Option\OptionTick.cs" />
+    <Compile Include="Service\Model\Option\OptionMinute.cs" />
+    <Compile Include="Service\Model\Option\OptionDaily.cs" />
+    <Compile Include="Service\Model\Stock\StockDaily.cs" />
+    <Compile Include="Service\Model\Stock\StockMinute.cs" />
+    <Compile Include="Utilities\Option\OptionInfoReform.cs" />
+    <Compile Include="Utilities\Option\OptionMargin.cs" />
     <Compile Include="Utilities\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
@@ -162,9 +211,7 @@
     <Compile Include="Strategies\Stock\StockSample\MA.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATest.cs" />
     <Compile Include="Strategies\Stock\StockSample\TATestForTick.cs" />
-    <Compile Include="Transaction\MinuteWithTick\MinuteTransactionWithTickData.cs" />
     <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />
-    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
     <Compile Include="Transaction\Tick\TickTransactionWtihSlip.cs" />
     <Compile Include="Utilities\Common\MinuteFrequencyTransferUtils.cs" />
@@ -188,16 +235,16 @@
     <Compile Include="Utilities\SaveResult\Option\OptionRecordUtil.cs" />
     <Compile Include="Utilities\SaveResult\ResultPathUtil.cs" />
     <Compile Include="Utilities\TALibrary\TA_MACD.cs" />
+    <Compile Include="Utilities\TALibrary\Volatility.cs" />
     <Compile Include="Utilities\TimeList\Alignment.cs" />
     <Compile Include="Utilities\TimeList\CreateTimeList.cs" />
     <Compile Include="Utilities\TimeList\TimeListUtility.cs" />
-    <Compile Include="Model\Common\TimeLine.cs" />
+    <Compile Include="Service\Model\Common\TimeLine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +252,7 @@
     <Folder Include="Utilities\Stock\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Charts\ChartPython.py" />
     <Content Include="Task\HeFeiying.txt" />
     <Content Include="Task\HuangZhenkun.txt" />
     <Content Include="Task\MaoHeng.txt" />

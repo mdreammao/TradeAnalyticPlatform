@@ -34,6 +34,7 @@ namespace BackTestingPlatform.DataAccess.Option
                     optionName = (string)dm[k * fieldLen + 1],
                     executeType = (string)dm[k * fieldLen + 5],
                     strike = (double)dm[k * fieldLen + 6],
+                    contractMultiplier = (double)dm[k * fieldLen + 7], 
                     optionType = (string)dm[k * fieldLen + 4],
                     startDate = (DateTime)dm[k * fieldLen + 9],
                     endDate = (DateTime)dm[k * fieldLen + 10]

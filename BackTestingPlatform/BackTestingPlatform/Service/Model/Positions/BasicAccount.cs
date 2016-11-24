@@ -14,5 +14,14 @@ namespace BackTestingPlatform.Model.Positions
         public double positionValue { get; set; }
         public double margin { get; set; }
         public double initialAssets { get; set; }
+        public BasicAccount(DateTime time=new DateTime(),double totalAssets=0,double freeCash=0,double positionValue=0,double margin=0,double initialAssets=0)
+        {
+            this.time = time;
+            this.totalAssets = totalAssets;
+            this.freeCash = freeCash;
+            this.positionValue = positionValue;
+            this.margin = margin;
+            this.initialAssets = initialAssets;
+        }
     }
 }

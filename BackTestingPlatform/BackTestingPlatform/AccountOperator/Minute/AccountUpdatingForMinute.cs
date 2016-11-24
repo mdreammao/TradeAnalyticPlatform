@@ -32,6 +32,7 @@ namespace BackTestingPlatform.AccountOperator.Minute
             if (positions.Count == 0)
             {
                 //log.Info("初始持仓为空！");
+                myAccount.time = now;
                 return;
             }
             //提取初始资产
@@ -49,6 +50,11 @@ namespace BackTestingPlatform.AccountOperator.Minute
             //持仓价值（实时）
             //当前时间对应data中timeList 的序号
             int index = TimeListUtility.MinuteToIndex(now);
+            if(index < 0)
+            {
+                log.Warn("Signal时间出错，请查验");
+                return;
+            }
             double totalPositionValue = 0;
             foreach (var position0 in nowPosition.Values)
             {

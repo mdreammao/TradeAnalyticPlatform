@@ -269,12 +269,28 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                         positionShot.Add(signal0.code, position0);
                     }
                 }
+                ////每处理一个信号，positions更新，myAccount更新（便于验资）
+                ////若当前时间键值已存在，则加1毫秒
+                //if (positions.ContainsKey(now))
+                //    positions.Add(now.AddMilliseconds(1), positionShot);
+                //else
+                //    positions.Add(now, positionShot);
                 //每处理一个信号，positions更新，myAccount更新（便于验资）
                 //若当前时间键值已存在，则加1毫秒
-                if (positions.ContainsKey(now))
-                    positions.Add(now.AddMilliseconds(1), positionShot);
-                else
-                    positions.Add(now, positionShot);
+                int tempTimeTiker = 0;
+                while (true)
+                {
+                    if (positions.ContainsKey(now.AddMilliseconds(tempTimeTiker)))
+                    {
+                        tempTimeTiker++;
+                    }
+                    else
+                    {
+                        positions.Add(now.AddMilliseconds(tempTimeTiker), positionShot);
+                        break;
+                    }
+                }
+
 
                 //账户信息更新
                 //根据当前交易记录和持仓情况更新账户
@@ -366,12 +382,12 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                     nowBrokerFeeRatio = brokerFeeRatio[signal0.tradingVarieties];
                     //-------------------------------------------------------------------                 
                     //验资，检查当前剩余资金是否足够执行信号
-                    //计算当前信号占用资金
-                    double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : CalculateOnesMarginForMinute.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
-                    //若资金不足，则跳过当前信号（*需要记录）
-                    /**/
-                    if (nowSignalCapitalOccupy > myAccount.freeCash)
-                        continue;
+            //      //计算当前信号占用资金
+            //      double nowSignalCapitalOccupy = longShortFlag == 1 ? transactionPrice * transactionVolume : //CalculateOnesMarginForMinute.calculateOnesMargin(signal0.code, transactionVolume, now, ref data);
+            //      //若资金不足，则跳过当前信号（*需要记录）
+            //      /**/
+            //      if (nowSignalCapitalOccupy > myAccount.freeCash)
+            //          continue;
 
                     //当前证券已有持仓
                     if (positionLast != null && positionLast.ContainsKey(position0.code))
@@ -403,10 +419,12 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                                 else if ((position0.LongPosition.volume + transactionVolume) < 0)
                                 {
                                     //多头头寸更新，平多头
+                                    transactionVolume += position0.LongPosition.volume;
+                                    position0.totalCashFlow += position0.LongPosition.volume * transactionPrice;
                                     position0.LongPosition.averagePrice = 0;
                                     position0.LongPosition.volume = 0;
                                     position0.LongPosition.totalCost = 0;
-                                    transactionVolume = position0.LongPosition.volume + transactionVolume;
+                                    
                                     //空头头寸更新，开空头
                                     position0.ShortPosition.averagePrice = transactionPrice;
                                     position0.ShortPosition.volume = transactionVolume;
@@ -439,10 +457,12 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                                 else if ((position0.ShortPosition.volume + transactionVolume) > 0)
                                 {
                                     //空头头寸更新，平空头
+                                    transactionVolume += position0.ShortPosition.volume;
+                                    position0.totalCashFlow += position0.ShortPosition.volume* transactionPrice;
                                     position0.ShortPosition.averagePrice = 0;
                                     position0.ShortPosition.volume = 0;
-                                    position0.ShortPosition.totalCost = 0;
-                                    transactionVolume += position0.ShortPosition.volume;
+                                    position0.ShortPosition.totalCost = 0;   
+                                                                
                                     //多头头寸更新，开多头
                                     position0.LongPosition.averagePrice = transactionPrice;
                                     position0.LongPosition.volume = transactionVolume;
@@ -547,11 +567,22 @@ namespace BackTestingPlatform.Transaction.MinuteTransactionWithSlip
                 }
                 //每处理一个信号，positions更新，myAccount更新（便于验资）
                 //若当前时间键值已存在，则加1毫秒
-                if (positions.ContainsKey(now))
-                    positions.Add(now.AddMilliseconds(1), positionShot);
-                else
-                    positions.Add(now, positionShot);
+                int tempTimeTiker = 0;
+                while(true)
+                {
+                    if (positions.ContainsKey(now.AddMilliseconds(tempTimeTiker)))
+                    {
+                        tempTimeTiker++;
+                    }
+                    else
+                    {
+                        positions.Add(now.AddMilliseconds(tempTimeTiker), positionShot);
+                        break;
+                    }                 
+                }
 
+
+ 
                 //账户信息更新
                 //根据当前交易记录和持仓情况更新账户
                 if (positions.Count != 0)
