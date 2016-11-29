@@ -35,7 +35,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
     {
         static Logger log = LogManager.GetCurrentClassLogger();
         //回测参数设置
-        private double initialCapital = 20000;
+        private double initialCapital = 25000;
         private double optionVolume = 10000;
         private double slipPoint = 0.001;
         private DateTime startDate, endDate;
@@ -178,8 +178,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 {
                     if (orignalSignal == 1) //做多跨式期权
                     {
-                        MinuteSignal openSignalCall = new MinuteSignal() { code = callATM.optionCode, volume = optionVolume, time = now, tradingVarieties = "option", price = callPrice[openIndex].close, minuteIndex = openIndex };
-                        MinuteSignal openSignalPut = new MinuteSignal() { code = putATM.optionCode, volume = optionVolume, time = now, tradingVarieties = "option", price = putPrice[openIndex].close, minuteIndex = openIndex };
+                        MinuteSignal openSignalCall = new MinuteSignal() { code = callATM.optionCode, volume = optionVolume, time = now, tradingVarieties = "option", price = callPrice[openIndex].open, minuteIndex = openIndex };
+                        MinuteSignal openSignalPut = new MinuteSignal() { code = putATM.optionCode, volume = optionVolume, time = now, tradingVarieties = "option", price = putPrice[openIndex].open, minuteIndex = openIndex };
                         Console.WriteLine("做多跨式期权！");
                         signal.Add(callATM.optionCode, openSignalCall);
                         signal.Add(putATM.optionCode, openSignalPut);
@@ -188,16 +188,16 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         holdingStatus.putCode = putATM.optionCode;
                         holdingStatus.callPosition = optionVolume;
                         holdingStatus.putPosition = optionVolume;
-                        holdingStatus.etfPrice_open = etfData[openIndex].close;
-                        holdingStatus.straddlePrice_open = callPrice[openIndex].close + putPrice[openIndex].close;
+                        holdingStatus.etfPrice_open = etfData[openIndex].open;
+                        holdingStatus.straddlePrice_open = callPrice[openIndex].close + putPrice[openIndex].open;
                         holdingStatus.straddleOpenDate = today;
                         holdingStatus.endDate = callATM.endDate;
                         holdingStatus.strike = callATM.strike;
                     }
                     else if (orignalSignal == -1) //做空跨式期权
                     {
-                        MinuteSignal openSignalCall = new MinuteSignal() { code = callATM.optionCode, volume = -optionVolume, time = now, tradingVarieties = "option", price = callPrice[openIndex].close, minuteIndex = openIndex };
-                        MinuteSignal openSignalPut = new MinuteSignal() { code = putATM.optionCode, volume = -optionVolume, time = now, tradingVarieties = "option", price = putPrice[openIndex].close, minuteIndex = openIndex };
+                        MinuteSignal openSignalCall = new MinuteSignal() { code = callATM.optionCode, volume = -optionVolume, time = now, tradingVarieties = "option", price = callPrice[openIndex].open, minuteIndex = openIndex };
+                        MinuteSignal openSignalPut = new MinuteSignal() { code = putATM.optionCode, volume = -optionVolume, time = now, tradingVarieties = "option", price = putPrice[openIndex].open, minuteIndex = openIndex };
                         Console.WriteLine("做空跨式期权！");
                         signal.Add(callATM.optionCode, openSignalCall);
                         signal.Add(putATM.optionCode, openSignalPut);
@@ -206,8 +206,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         holdingStatus.putCode = putATM.optionCode;
                         holdingStatus.callPosition = -optionVolume;
                         holdingStatus.putPosition = -optionVolume;
-                        holdingStatus.etfPrice_open = etfData[openIndex].close;
-                        holdingStatus.straddlePrice_open = callPrice[openIndex].close + putPrice[openIndex].close;
+                        holdingStatus.etfPrice_open = etfData[openIndex].open;
+                        holdingStatus.straddlePrice_open = callPrice[openIndex].open + putPrice[openIndex].open;
                         holdingStatus.straddleOpenDate = today;
                         holdingStatus.endDate = callATM.endDate;
                         holdingStatus.strike = callATM.strike;

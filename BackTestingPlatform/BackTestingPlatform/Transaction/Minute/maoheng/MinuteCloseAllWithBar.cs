@@ -3,6 +3,7 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Service.Model.Positions;
 using BackTestingPlatform.Utilities.TimeList;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
