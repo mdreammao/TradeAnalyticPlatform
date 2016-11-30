@@ -71,9 +71,10 @@ namespace BackTestingPlatform.AccountOperator.Minute.maoheng
                 totalCashFlow += position0.totalCashFlow;
             }
             myAccount.totalAssets = initialCapital + totalCashFlow + totalPositionValue;
-            myAccount.freeCash = initialCapital + totalCashFlow - totalMargin;
+            myAccount.freeCash = initialCapital  + totalCashFlow - totalMargin;
             myAccount.margin = totalMargin;
             myAccount.positionValue = totalPositionValue;
+           
         }
     }
 }

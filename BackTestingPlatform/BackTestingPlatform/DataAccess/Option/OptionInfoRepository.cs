@@ -15,6 +15,8 @@ namespace BackTestingPlatform.DataAccess.Option
 
         public List<OptionInfo> readFromWind(string underlying="510050.SH", string market="sse")
         {
+            DateTime timeOf50ETFDividend2016 = new DateTime(2016, 11, 29);//2016年50ETF分红时间
+            double standardContractMultiplier = 10000;
             string marketStr = "";
             if (market == "sse")
             {
@@ -39,6 +41,20 @@ namespace BackTestingPlatform.DataAccess.Option
                     startDate = (DateTime)dm[k * fieldLen + 9],
                     endDate = (DateTime)dm[k * fieldLen + 10]
                 });
+            }
+            for (int i = 0; i < items.Count(); i++)
+            {
+                var item = items[i];
+                if (item.startDate<timeOf50ETFDividend2016 && item.endDate>=timeOf50ETFDividend2016)
+                {
+                    item.modifiedDate = timeOf50ETFDividend2016;
+                    item.strikeBeforeModified =Math.Round(item.strike * item.contractMultiplier / standardContractMultiplier,2);
+                }
+                else
+                {
+                    item.strikeBeforeModified = item.strike;
+                }
+                items[i] = item;
             }
             return items;
         }

@@ -33,6 +33,9 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
 {
     public class StraddleWithHedge2
     {
+        DateTime timeOf50ETFDividend2016 = new DateTime(2016, 11, 29);//2016年50ETF分红时间
+        double bonusOf50ETFDividend2016 = 0.053;
+        double standardContractMultiplier = 10000;
         static Logger log = LogManager.GetCurrentClassLogger();
         //回测参数设置
         private double initialCapital = 25000;
@@ -80,6 +83,24 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
             for (int i = startIndex + 1; i < startIndex + backTestingDuration; i++)
             {
                 DateTime today = etfDailyData[i].time;
+                //获取当日上市的期权合约列表
+                var optionInfoList = OptionUtilities.getUnmodifiedOptionInfoList(this.optionInfoList, today);
+                //若当日发生50ETF分红派息，myAccount要加上分红的钱,并且需要调整持有头寸的strike
+                if (today== timeOf50ETFDividend2016  && positions.Count>0 && positions.Last().Value.ContainsKey("510050.SH") )
+                {
+                    //50ETF的头寸中记入分红
+                    positions.Last().Value["510050.SH"].totalCashFlow+= positions.Last().Value["510050.SH"].volume * bonusOf50ETFDividend2016;
+                    //期权持仓行权价调整
+                    foreach (var item in optionInfoList)
+                    {
+                        if (item.optionCode==holdingStatus.callCode)
+                        {
+                            holdingStatus.strike = item.strike;
+                            holdingStatus.callPosition *= item.contractMultiplier / standardContractMultiplier;
+                            holdingStatus.putPosition *= item.contractMultiplier / standardContractMultiplier;
+                        }
+                    }
+                }
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                 double fractile90Yesterday = fractile[i - 1][9]; //昨日历史波动率90分位数
                 double fractile70Yesterday = fractile[i - 1][7]; //昨日历史波动率70分位数
@@ -218,7 +239,14 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 int thisIndex = 239;
                 double delta = 0;
                 var thisTime = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), thisIndex);
-                benchmark.Add(etfData[thisIndex].close);
+                if (today>=timeOf50ETFDividend2016)
+                {
+                    benchmark.Add(etfData[thisIndex].close+bonusOf50ETFDividend2016);
+                }
+                else
+                {
+                    benchmark.Add(etfData[thisIndex].close);
+                }
                 if (holdingStatus.callPosition != 0)
                 {
                     if (dataToday.ContainsKey(holdingStatus.callCode) == false)
@@ -245,6 +273,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
 
                 //更新当日属性信息
                 AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, thisTime, dataToday);
+               
                 //记录历史仓位信息
                 accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
                 //在控制台上数据每日持仓信息
