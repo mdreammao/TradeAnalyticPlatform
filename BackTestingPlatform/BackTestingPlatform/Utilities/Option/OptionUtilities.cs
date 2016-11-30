@@ -12,6 +12,25 @@ namespace BackTestingPlatform.Utilities.Option
 
         static double standardContractMultiplier = 10000;
         /// <summary>
+        /// 根据合约代码，返回合约信息
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public static OptionInfo getOptionByCode(List<OptionInfo> list,string code)
+        {
+            foreach (var item in list)
+            {
+                if (item.optionCode==code)
+                {
+                    return item;
+                }
+            }
+            return new OptionInfo();
+        }
+        
+        
+        /// <summary>
         /// 根据给定的条件，查找对应期权的合约代码
         /// </summary>
         /// <param name="list">期权合约列表</param>

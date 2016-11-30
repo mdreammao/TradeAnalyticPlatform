@@ -162,6 +162,8 @@
     <Compile Include="Service\Model\Positions\ExecutionReport.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\Model\StraddlePair.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\StraddlePairWithHedge.cs" />
     <Compile Include="Strategies\Option\MaoHeng\StraddleWithHedge2.cs" />
     <Compile Include="Strategies\Option\MaoHeng\StraddleWithHedge.cs" />
     <Compile Include="Strategies\Option\MaoHeng\StraddleWithoutHedge.cs" />
