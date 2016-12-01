@@ -18,9 +18,29 @@ namespace BackTestingPlatform.DataAccess.Futures
 
         protected override List<FuturesMinute> readFromWind(string code, DateTime date)
         {
+            List<FuturesMinute> items = new List<FuturesMinute>();
+            string[] str = code.Split('.');
+            if (str[1]=="CFE")
+            {
+                return readByParameters(code, date, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
+            }
+            if (str[1]=="SHF")
+            {
+                var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:00:00;Fill=Previous");
+                var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00;Fill=Previous");
+                nightData.AddRange(dayData);
+                return nightData;
+            }
+            return items;
+        }
+
+        private List<FuturesMinute> readByParameters(string code, DateTime date,string paramters)
+        {
             WindAPI w = Platforms.GetWindAPI();
-            DateTime date1 = date.Date, date2 = date.Date.AddDays(1);
-            WindData wd = w.wsi(code, "open,high,low,close,volume,amt,oi", date1, date2, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
+            DateTime date2 = new DateTime(date.Year, date.Month, date.Day, 15, 0, 0);
+            DateTime date1 = date2.AddDays(-1).AddHours(2);
+            //获取日盘数据
+            WindData wd = w.wsi(code, "open,high,low,close,volume,amt,oi", date1, date2, paramters);
             int len = wd.timeList.Length;
             int fieldLen = wd.fieldList.Length;
             var items = new List<FuturesMinute>(len);
@@ -39,11 +59,10 @@ namespace BackTestingPlatform.DataAccess.Futures
                         close = (double)dataList[k * fieldLen + 3],
                         volume = (double)dataList[k * fieldLen + 4],
                         amount = (double)dataList[k * fieldLen + 5],
-                        openInterest=(double)dataList[k*fieldLen+6]
+                        openInterest = (double)dataList[k * fieldLen + 6]
                     });
                 }
             }
-
             return items;
         }
     }

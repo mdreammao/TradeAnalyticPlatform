@@ -160,6 +160,7 @@
     <Compile Include="Service\Model\Futures\FuturesInfo.cs" />
     <Compile Include="Service\Model\Futures\FuturesTick.cs" />
     <Compile Include="Service\Model\Positions\ExecutionReport.cs" />
+    <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatio.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\StraddlePair.cs" />
