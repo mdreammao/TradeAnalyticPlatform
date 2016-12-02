@@ -14,7 +14,7 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
 {
     public class MinuteCloseAllWithBar
     {
-        public static Dictionary<string, ExecutionReport> CloseAllPosition(Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.00)
+        public static Dictionary<string, ExecutionReport> CloseAllPosition(Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, int nowIndex,double slipPoint = 0.00)
         {
             //初始化记录成交回报的变量
             Dictionary<string, ExecutionReport> tradingFeedback = new Dictionary<string, ExecutionReport>();
@@ -37,7 +37,7 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
                 if (position0.volume == 0)
                     continue;
                 //对所有的持仓，生成现价等量反向的交易信号
-                int index = TimeListUtility.MinuteToIndex(now);
+                int index = nowIndex;
                 MinuteSignal nowSignal = new MinuteSignal()
                 {
                     code = position0.code,
@@ -49,7 +49,7 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
                 };
                 signal.Add(nowSignal.code, nowSignal);
             }
-            return MinuteTransactionWithBar.ComputePosition(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+            return MinuteTransactionWithBar.ComputePosition(signal, data, ref positions, ref myAccount, slipPoint: slipPoint, now: now,nowIndex:nowIndex);
         }
     }
 }

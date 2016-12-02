@@ -163,7 +163,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 }
 
                 //指定平仓时间为开盘第一个分钟。
-                DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), 0);
+                int openIndex = 0;
+                DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), openIndex);
                 Console.WriteLine("time: {0}, 昨日历史波动率: {1}, 历史波动率70分位数: {2}, 昨日隐含波动率: {3}", now, volYesterday.ToString("N"), fractile70Yesterday.ToString("N"), optionVol[i - 1].ToString("N"));
                 //如果有持仓先判断持仓状态和信号方向是否相同，如果不同先平仓
                 if (holdingStatus.callPosition != 0)
@@ -182,18 +183,18 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     {
                         Console.WriteLine("平仓！");
 
-                        MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, slipPoint);
+                        MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, openIndex,slipPoint);
                         holdingStatus = new Straddle();
                     }
                     if (DateUtils.GetSpanOfTradeDays(today, holdingStatus.endDate) <= 3) //有仓位无信号，判断是否移仓
                     {
                         Console.WriteLine("平仓！");
-                        MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, slipPoint);
+                        MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now,openIndex, slipPoint);
                         holdingStatus = new Straddle();
                     }
                 }
                 //指定开仓时间为开盘第10分钟。错开开平仓的时间。
-                int openIndex = 10;
+                openIndex = 10;
                 now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), openIndex);
                 if (holdingStatus.callPosition == 0 && orignalSignal != 0) //无仓位有信号，开仓
                 {
@@ -233,7 +234,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         holdingStatus.endDate = callATM.endDate;
                         holdingStatus.strike = callATM.strike;
                     }
-                    MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                    MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now,nowIndex:openIndex);
                 }
                 //每日收盘前，整理持仓情况
                 int thisIndex = 239;
@@ -266,13 +267,13 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     MinuteSignal openSignalETF = new MinuteSignal() { code = "510050.SH", volume = etfChangeVolume, time = thisTime, tradingVarieties = "stock", price = dataToday["510050.SH"][thisIndex].open, minuteIndex = thisIndex };
                     signal = new Dictionary<string, MinuteSignal>();
                     signal.Add("510050.SH", openSignalETF);
-                    MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: thisTime);
+                    MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: thisTime,nowIndex:thisIndex);
                     holdingStatus.etfPosition += etfChangeVolume;
                    // AccountUpdatingForMinute.computeAccountUpdating(ref myAccount, positions, thisTime, dataToday);
                 }
 
                 //更新当日属性信息
-                AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, thisTime, dataToday);
+                AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, thisTime,thisIndex,dataToday);
                
                 //记录历史仓位信息
                 accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));

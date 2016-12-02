@@ -21,7 +21,7 @@ namespace BackTestingPlatform.AccountOperator.Minute.maoheng
         //初始化log组件
         static Logger log = LogManager.GetCurrentClassLogger();
         static Dictionary<string,OptionInfo>optionInfoList=OptionInfoReform.ReformByCode(Platforms.container.Resolve<OptionInfoRepository>().fetchFromLocalCsvOrWindAndSaveAndCache(0));
-        public static void computeAccount(ref BasicAccount myAccount, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, Dictionary<string, List<KLine>> data)
+        public static void computeAccount(ref BasicAccount myAccount, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, DateTime now, int nowIndex,Dictionary<string, List<KLine>> data)
         {
             myAccount.time = now;
             //若position为null，直接跳过
@@ -39,7 +39,7 @@ namespace BackTestingPlatform.AccountOperator.Minute.maoheng
             double totalPositionValue = 0;
             double totalAssets = 0;
             //当前时间对应data中timeList 的序号
-            int index = TimeListUtility.MinuteToIndex(now);
+            int index = nowIndex;
             if (index < 0)
             {
                 log.Warn("Signal时间出错，请查验");

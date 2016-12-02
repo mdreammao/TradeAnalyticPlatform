@@ -19,6 +19,13 @@ namespace BackTestingPlatform.Utilities
     public static class FreqTransferUtils
     {
 
+        /// <summary>
+        /// 转换分钟线频率的函数。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="orignalList">原始K线</param>
+        /// <param name="frequency">转换分钟数</param>
+        /// <returns></returns>
         public static List<T> minuteToNMinutes<T>(List<T> orignalList,int frequency) where T: KLine, new ()
         {
             List<T> list = new List<T>();

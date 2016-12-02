@@ -63,6 +63,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
         }
         public void compute()
         {
+            //初始化头寸信息
             SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions = new SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>>();
             //初始化Account信息
             BasicAccount myAccount = new BasicAccount(initialAssets:initialCapital,totalAssets:initialCapital,freeCash:initialCapital);
@@ -167,7 +168,8 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 }
 
                 //指定平仓时间为开盘第一个分钟。
-                DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), 0);
+                int openIndex = 0;
+                DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), openIndex);
                 Console.WriteLine("time: {0}, 昨日历史波动率: {1}, 历史波动率70分位数: {2}, 昨日隐含波动率: {3}", now, volYesterday.ToString("N"), fractile70Yesterday.ToString("N"), optionVol[i - 1].ToString("N"));
                 //如果有持仓先判断持仓状态和信号方向是否相同，如果不同先平仓
                 if (holdingStatus.callPositionFront != 0)
@@ -196,18 +198,18 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                     {
                         Console.WriteLine("平仓！");
 
-                        MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, slipPoint);
+                        MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, openIndex,slipPoint);
                         holdingStatus = new StraddlePair();
                     }
                     if (DateUtils.GetSpanOfTradeDays(today, holdingStatus.endDate) <= 3) //有仓位无信号，判断是否移仓
                     {
                         Console.WriteLine("平仓！");
-                        MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, slipPoint);
+                        MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now,openIndex,slipPoint);
                         holdingStatus = new StraddlePair();
                     }
                 }
                 //指定开仓时间为开盘第10分钟。错开开平仓的时间。
-                int openIndex = 10;
+                openIndex = 10;
                 now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), openIndex);
                 if (holdingStatus.callPositionFront == 0 && orignalSignal != 0) //无仓位有信号，开仓
                 {
@@ -239,7 +241,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                         //变更持仓状态
                         holdingStatus = new StraddlePair { callCodeFront = callATM.optionCode, putCodeFront = putATM.optionCode, callCodeNext = callATMNext.optionCode, putCodeNext = putATMNext.optionCode, callPositionFront = -optionVolume, putPositionFront = -optionVolume, callPositionNext = optionVolume, putPositionNext = optionVolume, etfPrice_open = etfData[openIndex].open, straddlePairPrice_open = -callPrice[openIndex].open - putPrice[openIndex].open + callPriceNext[openIndex].open + putPriceNext[openIndex].open, straddleOpenDate = today, endDate = callATM.endDate, strike = callATM.strike,endDateNext=callATMNext.endDate};
                     }
-                    MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now);
+                    MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now,nowIndex:openIndex);
                 }
                 //每日收盘前，整理持仓情况
                 int thisIndex = 239;
@@ -288,7 +290,7 @@ namespace BackTestingPlatform.Strategies.Option.MaoHeng
                 }
 
                 //更新当日属性信息
-                AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, thisTime, dataToday);
+                AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, thisTime, data:dataToday,nowIndex:thisIndex);
                
                 //记录历史仓位信息
                 accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
