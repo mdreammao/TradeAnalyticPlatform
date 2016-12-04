@@ -1,5 +1,6 @@
 ﻿using BackTestingPlatform.Core;
 using BackTestingPlatform.Model.Futures;
+using BackTestingPlatform.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,17 +27,7 @@ namespace BackTestingPlatform.DataAccess.Futures
             }
             if (str[1]=="SHF")
             {
-
-                DateTime modifiedTime1 = new DateTime(2014, 12, 26);
-                var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:00:00;Fill=Previous");
-                DateTime modifiedTime2 = new DateTime(2016, 5, 3);
-                if (date>=modifiedTime1 && date<modifiedTime2)
-                {
-                    var nightData2= readByParameters(code, date, "periodstart=23:00:01;periodend=23:59:59;Fill=Previous");
-                    var nightData3= readByParameters(code, date, "periodstart=00:00:00;periodend=01:00:00;Fill=Previous");
-                    nightData.AddRange(nightData2);
-                    nightData.AddRange(nightData3);
-                }
+                var nightData = readByParameters(code, DateUtils.PreviousTradeDay(date),"periodstart=21:00:00;periodend=23:00:00;Fill=Previous");
                 var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00;Fill=Previous");
                 nightData.AddRange(dayData);
                 return nightData;

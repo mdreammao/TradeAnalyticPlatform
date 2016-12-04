@@ -254,10 +254,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Transaction\Minute\Futures\" />
-    <Folder Include="Utilities\Stock\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Charts\ChartPython.py" />
     <Content Include="Task\HeFeiying.txt" />

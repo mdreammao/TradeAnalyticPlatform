@@ -19,14 +19,12 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
     /// </summary>
     public class MinuteTransactionWithBar
     {
-        public static Dictionary<string,ExecutionReport> ComputePosition(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, double slipPoint = 0.00)
+        public static Dictionary<string,ExecutionReport> ComputePosition(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, int nowIndex,double slipPoint = 0.00)
         {
             //初始化记录成交回报的变量
             Dictionary<string, ExecutionReport> tradingFeedback = new Dictionary<string, ExecutionReport>();
             //初始化上一次头寸记录时间
             DateTime lastTime = new DateTime(now.Year,now.Month,now.Day,0,0,0);
-            //当前时刻对应的K线数组下标
-            int nowIndex = TimeListUtility.MinuteToIndex(now);
             //如果signal无信号，无法成交，直接返回空的成交回报。
             if (signal==null || signal.Count==0)
             { 
@@ -250,7 +248,7 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
             }
             //更新持仓的头寸信息
             if (positions.Count != 0)
-                AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, now, data);
+                AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, now,nowIndex,data);
             return tradingFeedback;
         }
     }
