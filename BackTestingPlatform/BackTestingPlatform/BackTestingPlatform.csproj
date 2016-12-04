@@ -255,7 +255,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Positions\" />
+    <Folder Include="Transaction\Minute\Futures\" />
     <Folder Include="Utilities\Stock\" />
   </ItemGroup>
   <ItemGroup>
