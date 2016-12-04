@@ -27,11 +27,14 @@ namespace BackTestingPlatform.DataAccess.Futures
             }
             if (str[1]=="SHF")
             {
+                DateTime modifiedDate1 = new DateTime(2014, 12, 26);
+
                 var nightData = readByParameters(code, DateUtils.PreviousTradeDay(date),"periodstart=21:00:00;periodend=23:00:00;Fill=Previous");
                 var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00;Fill=Previous");
                 nightData.AddRange(dayData);
                 return nightData;
             }
+            items = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00;Fill=Previous");
             return items;
         }
 
