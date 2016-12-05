@@ -131,7 +131,6 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     DateTime now = data[j].time;
 
                     # region 追踪止损判断 触发止损平仓
-
                     //追踪止损判断 触发止损平仓
                     if (positionVolume != 0) //头寸量
                     {
@@ -151,7 +150,6 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             maxIncome = 0;
                         }
                     }
-
                     #endregion
 
                     double[] prices = new double[numbers];
@@ -166,10 +164,13 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     if (ER>=longLevel && positionVolume==0) //多头信号,无头寸，则开多仓
                     {
                         double volume = 1;
+                        //长头寸信号
                         MinuteSignal longSignal = new MinuteSignal() { code = underlying, volume = volume, time = now, tradingVarieties = "futures", price = data[j].open, minuteIndex = j };
                         Console.WriteLine("做多期货！多头开仓价格: {0}",data[j].open);
+                        //signal保存长头寸longSignal信号
                         Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                         signal.Add(underlying, longSignal);
+                        //头寸量叠加
                         positionVolume += volume;
                         MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: longSignal.minuteIndex);
                     }
@@ -181,9 +182,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                         signal.Add(underlying, shortSignal);
                         positionVolume += volume;
+                        //分钟级交易
                         MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: shortSignal.minuteIndex);
                     }
                 }
+
                 int closeIndex = data.Count() - 5;
                 if (positionVolume != 0)
                 {
