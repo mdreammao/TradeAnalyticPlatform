@@ -8,6 +8,7 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Transaction.Minute.maoheng;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.DataApplication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +59,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private  List<FuturesMinute> getData(DateTime today,string code)
         {
             //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
-            var data = Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today);
+            var data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
             var data5=FreqTransferUtils.minuteToNMinutes(data, 5);
             return data5;
         }

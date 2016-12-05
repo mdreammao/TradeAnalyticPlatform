@@ -39,20 +39,12 @@ namespace BackTestingPlatform.DataAccess.Futures
                     var nightData2 = readByParameters(code, date, "periodstart=00:00:00;periodend=1:00:00");
                     var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
                     nightData1.AddRange(nightData2);
-                    if (double.IsNaN(nightData1[0].close)==true)
-                    {
-                        nightData1 = new List<FuturesMinute>();
-                    }
                     nightData1.AddRange(dayData);
                     return nightData1;
                 }
                 else
                 {
                     var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:00:00");
-                    if (double.IsNaN(nightData[0].close)==true)
-                    {
-                        nightData = new List<FuturesMinute>();
-                    }
                     var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
                     nightData.AddRange(dayData);
                     return nightData;
@@ -67,7 +59,7 @@ namespace BackTestingPlatform.DataAccess.Futures
         {
             WindAPI w = Platforms.GetWindAPI();
             DateTime date2 = new DateTime(date.Year, date.Month, date.Day, 15, 0, 0);
-            DateTime date1 = date2.AddDays(-1).AddHours(2);
+            DateTime date1 = DateUtils.PreviousTradeDay(date).AddHours(17);
             //获取日盘数据
             WindData wd = w.wsi(code, "open,high,low,close,volume,amt,oi", date1, date2, paramters);
             int len = wd.timeList.Length;
@@ -91,6 +83,10 @@ namespace BackTestingPlatform.DataAccess.Futures
                         openInterest = (double)dataList[k * fieldLen + 6]
                     });
                 }
+            }
+            if (items.Count>0 && double.IsNaN(items[0].close)==true)
+            {
+                return new List<FuturesMinute>();
             }
             return items;
         }
