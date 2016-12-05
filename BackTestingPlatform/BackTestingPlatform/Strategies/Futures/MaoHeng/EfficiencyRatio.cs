@@ -64,9 +64,9 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         }
 
         /// <summary>
-        /// 计算ER值
+        /// 计算ER值...................
         /// 
-        ///  Efficiency Ratio = direction / volatility ER = （N 期间内价格总变化的绝对值）/ （N 期间内个别价格变化的绝对值） 
+        ///  Efficiency Ratio = direction / volatility...ER = （N 期间内价格总变化的绝对值）/ （N 期间内个别价格变化的绝对值） 
         ///  如果个别价格变化都是正值 （或负值），那么 ER 将等于 1.0，这代表了强劲的趋势行情。
         ///  然而，如果有正面和负面价格变动造成相互的抵消，代表公式中的分子将会缩小，ER 将会减少。
         ///  ER 反映价格走势的一致性。ER 的所有值将都介于 0.0 ~ 1.0 
@@ -76,7 +76,9 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private double computeER(double[] prices)
         {
             double direction = 0, volatility = 0;
+            //计算当前K线和第一根K线的收盘价的差值,即收盘价移动的相对距离
             direction = prices.Last() - prices.First();
+            //计算前N根相邻K线收盘价差值的绝对值之和，即收盘价移动的绝对距离
             for (int i = 1; i < prices.Count(); i++)
             {
                 volatility += Math.Abs(prices[i] - prices[i - 1]);
@@ -110,7 +112,9 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //记录历史账户信息
             List<BasicAccount> accountHistory = new List<BasicAccount>();
             List<double> benchmark = new List<double>();
+            //持仓量
             double positionVolume = 0;
+            //最大收入值
             double maxIncome = 0;
             for (int i = 0; i < tradeDays.Count(); i++)
             {
@@ -120,18 +124,25 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
-                
-                for (int j = numbers; j < data.Count()-5; j++)//【？？？】这里为何减一个5
+
+                //这里减一个5：最后5分钟只平仓，不开仓
+                for (int j = numbers; j < data.Count()-5; j++)
                 {
                     DateTime now = data[j].time;
+
+                    # region 追踪止损判断 触发止损平仓
+
                     //追踪止损判断 触发止损平仓
-                    if (positionVolume != 0)
+                    if (positionVolume != 0) //头寸量
                     {
+                        //计算开盘价和头寸当前价的差价
                         double incomeNow = individualIncome(positions.Last().Value[underlying], data[j].open);
+                        //若当前收入大于最大收入值，则更新最大收入值
                         if (incomeNow>maxIncome)
                         {
                             maxIncome = incomeNow;
                         }
+                        //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
                         else if ((maxIncome-incomeNow)>5  || maxIncome>45) //从最高点跌下来3%，就止损
                         {
                             positionVolume = 0;
@@ -140,12 +151,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             maxIncome = 0;
                         }
                     }
+
+                    #endregion
+
                     double[] prices = new double[numbers];
                     for (int k = j-numbers; k < j; k++)
                     {
+                        //导入收盘价
                         prices[k - (j - numbers)] = data[k].close;
                     }
 
+                    //计算出ER值
                     double ER = computeER(prices);
                     if (ER>=longLevel && positionVolume==0) //多头信号,无头寸，则开多仓
                     {
@@ -179,6 +195,12 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
 
         }
         
+        /// <summary>
+        /// 计算单独头寸的收入
+        /// </summary>
+        /// <param name="position">传入的头寸</param>
+        /// <param name="price">传入的价格</param>
+        /// <returns></returns>
         private double individualIncome(PositionsWithDetail position, double price)
         {
             double income = 0;
