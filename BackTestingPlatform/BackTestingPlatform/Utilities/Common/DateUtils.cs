@@ -43,10 +43,16 @@ namespace BackTestingPlatform.Utilities
             return getTradeDays().GetRange(x1, x2 - x1 + 1);
         }
 
+        /// <summary>
+        /// 获取一串交易日的List
+        /// </summary>
+        /// <param name="firstDate">开始日期（int型）</param>
+        /// <param name="lastDate">结束日期（int型）</param>
+        /// <returns></returns>
         public static List<DateTime> GetTradeDays(int firstDate, int lastDate)
         {
             return GetTradeDays(
-                Kit.ToDateTime(firstDate, 0),
+                Kit.ToDateTime(firstDate, 0), //将int转换成DateTime类型
                 Kit.ToDateTime(lastDate, 235959));
         }
 

@@ -48,13 +48,31 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             this.shortLevel = shortLevel;
             this.tradeDays = DateUtils.GetTradeDays(startDate, endDate);
         }
+
+        /// <summary>
+        /// 从wind或本地CSV获取当天数据
+        /// </summary>
+        /// <param name="today">今天的日期</param>
+        /// <param name="code">代码</param>
+        /// <returns></returns>
         private  List<FuturesMinute> getData(DateTime today,string code)
         {
+            //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
             var data = Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today);
             var data5=FreqTransferUtils.minuteToNMinutes(data, 5);
             return data5;
         }
 
+        /// <summary>
+        /// 计算ER值
+        /// 
+        ///  Efficiency Ratio = direction / volatility ER = （N 期间内价格总变化的绝对值）/ （N 期间内个别价格变化的绝对值） 
+        ///  如果个别价格变化都是正值 （或负值），那么 ER 将等于 1.0，这代表了强劲的趋势行情。
+        ///  然而，如果有正面和负面价格变动造成相互的抵消，代表公式中的分子将会缩小，ER 将会减少。
+        ///  ER 反映价格走势的一致性。ER 的所有值将都介于 0.0 ~ 1.0 
+        /// </summary>
+        /// <param name="prices"></param>
+        /// <returns></returns>
         private double computeER(double[] prices)
         {
             double direction = 0, volatility = 0;
@@ -97,11 +115,13 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             for (int i = 0; i < tradeDays.Count(); i++)
             {
                 DateTime today = tradeDays[i];
+                //从wind或本地CSV获取相应交易日的数据list，并转换成FuturesMinute分钟线频率
                 var data = getData(today, underlying);
+                //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
                 
-                for (int j = numbers; j < data.Count()-5; j++)
+                for (int j = numbers; j < data.Count()-5; j++)//【？？？】这里为何减一个5
                 {
                     DateTime now = data[j].time;
                     //追踪止损判断 触发止损平仓
@@ -158,6 +178,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             }
 
         }
+        
         private double individualIncome(PositionsWithDetail position, double price)
         {
             double income = 0;
