@@ -23,18 +23,43 @@ namespace BackTestingPlatform.DataAccess.Futures
             string[] str = code.Split('.');
             if (str[1]=="CFE")
             {
-                return readByParameters(code, date, "periodstart=09:30:00;periodend=15:00:00;Fill=Previous");
+                return readByParameters(code, date, "periodstart=09:30:00;periodend=15:00:00");
             }
-            if (str[1]=="SHF")
+            if (str[0].IndexOf("RB")>-1 &&　str[1]=="SHF")
             {
                 DateTime modifiedDate1 = new DateTime(2014, 12, 26);
-
-                var nightData = readByParameters(code, DateUtils.PreviousTradeDay(date),"periodstart=21:00:00;periodend=23:00:00;Fill=Previous");
-                var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00;Fill=Previous");
-                nightData.AddRange(dayData);
-                return nightData;
+                DateTime modifiedDate2 = new DateTime(2016, 5, 3);
+                if (date<=modifiedDate1)
+                {
+                    return readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                }
+                else if (date<=modifiedDate2)
+                {
+                    var nightData1 = readByParameters(code, date, "periodstart=21:00:00;periodend=23:59:59");
+                    var nightData2 = readByParameters(code, date, "periodstart=00:00:00;periodend=1:00:00");
+                    var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                    nightData1.AddRange(nightData2);
+                    if (double.IsNaN(nightData1[0].close)==true)
+                    {
+                        nightData1 = new List<FuturesMinute>();
+                    }
+                    nightData1.AddRange(dayData);
+                    return nightData1;
+                }
+                else
+                {
+                    var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:00:00");
+                    if (double.IsNaN(nightData[0].close)==true)
+                    {
+                        nightData = new List<FuturesMinute>();
+                    }
+                    var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                    nightData.AddRange(dayData);
+                    return nightData;
+                }
+                
             }
-            items = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00;Fill=Previous");
+            items = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
             return items;
         }
 
