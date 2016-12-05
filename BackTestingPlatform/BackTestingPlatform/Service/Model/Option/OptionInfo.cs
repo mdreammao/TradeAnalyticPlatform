@@ -16,6 +16,7 @@ namespace BackTestingPlatform.Model.Option
         public double contractMultiplier { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
-
+        public DateTime modifiedDate { get; set; }
+        public double strikeBeforeModified { get; set; }
     }
 }

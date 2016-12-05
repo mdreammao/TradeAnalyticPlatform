@@ -117,6 +117,7 @@
     <Compile Include="AccountOperator\Minute\AccountUpdatingForMinute.cs" />
     <Compile Include="AccountOperator\Minute\CalculateOnesMarginForMinute.cs" />
     <Compile Include="AccountOperator\Minute\CalculatePositionsMarginForMinute.cs" />
+    <Compile Include="AccountOperator\Minute\maoheng\AccountUpdatingWithMinuteBar.cs" />
     <Compile Include="AccountOperator\QueryPositons.cs" />
     <Compile Include="AccountOperator\Tick\AccountUpdatingForTick.cs" />
     <Compile Include="AccountOperator\Tick\CalculateOnesMarginForTick.cs" />
@@ -158,8 +159,13 @@
     <Compile Include="Service\Model\Futures\FuturesDaily.cs" />
     <Compile Include="Service\Model\Futures\FuturesInfo.cs" />
     <Compile Include="Service\Model\Futures\FuturesTick.cs" />
+    <Compile Include="Service\Model\Positions\ExecutionReport.cs" />
+    <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatio.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\Model\StraddlePair.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\StraddlePairWithHedge.cs" />
+    <Compile Include="Strategies\Option\MaoHeng\StraddleWithHedge2.cs" />
     <Compile Include="Strategies\Option\MaoHeng\StraddleWithHedge.cs" />
     <Compile Include="Strategies\Option\MaoHeng\StraddleWithoutHedge.cs" />
     <Compile Include="Strategies\Option\MaoHeng\VolatilityTrade.cs" />
@@ -168,6 +174,7 @@
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\StockSample01.cs" />
+    <Compile Include="Transaction\Minute\maoheng\MinuteCloseAllWithBar.cs" />
     <Compile Include="Transaction\Minute\maoheng\MinuteTransactionWithBar.cs" />
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Utilities\Futures\FutureMargin.cs" />
@@ -247,10 +254,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Positions\" />
-    <Folder Include="Utilities\Stock\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Charts\ChartPython.py" />
     <Content Include="Task\HeFeiying.txt" />

@@ -124,22 +124,27 @@ namespace BackTestingPlatform.Utilities.TimeList
         }
 
         /// <summary>
-        /// 将时间变为数组下标。一天对应240个分钟,分别对应0到239。
+        /// 将时间变为数组下标。默认一天对应240个分钟,分别对应0到239。否则提供时间和下标对应的映射表。
         /// </summary>
         /// <param name="time">DateTime格式的时间</param>
         /// <returns>数组下标</returns>
-        public static int MinuteToIndex(DateTime time)
+        public static int MinuteToIndex(DateTime time,Dictionary<DateTime,int> timeList=null)
         {
-            int hour = time.Hour;
-            int minute = time.Minute;
-            if (hour < 13)
+            if (timeList==null || timeList.Count()==0)
             {
-                return (((hour - 9) * 60 + (minute - 30) + 1) < 0 ? 0 : (hour - 9) * 60 + (minute - 30) + 1) - 1;
+                int hour = time.Hour;
+                int minute = time.Minute;
+                if (hour < 13)
+                {
+                    return (((hour - 9) * 60 + (minute - 30) + 1) < 0 ? 0 : (hour - 9) * 60 + (minute - 30) + 1) - 1;
+                }
+                else
+                {
+                    return (((hour - 13) * 60 + minute + 121) > 240 ? 240 : (hour - 13) * 60 + minute + 121) - 1;
+                }
             }
-            else
-            {
-                return (((hour - 13) * 60 + minute + 121) > 240 ? 240 : (hour - 13) * 60 + minute + 121) - 1;
-            }
+            DateTime timeInDay = new DateTime(1, 1, 1, time.Hour, time.Minute, time.Second); //仅保留时分秒信息
+            return timeList[timeInDay];
         }
 
         /// <summary>
