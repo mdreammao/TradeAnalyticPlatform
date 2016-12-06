@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using BackTestingPlatform.Charts;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Futures;
 using BackTestingPlatform.DataAccess.Option;
@@ -8,12 +9,16 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Transaction.Minute.maoheng;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.DataApplication;
+using BackTestingPlatform.Utilities.SaveResult.Common;
+using BackTestingPlatform.Utilities.SaveResult.Option;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BackTestingPlatform.Strategies.Futures.MaoHeng
 {
@@ -60,8 +65,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         {
             //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
             var data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
-            var data5=FreqTransferUtils.minuteToNMinutes(data, 5);
-            return data5;
+            var dataModified=FreqTransferUtils.minuteToNMinutes(data, frequency);
+            return dataModified;
         }
 
         /// <summary>
@@ -121,13 +126,16 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             {
                 DateTime today = tradeDays[i];
                 //从wind或本地CSV获取相应交易日的数据list，并转换成FuturesMinute分钟线频率
-                var data = getData(today, underlying);
+                var dataOnlyToday = getData(today, underlying);
+                var data = getData(DateUtils.PreviousTradeDay(today), underlying);
+                int indexStart = data.Count();
+                data.AddRange(dataOnlyToday);
                 //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
 
                 //这里减一个5：最后5分钟只平仓，不开仓
-                for (int j = numbers; j < data.Count()-5; j++)
+                for (int j = indexStart; j < data.Count()-5; j++)
                 {
                     DateTime now = data[j].time;
 
@@ -195,8 +203,40 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     Console.WriteLine("{2}   每日收盘前强制平仓，平仓价格:{0},账户价值:{1}", data[closeIndex].open, myAccount.totalAssets, today);
                     MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, data[closeIndex].time, closeIndex, slipPoint);
                 }
+                if (data.Count>0)
+                {
+                    //更新当日属性信息
+                    AccountOperator.Minute.maoheng.AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, data.Last().time, data.Count() - 1, dataToday);
+                    //记录历史仓位信息
+                    accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
+                    benchmark.Add(data.Last().close);
+                }
             }
-
+            //策略绩效统计及输出
+            PerformanceStatisics myStgStats = new PerformanceStatisics();
+            myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
+            //画图
+            Dictionary<string, double[]> line = new Dictionary<string, double[]>();
+            double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
+            line.Add("NetWorth", netWorth);
+            //记录净值数据
+            RecordUtil.recordToCsv(accountHistory, GetType().FullName, "account", parameters: "RB_ER", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            //记录持仓变化
+            var positionStatus = OptionRecordUtil.Transfer(positions);
+            RecordUtil.recordToCsv(positionStatus, GetType().FullName, "positions", parameters: "RB_ER", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            //记录统计指标
+            var performanceList = new List<PerformanceStatisics>();
+            performanceList.Add(myStgStats);
+            RecordUtil.recordToCsv(performanceList, GetType().FullName, "performance", parameters: "RB_ER", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            //统计指标在console 上输出
+            Console.WriteLine("--------Strategy Performance Statistics--------\n");
+            Console.WriteLine(" netProfit:{0,5:F4} \n totalReturn:{1,-5:F4} \n anualReturn:{2,-5:F4} \n anualSharpe :{3,-5:F4} \n winningRate:{4,-5:F4} \n PnLRatio:{5,-5:F4} \n maxDrawDown:{6,-5:F4} \n maxProfitRatio:{7,-5:F4} \n informationRatio:{8,-5:F4} \n alpha:{9,-5:F4} \n beta:{10,-5:F4} \n averageHoldingRate:{11,-5:F4} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);
+            Console.WriteLine("-----------------------------------------------\n");
+            //benchmark净值
+            List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
+            line.Add("Base", netWorthOfBenchmark.ToArray());
+            string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
+            Application.Run(new PLChart(line, datestr));
         }
         
         /// <summary>
