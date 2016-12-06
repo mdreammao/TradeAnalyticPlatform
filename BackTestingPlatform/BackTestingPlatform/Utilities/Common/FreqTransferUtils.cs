@@ -28,6 +28,10 @@ namespace BackTestingPlatform.Utilities
         /// <returns></returns>
         public static List<T> minuteToNMinutes<T>(List<T> orignalList,int frequency) where T: KLine, new ()
         {
+            if (orignalList==null)
+            {
+                return new List<T>();
+            }
             List<T> list = new List<T>();
             int len = orignalList.Count() / frequency;
             for (int i = 0; i < len; i++)

@@ -192,15 +192,19 @@ namespace BackTestingPlatform.DataAccess
                 }
 
             }
-            if (!csvHasData && result != null && saveToCsv)
+            if (!csvHasData && result != null && result.Count()>0 && saveToCsv)
             {
                 //如果数据不是从csv获取的，可保存至本地，存为csv文件
                 log.Debug("正在保存到本地csv文件...");
                 saveToLocalCsv(result, code, date, tag);
             }
-            if (result != null)
+            if (result != null && result.Count()>0)
             {
                 log.Info("获取{3}数据{0}(date={1})成功.共{2}行.", Kit.ToShortName(tag), date, result.Count, code);
+            }
+            else
+            {
+                log.Info("获取{2}数据{0}(date={1})失败.无有效数据.", Kit.ToShortName(tag), date, code);
             }
             return result;
         }
