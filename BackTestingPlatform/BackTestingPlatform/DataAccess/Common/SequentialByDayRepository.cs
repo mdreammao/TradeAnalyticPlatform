@@ -145,6 +145,17 @@ namespace BackTestingPlatform.DataAccess
             return fetch0(code, date, tag, false, true, false, true);
         }
 
+        /// <summary>
+        /// 多种途径获取/储存数据（根据参数选择方式）
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="date"></param>
+        /// <param name="tag"></param>
+        /// <param name="tryCsv"></param>
+        /// <param name="tryWind"></param>
+        /// <param name="tryMssql0"></param>
+        /// <param name="saveToCsv"></param>
+        /// <returns></returns>
         private List<T> fetch0(string code, DateTime date, string tag, bool tryCsv, bool tryWind, bool tryMssql0, bool saveToCsv)
         {
             if (tag == null) tag = typeof(T).ToString();
