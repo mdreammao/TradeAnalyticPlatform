@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using ZedGraph;
+using BackTestingPlatform.DataAccess;
 
 namespace BackTestingPlatform.Utilities.SaveResult.Common
 {

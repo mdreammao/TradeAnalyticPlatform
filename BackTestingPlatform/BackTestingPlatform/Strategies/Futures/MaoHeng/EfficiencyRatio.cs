@@ -38,11 +38,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private double longLevel = 0.8, shortLevel = -0.8;
         private List<DateTime> tradeDays = new List<DateTime>();
         private Dictionary<DateTime, int> timeList = new Dictionary<DateTime, int>();
+
         /// <summary>
         /// 策略的构造函数
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
+        /// <param name="underlying"></param>
+        /// <param name="frequency"></param>
+        /// <param name="numbers"></param>
+        /// <param name="longLevel"></param>
+        /// <param name="shortLevel"></param>
         public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=1,int numbers=3,double longLevel=0.75,double shortLevel=-0.75)
         {
             this.startDate = Kit.ToDate(startDate);
@@ -122,26 +128,29 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             double positionVolume = 0;
             //最大收入值
             double maxIncome = 0;
+
+            //第一层循环：所有交易日循环一遍...
             for (int i = 0; i < tradeDays.Count(); i++)
             {
                 DateTime today = tradeDays[i];
                 //从wind或本地CSV获取相应交易日的数据list，并转换成FuturesMinute分钟线频率
-                var dataOnlyToday = getData(today, underlying);
-                var data = getData(DateUtils.PreviousTradeDay(today), underlying);
+                var dataOnlyToday = getData(today, underlying);//一个交易日里有多条分钟线数据
+                var data = getData(DateUtils.PreviousTradeDay(today), underlying);//前一交易日的分钟线频率数据list
                 int indexStart = data.Count();
-                data.AddRange(dataOnlyToday);
+                data.AddRange(dataOnlyToday);//将当前天的数据add到前一天的数据之后
                 //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
 
-                //这里减一个5：最后5分钟只平仓，不开仓
-                for (int j = indexStart; j < data.Count()-5; j++)
+                //第二层循环：只循环当前天的数据（开始的索引值为前一天数据的List.count）
+                for (int j = indexStart; j < data.Count()-5; j++)//这里减一个5：最后5分钟只平仓，不开仓
                 {
                     DateTime now = data[j].time;
 
-                    # region 追踪止损判断 触发止损平仓
+                    # region 头寸量不为0，额外要做的操作
+
                     //追踪止损判断 触发止损平仓
-                    if (positionVolume != 0) //头寸量
+                    if (positionVolume != 0) //头寸量不为0，额外要做的操作
                     {
                         //计算开盘价和头寸当前价的差价
                         double incomeNow = individualIncome(positions.Last().Value[underlying], data[j].open);
@@ -150,7 +159,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         {
                             maxIncome = incomeNow;
                         }
-                        //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
+                        //若盈利回吐大于5个点 或者 最大收入大于45，则全部进行平仓
                         else if ((maxIncome-incomeNow)>5  || maxIncome>45) //从最高点跌下来3%，就止损
                         {
                             positionVolume = 0;
@@ -159,6 +168,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             maxIncome = 0;
                         }
                     }
+
                     #endregion
 
                     double[] prices = new double[numbers];
@@ -196,6 +206,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     }
                 }
 
+                //第二层循环结束...............
                 int closeIndex = data.Count() - 5;
                 if (positionVolume != 0)
                 {
