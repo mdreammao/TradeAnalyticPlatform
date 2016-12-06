@@ -8,6 +8,7 @@ using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
 using BackTestingPlatform.Transaction.Minute.maoheng;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.DataApplication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,17 +49,37 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             this.shortLevel = shortLevel;
             this.tradeDays = DateUtils.GetTradeDays(startDate, endDate);
         }
+
+        /// <summary>
+        /// 从wind或本地CSV获取当天数据
+        /// </summary>
+        /// <param name="today">今天的日期</param>
+        /// <param name="code">代码</param>
+        /// <returns></returns>
         private  List<FuturesMinute> getData(DateTime today,string code)
         {
-            var data = Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today);
+            //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
+            var data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
             var data5=FreqTransferUtils.minuteToNMinutes(data, 5);
             return data5;
         }
 
+        /// <summary>
+        /// 计算ER值...................
+        /// 
+        ///  Efficiency Ratio = direction / volatility...ER = （N 期间内价格总变化的绝对值）/ （N 期间内个别价格变化的绝对值） 
+        ///  如果个别价格变化都是正值 （或负值），那么 ER 将等于 1.0，这代表了强劲的趋势行情。
+        ///  然而，如果有正面和负面价格变动造成相互的抵消，代表公式中的分子将会缩小，ER 将会减少。
+        ///  ER 反映价格走势的一致性。ER 的所有值将都介于 0.0 ~ 1.0 
+        /// </summary>
+        /// <param name="prices"></param>
+        /// <returns></returns>
         private double computeER(double[] prices)
         {
             double direction = 0, volatility = 0;
+            //计算当前K线和第一根K线的收盘价的差值,即收盘价移动的相对距离
             direction = prices.Last() - prices.First();
+            //计算前N根相邻K线收盘价差值的绝对值之和，即收盘价移动的绝对距离
             for (int i = 1; i < prices.Count(); i++)
             {
                 volatility += Math.Abs(prices[i] - prices[i - 1]);
@@ -92,26 +113,36 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //记录历史账户信息
             List<BasicAccount> accountHistory = new List<BasicAccount>();
             List<double> benchmark = new List<double>();
+            //持仓量
             double positionVolume = 0;
+            //最大收入值
             double maxIncome = 0;
             for (int i = 0; i < tradeDays.Count(); i++)
             {
                 DateTime today = tradeDays[i];
+                //从wind或本地CSV获取相应交易日的数据list，并转换成FuturesMinute分钟线频率
                 var data = getData(today, underlying);
+                //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
-                
+
+                //这里减一个5：最后5分钟只平仓，不开仓
                 for (int j = numbers; j < data.Count()-5; j++)
                 {
                     DateTime now = data[j].time;
+
+                    # region 追踪止损判断 触发止损平仓
                     //追踪止损判断 触发止损平仓
-                    if (positionVolume != 0)
+                    if (positionVolume != 0) //头寸量
                     {
+                        //计算开盘价和头寸当前价的差价
                         double incomeNow = individualIncome(positions.Last().Value[underlying], data[j].open);
+                        //若当前收入大于最大收入值，则更新最大收入值
                         if (incomeNow>maxIncome)
                         {
                             maxIncome = incomeNow;
                         }
+                        //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
                         else if ((maxIncome-incomeNow)>5  || maxIncome>45) //从最高点跌下来3%，就止损
                         {
                             positionVolume = 0;
@@ -120,20 +151,27 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             maxIncome = 0;
                         }
                     }
+                    #endregion
+
                     double[] prices = new double[numbers];
                     for (int k = j-numbers; k < j; k++)
                     {
+                        //导入收盘价
                         prices[k - (j - numbers)] = data[k].close;
                     }
 
+                    //计算出ER值
                     double ER = computeER(prices);
                     if (ER>=longLevel && positionVolume==0) //多头信号,无头寸，则开多仓
                     {
                         double volume = 1;
+                        //长头寸信号
                         MinuteSignal longSignal = new MinuteSignal() { code = underlying, volume = volume, time = now, tradingVarieties = "futures", price = data[j].open, minuteIndex = j };
                         Console.WriteLine("做多期货！多头开仓价格: {0}",data[j].open);
+                        //signal保存长头寸longSignal信号
                         Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                         signal.Add(underlying, longSignal);
+                        //头寸量叠加
                         positionVolume += volume;
                         MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: longSignal.minuteIndex);
                     }
@@ -145,9 +183,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                         signal.Add(underlying, shortSignal);
                         positionVolume += volume;
+                        //分钟级交易
                         MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: shortSignal.minuteIndex);
                     }
                 }
+
                 int closeIndex = data.Count() - 5;
                 if (positionVolume != 0)
                 {
@@ -158,6 +198,13 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             }
 
         }
+        
+        /// <summary>
+        /// 计算单独头寸的收入
+        /// </summary>
+        /// <param name="position">传入的头寸</param>
+        /// <param name="price">传入的价格</param>
+        /// <returns></returns>
         private double individualIncome(PositionsWithDetail position, double price)
         {
             double income = 0;

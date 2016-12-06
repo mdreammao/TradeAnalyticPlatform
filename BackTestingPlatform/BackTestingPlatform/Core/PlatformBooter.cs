@@ -18,8 +18,7 @@ namespace BackTestingPlatform
             var t1 = DateTime.Now;
             Platforms.Initialize(); //初始化          
             Platforms.ShutDown();  //关闭
-            var te = DateTime.Now - t1;
-            
+            var te = DateTime.Now - t1;     
         }
     }
 }
