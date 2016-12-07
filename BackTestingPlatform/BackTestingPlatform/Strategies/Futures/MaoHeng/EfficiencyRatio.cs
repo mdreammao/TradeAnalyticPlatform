@@ -38,7 +38,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
-        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=1,int numbers=3,double longLevel=0.75,double shortLevel=-0.75)
+        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=5,int numbers=9,double longLevel=0.75,double shortLevel=-0.75)
         {
             this.startDate = Kit.ToDate(startDate);
             this.endDate = Kit.ToDate(endDate);
@@ -60,8 +60,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         {
             //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
             var data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
-            var data5=FreqTransferUtils.minuteToNMinutes(data, 5);
-            return data5;
+            var dataModified=FreqTransferUtils.minuteToNMinutes(data, frequency);
+            return dataModified;
         }
 
         /// <summary>
