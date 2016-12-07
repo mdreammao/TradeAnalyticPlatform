@@ -29,6 +29,7 @@ namespace BackTestingPlatform.Utilities
         }
 
         /// <summary>
+        /// 获取交易日列表（根据一个日期范围 [firstDate,lastDate]）
         /// get TradeDay List by a range [firstDate,lastDate]
         /// </summary>
         /// <param name="firstDate"></param>
@@ -38,9 +39,11 @@ namespace BackTestingPlatform.Utilities
         {
             int x1 = getTradeDays().BinarySearch(firstDate);
             int x2 = getTradeDays().BinarySearch(lastDate);
+            //list的BinarySearch，若没有找到item，则返回一个负数。该负数是是大于item的下一个元素的索引的按位求补
             x1 = x1 < 0 ? -x1 - 1 : x1;
             x2 = x2 < 0 ? -x2 - 2 : x2;
-            return getTradeDays().GetRange(x1, x2 - x1 + 1);
+            var days=getTradeDays().GetRange(x1, x2 - x1 + 1);
+            return days;
         }
 
         /// <summary>

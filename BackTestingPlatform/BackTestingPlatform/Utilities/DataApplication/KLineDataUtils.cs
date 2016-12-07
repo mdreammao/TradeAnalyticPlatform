@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace BackTestingPlatform.Utilities.DataApplication
 {
+    
     public static class KLineDataUtils
     {
+        /// <summary>
+        /// //查缺补漏函数：
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="orignalList"></param>
+        /// <returns></returns>
         public static List<T> leakFilling<T>(List<T> orignalList) where T : KLine, new()
         {
             for (int i = 0; i < orignalList.Count(); i++)
