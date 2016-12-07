@@ -28,7 +28,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
     public class EfficiencyRatio
     {
         //回测参数设置
-        private double initialCapital = 25000;
+        private double initialCapital = 2500;
         private double optionVolume = 10000;
         private double slipPoint = 0;
         private DateTime startDate, endDate;
@@ -43,7 +43,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
-        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=5,int numbers=9,double longLevel=0.75,double shortLevel=-0.75)
+        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=5,int numbers=10,double longLevel=0.75,double shortLevel=-0.75)
         {
             this.startDate = Kit.ToDate(startDate);
             this.endDate = Kit.ToDate(endDate);
@@ -128,14 +128,14 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 //从wind或本地CSV获取相应交易日的数据list，并转换成FuturesMinute分钟线频率
                 var dataOnlyToday = getData(today, underlying);
                 var data = getData(DateUtils.PreviousTradeDay(today), underlying);
-                int indexStart = data.Count();
+                int indexStart =Math.Max(data.Count(),numbers);
                 data.AddRange(dataOnlyToday);
                 //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
 
                 //这里减一个5：最后5分钟只平仓，不开仓
-                for (int j = indexStart; j < data.Count()-5; j++)
+                for (int j = indexStart; j < data.Count()-1; j++)
                 {
                     DateTime now = data[j].time;
 

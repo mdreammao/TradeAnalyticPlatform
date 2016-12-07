@@ -36,7 +36,7 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="data">要保存的数据</param>
         /// <param name="path">读写文件路径</param>
         /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
-        public virtual void saveToLocalCsv(string path, IList<T> data, bool appendMode = false)
+        public virtual void saveToLobcalCsv(string path, IList<T> data, bool appendMode = false)
         {
             if (data == null)
             {
