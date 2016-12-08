@@ -28,8 +28,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
     public class EfficiencyRatio
     {
         //回测参数设置
-        private double initialCapital = 2500;
-        private double optionVolume = 10000;
+        private double initialCapital = 20000;
         private double slipPoint = 0;
         private DateTime startDate, endDate;
         private string underlying;
@@ -43,7 +42,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// </summary>
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
-        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=5,int numbers=10,double longLevel=0.75,double shortLevel=-0.75)
+        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=5,int numbers=6,double longLevel=0.75,double shortLevel=-0.75)
         {
             this.startDate = Kit.ToDate(startDate);
             this.endDate = Kit.ToDate(endDate);
@@ -151,7 +150,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             maxIncome = incomeNow;
                         }
                         //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
-                        else if ((maxIncome-incomeNow)>5  || maxIncome>45) //从最高点跌下来3%，就止损
+                        else if ((maxIncome-incomeNow)>10  || maxIncome>60) //从最高点跌下来3%，就止损
                         {
                             positionVolume = 0;
                             Console.WriteLine("追踪止损！平仓价格: {0}",data[j].open);

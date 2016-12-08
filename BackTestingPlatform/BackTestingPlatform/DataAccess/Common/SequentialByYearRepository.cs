@@ -338,17 +338,17 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
         /// <param name="canSaveThisYear">是否可以保存今年的数据，默认不可以</param>
-        [Obsolete]
-        public void saveToLocalCsv(IList<T> data, string code, int year, string tag = null, bool appendMode = false, bool canSaveThisYear = false)
-        {
-            if (!canSaveThisYear && year >= DateTime.Now.Year)
-            {
-                log.Debug("今年的{0}数据不保存，请在今年后保存。", Kit.ToShortName(tag));
-                return;
-            }
-            var path = _buildCacheDataFilePath(code, new DateTime(year, 1, 1), new DateTime(year, 12, 31), tag);
-            saveToLocalCsv(path, data, appendMode);
-        }
+        //[Obsolete]
+        //public void saveToLocalCsv(IList<T> data, string code, int year, string tag = null, bool appendMode = false, bool canSaveThisYear = false)
+        //{
+        //    if (!canSaveThisYear && year >= DateTime.Now.Year)
+        //    {
+        //        log.Debug("今年的{0}数据不保存，请在今年后保存。", Kit.ToShortName(tag));
+        //        return;
+        //    }
+        //    var path = _buildCacheDataFilePath(code, new DateTime(year, 1, 1), new DateTime(year, 12, 31), tag);
+        //    saveToLocalCsv(path, data, appendMode);
+        //}
 
         /// <summary>
         /// 将数据以csv文件的形式保存到CacheData文件夹下的预定路径。
@@ -361,12 +361,12 @@ namespace BackTestingPlatform.DataAccess
         /// <param name="tag">读写文件路径前缀，若为空默认为类名</param>
         /// <param name="appendMode">是否为追加的文件尾部模式，否则是覆盖模式</param>
         /// <param name="canSaveThisYear">是否可以保存今年的数据，默认不可以</param>
-        [Obsolete]
-        private void saveToLocalCsv(IList<T> data, string code, DateTime date1, DateTime date2, string tag = null, bool appendMode = false)
-        {
-            var path = _buildCacheDataFilePath(code, date1, date2, tag);
-            saveToLocalCsv(path, data, appendMode);
-        }
+        //[Obsolete]
+        //private void saveToLocalCsv(IList<T> data, string code, DateTime date1, DateTime date2, string tag = null, bool appendMode = false)
+        //{
+        //    var path = _buildCacheDataFilePath(code, date1, date2, tag);
+        //    saveToLocalCsv(path, data, appendMode);
+        //}
 
    
 
