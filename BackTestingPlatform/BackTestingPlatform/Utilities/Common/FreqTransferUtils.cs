@@ -37,6 +37,7 @@ namespace BackTestingPlatform.Utilities
             for (int i = 0; i < len; i++)
             {
                 double close=0, high=0, low=0, openInterest=0,amount=0,volume=0;
+                DateTime time = new DateTime();
                 for (int j = 0; j < frequency; j++)
                 {
                     int index = i * frequency + j;
@@ -46,11 +47,12 @@ namespace BackTestingPlatform.Utilities
                         openInterest = orignalList[index].openInterest;
                         amount = amount + orignalList[index].amount;
                         volume = volume + orignalList[index].volume;
+                        time = orignalList[index].time;
                         high = high > orignalList[index].high ? high : orignalList[index].high;
                         low = (low < orignalList[index].low && low>0) ? low : orignalList[index].low;
                     }
                 }
-               list.Add(new T { open = orignalList[i * frequency].open, time = orignalList[i * frequency].time, close = close, amount = amount, volume = volume, high = high, low = low,openInterest=openInterest});
+               list.Add(new T { open = orignalList[i * frequency].open, time = time, close = close, amount = amount, volume = volume, high = high, low = low,openInterest=openInterest});
             }
             return list;
         }

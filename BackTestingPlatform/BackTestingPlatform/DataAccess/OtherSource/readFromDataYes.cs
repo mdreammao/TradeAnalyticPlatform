@@ -16,10 +16,9 @@ namespace BackTestingPlatform.DataAccess.OtherSource
     public static class readFromDataYes
     {
         static Logger log = LogManager.GetCurrentClassLogger();
-        public static void getData(string path,string fileName)
+        public static Dictionary<string,Dictionary<string,List<KLine>>> getData(string path,string fileName)
         {
             Dictionary<string, Dictionary<string, List<KLine>>> dic = new Dictionary<string, Dictionary<string, List<KLine>>>();
-            //string header = "time,code,open,close,high,low,volume,turnover,totalvolume,totalturnover,requesttime";
             try
             {
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -65,6 +64,7 @@ namespace BackTestingPlatform.DataAccess.OtherSource
             {
                 log.Error(e);
             }
+            return dic;
         }
         static string toDoubleQuotedString(string src)
         {

@@ -25,7 +25,14 @@ namespace BackTestingPlatform.DataAccess.Futures
             {
                 return readByParameters(code, date, "periodstart=09:30:00;periodend=15:00:00");
             }
-            if (code=="A.DCE")
+            if (str[0].IndexOf("A") > -1 && str[1] == "DCE")
+            {
+                var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:30:00");
+                var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                nightData.AddRange(dayData);
+                return nightData;
+            }
+            if (str[0].IndexOf("I")>-1 && str[1]=="DCE")
             {
                 var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:30:00");
                 var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
