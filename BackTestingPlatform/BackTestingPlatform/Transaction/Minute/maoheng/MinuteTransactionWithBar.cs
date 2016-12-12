@@ -52,14 +52,19 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
             {
                 return tradingFeedback;
             }
+            //如果两者时间相等，则把总仓位变化数组positions中的最后一项，添加进新仓位的容器positionShot中
             if (now==lastTime)
             {
                 positionShot= positions[positions.Keys.Last()];
             }
+            //如果交易信号时间在最后一次持仓变化时间点之后，则需要重新把最后持仓的仓位变化信息手工copy一份；
+            //然后添加进新仓位的容器positionShot中。
             else if (positions.Count>0)//如果持仓大于0
             {
                 foreach (var item in positions[positions.Keys.Last()])//循环 持仓最后状态时间的持仓数据
                 {
+                    //这里必须手动copy一份，不可以直接传引用。因为最后持仓变化节点的仓位信息是不应该被改变的；
+                    //如果直接传引用，交易信号时间点仓位变化会同时改变最后持仓变化节点的仓位信息。
                     PositionsWithDetail position0 = new PositionsWithDetail().myClone(item.Value);//复制一份新的
                     positionShot.Add(position0.code, position0);
                 }
@@ -154,6 +159,10 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
                     tradingFeedback.Add(signal0.code, report0);
                     continue;
                 }
+
+                ///【解释：以下部分 position，positionShot和position0的关系】
+                /// position：是传入的参数，
+                ///
 
                 //接下来处理能够成交的signal0，信号下单的时间只能是lastTime或者now。
                 PositionsWithDetail position0 = new PositionsWithDetail();

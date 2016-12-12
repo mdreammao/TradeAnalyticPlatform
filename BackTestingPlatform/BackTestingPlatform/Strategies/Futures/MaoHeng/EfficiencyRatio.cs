@@ -143,9 +143,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
 
-                #region 第二层循环
-				//这里减1：最后一个周期只平仓，不开仓
                 //第二层循环：只循环某当天的数据（开始的索引值为前一天数据的List.count）
+                #region 第二层循环
+
+                //这里减1：最后一个周期只平仓，不开仓
                 for (int j = indexStart; j < data.Count()-1; j++)
                 {
                     DateTime now = data[j].time;
@@ -157,6 +158,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     }
                     //计算出ER值
                     double ER = computeER(prices);
+
                     # region 追踪止损判断 触发止损平仓
 
                     //追踪止损判断 触发止损平仓
@@ -225,6 +227,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     }
                 }
 
+                #endregion
 
                 int closeIndex = data.Count() - 1;
 
@@ -239,7 +242,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 {
                     //更新当日属性信息
 
-                            AccountOperator.Minute.maoheng.AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, data.Last().time, data.Count() - 1, dataToday);
+                    AccountOperator.Minute.maoheng.AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, data.Last().time, data.Count() - 1, dataToday);
 
                     //记录历史仓位信息
                     accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
