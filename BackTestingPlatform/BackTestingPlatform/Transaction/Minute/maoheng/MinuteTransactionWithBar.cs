@@ -19,6 +19,17 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
     /// </summary>
     public class MinuteTransactionWithBar
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="signal">交易信号（正向/反向）</param>
+        /// <param name="data">KLine格式的交易数据</param>
+        /// <param name="positions">头寸信息</param>
+        /// <param name="myAccount">账户信息</param>
+        /// <param name="now">交易日的时间信息</param>
+        /// <param name="nowIndex">当前索引值（不知道什么意思）</param>
+        /// <param name="slipPoint">滑点</param>
+        /// <returns></returns>
         public static Dictionary<string,ExecutionReport> ComputePosition(Dictionary<string, MinuteSignal> signal, Dictionary<string, List<KLine>> data, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, DateTime now, int nowIndex,double slipPoint = 0.00)
         {
             //初始化记录成交回报的变量
@@ -41,15 +52,15 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
             {
                 return tradingFeedback;
             }
-            else if (now==lastTime)
+            if (now==lastTime)
             {
                 positionShot= positions[positions.Keys.Last()];
             }
-            else if (positions.Count>0)
+            else if (positions.Count>0)//如果持仓大于0
             {
-                foreach (var item in positions[positions.Keys.Last()])
+                foreach (var item in positions[positions.Keys.Last()])//循环 持仓最后状态时间的持仓数据
                 {
-                    PositionsWithDetail position0 = new PositionsWithDetail().myClone(item.Value);
+                    PositionsWithDetail position0 = new PositionsWithDetail().myClone(item.Value);//复制一份新的
                     positionShot.Add(position0.code, position0);
                 }
             }
@@ -63,7 +74,7 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
                 //①信号触发时间必须在positionLast的记录时间之后，在当前时间now之前。
                 //②信号必须有合理的交易数量。
                 //③信号必须有对应的数据。
-                if (signal0.time!=now)
+                if (signal0.time!=now) //【？？？】不是说必须要在当前时间now之前么
                 {
                     ExecutionReport report0 = new ExecutionReport();
                     report0.code = signal0.code;
@@ -90,12 +101,17 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
                     tradingFeedback.Add(signal0.code, report0);
                     continue;
                 }
+
                 //根据K线来判断成交数量，有可能完全成交，也有可能部分成交
                 //开多头时，如果价格大于最低价，完全成交，否者不成交
                 //开空头时，如果价格小于最高价，完全成交，否者不成交
+
                 //找出对应的K线
                 KLine KLineData = data[signal0.code][nowIndex];
+                //确定滑点
                 double slip = Math.Max(slipPoint, signal0.bidAskSpread);
+
+                //开多头时，如果价格大于最低价，完全成交，否者不成交
                 if (signal0.volume>0 && signal0.price>=KLineData.low)
                 {
                     ExecutionReport report0 = new ExecutionReport();
@@ -116,6 +132,8 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
                     tradingFeedback.Add(signal0.code, report0);
                     continue;
                 }
+
+                //开空头时，如果价格小于最高价，完全成交，否者不成交
                 if (signal0.volume<0 && signal0.price<=KLineData.high)
                 {
                     ExecutionReport report0 = new ExecutionReport();
@@ -136,12 +154,13 @@ namespace BackTestingPlatform.Transaction.Minute.maoheng
                     tradingFeedback.Add(signal0.code, report0);
                     continue;
                 }
+
                 //接下来处理能够成交的signal0，信号下单的时间只能是lastTime或者now。
                 PositionsWithDetail position0 = new PositionsWithDetail();
                 //查询当前持仓数量
                 double nowHoldingVolume;
                 //当前证券已有持仓
-                if (positionShot.Count>0 && positionShot.ContainsKey(signal0.code)==true)
+                if (positionShot.Count>0 && positionShot.ContainsKey(signal0.code))
                 {
                     //将当前证券持仓情况赋值给临时持仓变量
                     position0 = positionShot[signal0.code];

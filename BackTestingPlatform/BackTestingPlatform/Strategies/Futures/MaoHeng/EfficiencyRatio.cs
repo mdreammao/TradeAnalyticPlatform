@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using BackTestingPlatform.AccountOperator.Minute.maoheng;
 
 namespace BackTestingPlatform.Strategies.Futures.MaoHeng
 {
@@ -123,6 +124,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             BasicAccount myAccount = new BasicAccount(initialAssets: initialCapital, totalAssets: initialCapital, freeCash: initialCapital);
             //记录历史账户信息
             List<BasicAccount> accountHistory = new List<BasicAccount>();
+            //基准衡量
             List<double> benchmark = new List<double>();
             //持仓量
             double positionVolume = 0;
@@ -137,12 +139,13 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 var dataOnlyToday = getData(today, underlying);//一个交易日里有多条分钟线数据
                 var data = getData(DateUtils.PreviousTradeDay(today), underlying);//前一交易日的分钟线频率数据list
                 int indexStart = data.Count();
-                data.AddRange(dataOnlyToday);//将当前天的数据add到前一天的数据之后
+                data.AddRange(dataOnlyToday);//将当天的数据add到前一天的数据之后
                 //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
 
-                //第二层循环：只循环当前天的数据（开始的索引值为前一天数据的List.count）
+                #region 第二层循环
+                //第二层循环：只循环某当天的数据（开始的索引值为前一天数据的List.count）
                 for (int j = indexStart; j < data.Count()-5; j++)//这里减一个5：最后5分钟只平仓，不开仓
                 {
                     DateTime now = data[j].time;
@@ -150,7 +153,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     # region 头寸量不为0，额外要做的操作
 
                     //追踪止损判断 触发止损平仓
-                    if (positionVolume != 0) //头寸量不为0，额外要做的操作
+                    if (positionVolume != 0) //头寸量不为0，额外要做的操作 
                     {
                         //计算开盘价和头寸当前价的差价
                         double incomeNow = individualIncome(positions.Last().Value[underlying], data[j].open);
@@ -170,17 +173,19 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     }
 
                     #endregion
-
+                    //numbers是指选取几根相邻K线来计算ER数据
                     double[] prices = new double[numbers];
                     for (int k = j-numbers; k < j; k++)
                     {
-                        //导入收盘价
+                        //导入每个交易日的收盘价
                         prices[k - (j - numbers)] = data[k].close;
                     }
 
                     //计算出ER值
                     double ER = computeER(prices);
-                    if (ER>=longLevel && positionVolume==0) //多头信号,无头寸，则开多仓
+
+                    //多头信号,无头寸，则开多仓（开多仓只是头存量+1么？）
+                    if (ER>=longLevel && positionVolume==0) 
                     {
                         double volume = 1;
                         //长头寸信号
@@ -207,7 +212,12 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 }
 
                 //第二层循环结束...............
+                #endregion 第二层循环结束
+
+                //结束交易的索引值
                 int closeIndex = data.Count() - 5;
+
+                //当天结束，收盘前强制平仓
                 if (positionVolume != 0)
                 {
                     positionVolume = 0;
@@ -217,7 +227,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 if (data.Count>0)
                 {
                     //更新当日属性信息
-                    AccountOperator.Minute.maoheng.AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, data.Last().time, data.Count() - 1, dataToday);
+                    AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, data.Last().time, data.Count() - 1, dataToday);
                     //记录历史仓位信息
                     accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
                     benchmark.Add(data.Last().close);
@@ -225,6 +235,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             }
             //策略绩效统计及输出
             PerformanceStatisics myStgStats = new PerformanceStatisics();
+            //TODO:了解该函数中计算出了那些评价标准
             myStgStats = PerformanceStatisicsUtils.compute(accountHistory, positions, benchmark.ToArray());
             //画图
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();

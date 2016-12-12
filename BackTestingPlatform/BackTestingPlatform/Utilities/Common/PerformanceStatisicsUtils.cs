@@ -13,16 +13,16 @@ namespace BackTestingPlatform.Utilities.Common
     public static class PerformanceStatisicsUtils
     {
         /// <summary>
-        /// 计算策略的各项性能指标，目前胜率等和交易次数相关的指标只针对非仓位管理型的策略
+        ///  计算策略的各项性能指标，目前胜率等和交易次数相关的指标只针对非仓位管理型的策略
         /// 该性能统计默认为是对日频采样的统计，若为其他频率需调整barsOfYear
         /// 所有指标保留四位小数
         /// 若未穿入benchmark
         /// </summary>
         /// <param name="accountHistory"></param>
         /// <param name="positions"></param>
+        /// <param name="benchmark"></param>
+        /// <param name="riskFreeRate"></param>
         /// <returns></returns>
-        /// 
-
         public static PerformanceStatisics compute(List<BasicAccount> accountHistory, SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, double[] benchmark=null, double riskFreeRate=0.00)
         {
             //若没有输入benchmark，构建默认的benchmark（全为1）3
