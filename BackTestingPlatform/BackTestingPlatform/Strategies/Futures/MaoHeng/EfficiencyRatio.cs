@@ -29,8 +29,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
     public class EfficiencyRatio
     {
         //回测参数设置
-        private double initialCapital = 25000;
-        private double optionVolume = 10000;
+        private double initialCapital = 3000;
         private double slipPoint = 0;
         private DateTime startDate, endDate;
         private string underlying;
@@ -145,12 +144,20 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
 
                 #region 第二层循环
+				//这里减1：最后一个周期只平仓，不开仓
                 //第二层循环：只循环某当天的数据（开始的索引值为前一天数据的List.count）
-                for (int j = indexStart; j < data.Count()-5; j++)//这里减一个5：最后5分钟只平仓，不开仓
+                for (int j = indexStart; j < data.Count()-1; j++)
                 {
                     DateTime now = data[j].time;
-
-                    # region 头寸量不为0，额外要做的操作
+                    double[] prices = new double[numbers];
+                    for (int k = j - numbers; k < j; k++)
+                    {
+                        //导入收盘价
+                        prices[k - (j - numbers)] = data[k].close;
+                    }
+                    //计算出ER值
+                    double ER = computeER(prices);
+                    # region 追踪止损判断 触发止损平仓
 
                     //追踪止损判断 触发止损平仓
                     if (positionVolume != 0) //头寸量不为0，额外要做的操作 
@@ -162,32 +169,38 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         {
                             maxIncome = incomeNow;
                         }
-                        //若盈利回吐大于5个点 或者 最大收入大于45，则全部进行平仓
-                        else if ((maxIncome-incomeNow)>5  || maxIncome>45) //从最高点跌下来3%，就止损
+                        //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
+                        //&& ((positionVolume>0 && ER<longLevel) || (positionVolume<0 && ER>shortLevel))
+                        else if ((maxIncome-incomeNow)>0.01*Math.Abs(data[j].open) || incomeNow<-0.01 * Math.Abs(data[j].open)) //从最高点跌下来3%，就止损
+
                         {
                             positionVolume = 0;
                             Console.WriteLine("追踪止损！平仓价格: {0}",data[j].open);
                             MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, j, slipPoint);
                             maxIncome = 0;
                         }
+                        //if (positionVolume>0 && ER<0 && incomeNow<-10)
+                        //{
+                        //    positionVolume = 0;
+                        //    Console.WriteLine("信号止损！平仓价格: {0}", data[j].open);
+                        //    MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, j, slipPoint);
+                        //    maxIncome = 0;
+                        //}
+                        //else if (positionVolume < 0 && ER >0 && incomeNow < -10)
+                        //{
+                        //    positionVolume = 0;
+                        //    Console.WriteLine("信号止损！平仓价格: {0}", data[j].open);
+                        //    MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, j, slipPoint);
+                        //    maxIncome = 0;
+                        //}
                     }
 
                     #endregion
-                    //numbers是指选取几根相邻K线来计算ER数据
-                    double[] prices = new double[numbers];
-                    for (int k = j-numbers; k < j; k++)
-                    {
-                        //导入每个交易日的收盘价
-                        prices[k - (j - numbers)] = data[k].close;
-                    }
+                    if (ER>=longLevel && positionVolume==0) //多头信号,无头寸，则开多仓
 
-                    //计算出ER值
-                    double ER = computeER(prices);
-
-                    //多头信号,无头寸，则开多仓（开多仓只是头存量+1么？）
-                    if (ER>=longLevel && positionVolume==0) 
                     {
                         double volume = 1;
+                        maxIncome = 0;
                         //长头寸信号
                         MinuteSignal longSignal = new MinuteSignal() { code = underlying, volume = volume, time = now, tradingVarieties = "futures", price = data[j].open, minuteIndex = j };
                         Console.WriteLine("做多期货！多头开仓价格: {0}",data[j].open);
@@ -198,9 +211,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         positionVolume += volume;
                         MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: longSignal.minuteIndex);
                     }
-                    else if (ER<=shortLevel && positionVolume == 0) //空头信号，无头寸，则开空仓
+                    else if (ER<=shortLevel&& positionVolume == 0) //空头信号，无头寸，则开空仓
                     {
                         double volume = -1;
+                        maxIncome = 0;
                         MinuteSignal shortSignal = new MinuteSignal() { code = underlying, volume = volume, time = now, tradingVarieties = "futures", price = data[j].open, minuteIndex = j };
                         Console.WriteLine("做空期货！空头开仓价格: {0}",data[j].open);
                         Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
@@ -211,23 +225,22 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     }
                 }
 
-                //第二层循环结束...............
-                #endregion 第二层循环结束
 
-                //结束交易的索引值
-                int closeIndex = data.Count() - 5;
+                int closeIndex = data.Count() - 1;
 
-                //当天结束，收盘前强制平仓
                 if (positionVolume != 0)
                 {
                     positionVolume = 0;
-                    Console.WriteLine("{2}   每日收盘前强制平仓，平仓价格:{0},账户价值:{1}", data[closeIndex].open, myAccount.totalAssets, today);
+                    maxIncome = 0;
                     MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, data[closeIndex].time, closeIndex, slipPoint);
+                    Console.WriteLine("{2}   每日收盘前强制平仓，平仓价格:{0},账户价值:{1}", data[closeIndex].open, myAccount.totalAssets, today);
                 }
                 if (data.Count>0)
                 {
                     //更新当日属性信息
-                    AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, data.Last().time, data.Count() - 1, dataToday);
+
+                            AccountOperator.Minute.maoheng.AccountUpdatingWithMinuteBar.computeAccount(ref myAccount, positions, data.Last().time, data.Count() - 1, dataToday);
+
                     //记录历史仓位信息
                     accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
                     benchmark.Add(data.Last().close);

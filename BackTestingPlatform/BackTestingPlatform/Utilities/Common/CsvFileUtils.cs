@@ -85,7 +85,7 @@ namespace BackTestingPlatform.Utilities
         /// <param name="filePath"></param>
         /// <param name="firstRowAsHeader">csv文件第一行是否作为header</param>
         /// <returns></returns>
-        public static DataTable ReadFromCsvFile(string filePath, bool firstRowAsHeader = true)
+        public static DataTable ReadFromCsvFile(string filePath, bool firstRowAsHeader = true,string columns="")
         {
             DataTable dt = new DataTable();
             try
@@ -97,6 +97,15 @@ namespace BackTestingPlatform.Utilities
                         if (!sr.EndOfStream && firstRowAsHeader)
                         {
                             string[] headers = sr.ReadLine().Split(',');
+                            foreach (string header in headers)
+                            {
+                                dt.Columns.Add(header);
+                            }
+                        }
+
+                        if(!sr.EndOfStream && firstRowAsHeader==false && columns!="")
+                        {
+                            string[] headers = columns.Split(',');
                             foreach (string header in headers)
                             {
                                 dt.Columns.Add(header);

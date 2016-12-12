@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform.Test", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackTestingPlatform", "BackTestingPlatform\BackTestingPlatform.csproj", "{830FE9E4-2D61-42ED-9104-9CB26CA72D73}"
 EndProject
+
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalTesterCuiXun", "LocalTesterCuiXun\LocalTesterCuiXun.csproj", "{B2AB6447-0F35-4FA9-A156-802EF62E4216}"
+
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
