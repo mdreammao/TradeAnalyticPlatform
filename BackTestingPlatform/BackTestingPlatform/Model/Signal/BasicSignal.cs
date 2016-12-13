@@ -12,7 +12,9 @@ namespace BackTestingPlatform.Model.Signal
         public string code { get; set; }
         public double volume { get; set; }
         public double price { get; set; }
+        //交易品种
         public string tradingVarieties { get; set; }
+        //买卖价差
         public double bidAskSpread { get; set; }
     }
 

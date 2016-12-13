@@ -11,7 +11,7 @@ namespace BackTestingPlatform.Utilities.DataApplication
     public static class KLineDataUtils
     {
         /// <summary>
-        /// //查缺补漏函数：
+        /// //查缺补漏函数：如果某天数据为NAN，那么复制上一天的数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="orignalList"></param>
