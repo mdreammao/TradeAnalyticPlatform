@@ -268,7 +268,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             }
             if (position.ShortPosition.volume!=0)
             {
-                return (price - position.ShortPosition.averagePrice);
+                return (position.ShortPosition.averagePrice-price);
             }
             return income;
         }
