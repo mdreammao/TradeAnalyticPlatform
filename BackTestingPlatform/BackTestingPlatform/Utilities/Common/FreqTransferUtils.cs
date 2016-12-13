@@ -41,13 +41,14 @@ namespace BackTestingPlatform.Utilities
                 for (int j = 0; j < frequency; j++)
                 {
                     int index = i * frequency + j;
+                    time = orignalList[index].time;
                     if (index<orignalList.Count())
                     {
                         close = orignalList[index].close;
                         openInterest = orignalList[index].openInterest;
                         amount = amount + orignalList[index].amount;
                         volume = volume + orignalList[index].volume;
-                        time = orignalList[index].time;
+                        //time = orignalList[index].time;
                         high = high > orignalList[index].high ? high : orignalList[index].high;
                         low = (low < orignalList[index].low && low>0) ? low : orignalList[index].low;
                     }
