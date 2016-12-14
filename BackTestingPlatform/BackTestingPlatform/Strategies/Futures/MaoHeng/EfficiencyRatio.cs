@@ -70,7 +70,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private  List<FuturesMinute> getData(DateTime today,string code)
         {
             //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
-            var data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
+            List<FuturesMinute> data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
             var dataModified=FreqTransferUtils.minuteToNMinutes(data, frequency);
             return dataModified;
         }
