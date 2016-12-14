@@ -30,7 +30,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
     {
         //回测参数设置
         private double initialCapital = 3000;
-        private double slipPoint = 0.3;
+        private double slipPoint = 0;
         private DateTime startDate, endDate;
         private string underlying;
         private int frequency = 1;
@@ -59,6 +59,16 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             this.longLevel = longLevel;
             this.shortLevel = shortLevel;
             this.tradeDays = DateUtils.GetTradeDays(startDate, endDate);
+            if (underlying.IndexOf("RB")>-1) //螺纹钢手续费为每手万一，一手乘数为10
+            {
+                initialCapital = 3000;
+                slipPoint = initialCapital*0.0001;
+            }
+            else if (underlying.IndexOf("A")>-1) //大豆的手续费为每手2块钱，一手乘数为10
+            {
+                initialCapital = 4000;
+                slipPoint = 0.2;
+            }
         }
 
         /// <summary>
@@ -70,7 +80,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private  List<FuturesMinute> getData(DateTime today,string code)
         {
             //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
-            var data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
+            List<FuturesMinute> data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
             var dataModified=FreqTransferUtils.minuteToNMinutes(data, frequency);
             return dataModified;
         }
@@ -138,6 +148,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 var dataOnlyToday = getData(today, underlying);//一个交易日里有多条分钟线数据
                 var data = getData(DateUtils.PreviousTradeDay(today), underlying);//前一交易日的分钟线频率数据list
                 int indexStart = data.Count();
+                if (indexStart==0) //前一天没数据
+                {
+                    indexStart = numbers;
+                }
                 data.AddRange(dataOnlyToday);//将当天的数据add到前一天的数据之后
                 //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
@@ -202,16 +216,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
 
                     {
                         double volume = 1;
-                        maxIncome = 0;
                         //长头寸信号
                         MinuteSignal longSignal = new MinuteSignal() { code = underlying, volume = volume, time = now, tradingVarieties = "futures", price = data[j].open, minuteIndex = j };
-                        Console.WriteLine("做多期货！多头开仓价格: {0}",data[j].open);
                         //signal保存长头寸longSignal信号
                         Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                         signal.Add(underlying, longSignal);
+                        MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: longSignal.minuteIndex);
+                        Console.WriteLine("做多期货！多头开仓价格: {0}", data[j].open);
                         //头寸量叠加
                         positionVolume += volume;
-                        MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: longSignal.minuteIndex);
+                        //单笔最大收益重置
+                        maxIncome = 0;
                     }
                     else if (ER<=shortLevel&& positionVolume == 0) //空头信号，无头寸，则开空仓
                     {
@@ -257,15 +272,16 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
             line.Add("NetWorth", netWorth);
+            string recordName = underlying.Replace(".", "_") + "_ER_"+"numbers_"+numbers.ToString()+"_frequency_"+frequency.ToString()+"_level_"+shortLevel.ToString();
             //记录净值数据
-            RecordUtil.recordToCsv(accountHistory, GetType().FullName, "account", parameters: "RB_ER", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            RecordUtil.recordToCsv(accountHistory, GetType().FullName, "account", parameters: recordName, performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
             //记录持仓变化
             var positionStatus = OptionRecordUtil.Transfer(positions);
-            RecordUtil.recordToCsv(positionStatus, GetType().FullName, "positions", parameters: "RB_ER", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            RecordUtil.recordToCsv(positionStatus, GetType().FullName, "positions", parameters: recordName, performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
             //记录统计指标
             var performanceList = new List<PerformanceStatisics>();
             performanceList.Add(myStgStats);
-            RecordUtil.recordToCsv(performanceList, GetType().FullName, "performance", parameters: "RB_ER", performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            RecordUtil.recordToCsv(performanceList, GetType().FullName, "performance", parameters: recordName, performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
             //统计指标在console 上输出
             Console.WriteLine("--------Strategy Performance Statistics--------\n");
             Console.WriteLine(" netProfit:{0,5:F4} \n totalReturn:{1,-5:F4} \n anualReturn:{2,-5:F4} \n anualSharpe :{3,-5:F4} \n winningRate:{4,-5:F4} \n PnLRatio:{5,-5:F4} \n maxDrawDown:{6,-5:F4} \n maxProfitRatio:{7,-5:F4} \n informationRatio:{8,-5:F4} \n alpha:{9,-5:F4} \n beta:{10,-5:F4} \n averageHoldingRate:{11,-5:F4} \n", myStgStats.netProfit, myStgStats.totalReturn, myStgStats.anualReturn, myStgStats.anualSharpe, myStgStats.winningRate, myStgStats.PnLRatio, myStgStats.maxDrawDown, myStgStats.maxProfitRatio, myStgStats.informationRatio, myStgStats.alpha, myStgStats.beta, myStgStats.averageHoldingRate);

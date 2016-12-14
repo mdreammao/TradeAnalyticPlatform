@@ -25,19 +25,25 @@ namespace BackTestingPlatform.DataAccess.Futures
             {
                 return readByParameters(code, date, "periodstart=09:30:00;periodend=15:00:00");
             }
-            if (str[0].IndexOf("A") > -1 && str[1] == "DCE")
+            if (str[1] == "DCE") //大商所目前所有品种交易时间最晚时间为2点半
             {
-                var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:30:00");
-                var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
-                nightData.AddRange(dayData);
-                return nightData;
-            }
-            if (str[0].IndexOf("I")>-1 && str[1]=="DCE")
-            {
-                var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:30:00");
-                var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
-                nightData.AddRange(dayData);
-                return nightData;
+                DateTime modifiedDate1 = new DateTime(2015, 5, 8);
+                if (date<=modifiedDate1)
+                {
+                    var nightData1 = readByParameters(code, date, "periodstart=21:00:00;periodend=23:59:59");
+                    var nightData2 = readByParameters(code, date, "periodstart=00:00:00;periodend=2:30:00");
+                    var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                    nightData1.AddRange(nightData2);
+                    nightData1.AddRange(dayData);
+                    return nightData1;
+                }
+                else
+                {
+                    var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:30:00");
+                    var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                    nightData.AddRange(dayData);
+                    return nightData;
+                }
             }
             if (str[0].IndexOf("RB")>-1 &&　str[1]=="SHF")
             {
