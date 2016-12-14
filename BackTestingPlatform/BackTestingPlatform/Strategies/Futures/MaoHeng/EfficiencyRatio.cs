@@ -69,6 +69,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 4000;
                 slipPoint = 0.2;
             }
+            else if (underlying.IndexOf("M") > -1) //大豆的手续费为每手2块钱，一手乘数为10
+            {
+                initialCapital = 3000;
+                slipPoint = 0.15;
+            }
         }
 
         /// <summary>
@@ -187,7 +192,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         }
                         //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
                         //&& ((positionVolume>0 && ER<longLevel) || (positionVolume<0 && ER>shortLevel))
-                        else if ((maxIncome-incomeNow)>0.01*Math.Abs(data[j].open) || incomeNow<-0.01 * Math.Abs(data[j].open)) //从最高点跌下来3%，就止损
+                        else if ((maxIncome-incomeNow)>0.005*Math.Abs(data[j].open) || incomeNow<-0.005 * Math.Abs(data[j].open)) //从最高点跌下来3%，就止损
 
                         {
                             positionVolume = 0;
