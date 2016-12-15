@@ -33,6 +33,10 @@ namespace BackTestingPlatform.Utilities
                 return new List<T>();
             }
             List<T> list = new List<T>();
+            if (frequency==1)
+            {
+                return orignalList;
+            }
             int len = orignalList.Count() / frequency;
             for (int i = 0; i < len; i++)
             {
