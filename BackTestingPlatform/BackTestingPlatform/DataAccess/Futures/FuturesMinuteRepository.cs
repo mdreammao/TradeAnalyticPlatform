@@ -93,6 +93,7 @@ namespace BackTestingPlatform.DataAccess.Futures
                 {
                     items.Add(new FuturesMinute
                     {
+                        tradeday=date,
                         time = timeList[k],
                         open = (double)dataList[k * fieldLen + 0],
                         high = (double)dataList[k * fieldLen + 1],

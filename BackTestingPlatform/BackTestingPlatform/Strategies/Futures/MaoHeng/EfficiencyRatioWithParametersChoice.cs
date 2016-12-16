@@ -73,7 +73,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //var dataModified = FreqTransferUtils.minuteToNMinutes(data, frequency);
             //按交易日逐日计算，每日遍历所有的参数，结果记入字典结构的变量中
             ParameterPairs pairs = new ParameterPairs();
-            int[] frequencySet = new int[6] { 1, 2, 5, 10, 15, 20 };
+            int[] frequencySet = new int[6] { 2, 5, 10, 15, 20,30 };
             int[] numbersSet = new int[6] { 3, 4, 5, 6, 8, 10 };
             double[] lossPercentSet = new double[3] { 0.005, 0.01, 0.015 };
             double[] ERRatioSet = new double[5] { 0.5, 0.6, 0.7, 0.8, 0.9 };
@@ -109,7 +109,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                 }
                                 pairs.tradeday = now.tradeday;
                                 //当日最后一根K线，进入结算。
-                                if (i>dataModified.Count() || dataModified[i+1].tradeday>now.tradeday) 
+                                if (i>=dataModified.Count() || (i+1 < dataModified.Count() && dataModified[i+1].tradeday>now.tradeday)) 
                                 {
                                     //强制平仓
                                     if (positionVolume!=0)
@@ -117,7 +117,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                         profitInDay += positionVolume * (now.open - openPrice)-2*slipPoint;
                                     }
                                     //记录该组参数当日收益
-                                    result.Add(pairs, profitInDay);
+                                    ParameterPairs pairs0 = new ParameterPairs { ERRatio=pairs.ERRatio,frequency=pairs.frequency,lossPercent=pairs.lossPercent,tradeday=pairs.tradeday};
+                                    result.Add(pairs0, profitInDay);
                                     //重置数据
                                     profitInDay = 0;
                                     positionVolume = 0;
@@ -216,11 +217,6 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         {
             //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
             List<FuturesMinute> data = KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
-            for (int i = 0; i < data.Count(); i++)
-            {
-                data[i].indexInDay = i;
-                data[i].tradeday = today;
-            }
             return data;
         }
 
