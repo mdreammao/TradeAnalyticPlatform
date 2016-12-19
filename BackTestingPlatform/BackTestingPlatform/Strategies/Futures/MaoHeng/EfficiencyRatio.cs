@@ -30,12 +30,14 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
     {
         //回测参数设置
         private double initialCapital = 3000;
-        private double slipPoint = 0;
+        private double slipPoint = 0.3;
         private DateTime startDate, endDate;
         private string underlying;
         private int frequency = 1;
         private int numbers = 5;
         private double longLevel = 0.8, shortLevel = -0.8;
+        private double ERRatio = 0.8;
+        private double lossPercent = 0.005;
         private List<DateTime> tradeDays = new List<DateTime>();
         private Dictionary<DateTime, int> timeList = new Dictionary<DateTime, int>();
 
@@ -49,7 +51,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// <param name="numbers"></param>
         /// <param name="longLevel"></param>
         /// <param name="shortLevel"></param>
-        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=1,int numbers=3,double longLevel=0.75,double shortLevel=-0.75)
+        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=1,int numbers=3,double longLevel=0.75,double shortLevel=-0.75,double ERRatio=0.8,double lossPercent=0.005)
         {
             this.startDate = Kit.ToDate(startDate);
             this.endDate = Kit.ToDate(endDate);
@@ -58,6 +60,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             this.numbers = numbers;
             this.longLevel = longLevel;
             this.shortLevel = shortLevel;
+            this.ERRatio = ERRatio;
+            this.lossPercent = lossPercent;
             this.tradeDays = DateUtils.GetTradeDays(startDate, endDate);
             if (underlying.IndexOf("RB")>-1) //螺纹钢手续费为每手万一，一手乘数为10
             {
@@ -192,7 +196,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         }
                         //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
                         //&& ((positionVolume>0 && ER<longLevel) || (positionVolume<0 && ER>shortLevel))
-                        else if ((maxIncome-incomeNow)>0.005*Math.Abs(data[j].open) || incomeNow<-0.005 * Math.Abs(data[j].open)) //从最高点跌下来3%，就止损
+                        else if ((maxIncome-incomeNow)> lossPercent * Math.Abs(data[j].open) || incomeNow<-lossPercent * Math.Abs(data[j].open)) //从最高点跌下来3%，就止损
 
                         {
                             positionVolume = 0;
@@ -217,7 +221,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     }
 
                     #endregion
-                    if (ER>=longLevel && positionVolume==0) //多头信号,无头寸，则开多仓
+                    if (ER>= ERRatio && positionVolume==0) //多头信号,无头寸，则开多仓
 
                     {
                         double volume = 1;
@@ -233,7 +237,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         //单笔最大收益重置
                         maxIncome = 0;
                     }
-                    else if (ER<=shortLevel&& positionVolume == 0) //空头信号，无头寸，则开空仓
+                    else if (ER<= -ERRatio && positionVolume == 0) //空头信号，无头寸，则开空仓
                     {
                         double volume = -1;
                         maxIncome = 0;

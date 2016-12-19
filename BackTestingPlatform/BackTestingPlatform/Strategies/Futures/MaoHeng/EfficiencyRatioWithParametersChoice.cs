@@ -30,7 +30,9 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private int numbers;
         private double longLevel,shortLevel;
         private List<DateTime> tradeDays = new List<DateTime>();
-        private Dictionary<ParameterPairs, double> result = new Dictionary<ParameterPairs, double>();
+       //private Dictionary<ParameterPairs, double> result = new Dictionary<ParameterPairs, double>();
+        //每种参数组合，在所有交易日的盈利结果
+        private Dictionary<FourParameterPairs, SortedDictionary<DateTime, double>> newResult = new Dictionary<FourParameterPairs, SortedDictionary<DateTime, double>>();
         private Dictionary<DateTime, int> tradeIndexStart = new Dictionary<DateTime, int>();
         private Dictionary<DateTime, int> timeList = new Dictionary<DateTime, int>();
 
@@ -73,11 +75,20 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //var dataModified = FreqTransferUtils.minuteToNMinutes(data, frequency);
             //按交易日逐日计算，每日遍历所有的参数，结果记入字典结构的变量中
             ParameterPairs pairs = new ParameterPairs();
-            int[] frequencySet = new int[6] { 2, 5, 10, 15, 20,30 };
-            int[] numbersSet = new int[6] { 3, 4, 5, 6, 8, 10 };
-            double[] lossPercentSet = new double[3] { 0.005, 0.01, 0.015 };
-            double[] ERRatioSet = new double[5] { 0.5, 0.6, 0.7, 0.8, 0.9 };
- 
+
+            //int[] frequencySet = new int[6] { 2, 5, 10, 15, 20,30 };
+            //int[] numbersSet = new int[6] { 3, 4, 5, 6, 8, 10 };
+            //double[] lossPercentSet = new double[3] { 0.005, 0.01, 0.015 };
+            //double[] ERRatioSet = new double[5] { 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+#if DEBUG
+            int[] frequencySet = new int[1] { 2};
+            int[] numbersSet = new int[1] { 3 };
+            double[] lossPercentSet = new double[1] { 0.005};
+            double[] ERRatioSet = new double[1] { 0.7};
+#endif
+
+
             foreach (var fre in frequencySet)
             {
                 frequency = fre; //给定K线周期
@@ -100,6 +111,19 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             double openPrice = 0;
                             double maxIncomeIndividual = 0;
                             Console.WriteLine("开始回测参数，K线：{0},回望时间：{1}，ER值：{2}，追踪止损：{3}", pairs.frequency, pairs.numbers, pairs.ERRatio, pairs.lossPercent);
+
+                            //[新版]记录该组参数对应的, 所有交易日的收益
+                            FourParameterPairs newPairs0 = new FourParameterPairs
+                            {
+                                ERRatio = pairs.ERRatio,
+                                frequency = pairs.frequency,
+                                lossPercent = pairs.lossPercent,
+                                numbers = pairs.numbers
+                            };
+
+                            //用来记录同一套策略情况下，不同交易日的盈利情况
+                            SortedDictionary<DateTime, double> sortedDic0 = new SortedDictionary<DateTime, double>();
+
                             for (int i = 0; i < dataModified.Count(); i++) //开始按日期遍历
                             {
                                 var now = dataModified[i];
@@ -115,10 +139,12 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                     if (positionVolume!=0)
                                     {
                                         profitInDay += positionVolume * (now.open - openPrice)-2*slipPoint;
+                                        Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
                                     }
+
                                     //记录该组参数当日收益
-                                    ParameterPairs pairs0 = new ParameterPairs { ERRatio=pairs.ERRatio,frequency=pairs.frequency,lossPercent=pairs.lossPercent,tradeday=pairs.tradeday};
-                                    result.Add(pairs0, profitInDay);
+                                    sortedDic0.Add(pairs.tradeday, profitInDay);
+
                                     //重置数据
                                     profitInDay = 0;
                                     positionVolume = 0;
@@ -140,12 +166,13 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                         {
                                             openPrice = now.open;
                                             positionVolume = 1;
-
+                                            Console.WriteLine("时间：{0}，价格：{1}, volume：1", dataModified[i].time, now.open);
                                         }
                                         if (ER<-ERRatio && now.open<now.high) //开空仓
                                         {
                                             openPrice = now.open;
                                             positionVolume = -1;
+                                            Console.WriteLine("时间：{0}，价格：{1}, volume：-1", dataModified[i].time, now.open);
                                         }
                                     }
                                     else if (positionVolume==1) //持多仓
@@ -160,6 +187,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                             profitInDay += now.open - openPrice-2*slipPoint;
                                             positionVolume = 0;
                                             maxIncomeIndividual = 0;
+                                            Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
                                         }
                                     }
                                     else if (positionVolume==-1) //持空仓
@@ -173,15 +201,16 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                             profitInDay += openPrice - now.open - 2 * slipPoint;
                                             positionVolume = 0;
                                             maxIncomeIndividual = 0;
+                                            Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
                                         }
                                     }
                                 }
                             }
-
+                            //写入每一套参数，对应的所有交易日的收益情况
+                            newResult.Add(newPairs0, sortedDic0);
                         }
                     }
-                }
-                
+                }                
             }
         }
         /// <summary>
