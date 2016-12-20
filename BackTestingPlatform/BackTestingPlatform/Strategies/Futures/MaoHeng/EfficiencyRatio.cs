@@ -40,7 +40,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private double lossPercent = 0.005;
         private List<DateTime> tradeDays = new List<DateTime>();
         private Dictionary<DateTime, int> timeList = new Dictionary<DateTime, int>();
-
+        private List<NetValue> netValue = new List<NetValue>();
         /// <summary>
         /// 策略的构造函数
         /// </summary>
@@ -196,6 +196,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         }
                         //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
                         //&& ((positionVolume>0 && ER<longLevel) || (positionVolume<0 && ER>shortLevel))
+
                         else if ((maxIncome-incomeNow)> lossPercent * Math.Abs(data[j].open) || incomeNow<-lossPercent * Math.Abs(data[j].open)) //从最高点跌下来3%，就止损
 
                         {
@@ -271,6 +272,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     //记录历史仓位信息
                     accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
                     benchmark.Add(data.Last().close);
+                    netValue.Add(new NetValue { time = today, netvalue = myAccount.totalAssets, benchmark = data.Last().close });
                 }
             }
             //策略绩效统计及输出
@@ -284,6 +286,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             string recordName = underlying.Replace(".", "_") + "_ER_"+"numbers_"+numbers.ToString()+"_frequency_"+frequency.ToString()+"_level_"+shortLevel.ToString();
             //记录净值数据
             RecordUtil.recordToCsv(accountHistory, GetType().FullName, "account", parameters: recordName, performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
+            RecordUtil.recordToCsv(netValue, GetType().FullName, "netvalue", parameters: recordName, performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
             //记录持仓变化
             var positionStatus = OptionRecordUtil.Transfer(positions);
             RecordUtil.recordToCsv(positionStatus, GetType().FullName, "positions", parameters: recordName, performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
