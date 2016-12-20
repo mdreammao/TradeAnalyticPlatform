@@ -39,8 +39,8 @@ namespace BackTestingPlatform.Utilities.Common
                 return null;
             }
             PerformanceStatisics performanceStats = new PerformanceStatisics();
-            //无风险收益率(年化)
-            
+
+            //无风险收益率(年化)        
             double barsOfYear = 252;
             //account长度，account记录周期数
             int lengthOfAccount = accountHistory.Count;

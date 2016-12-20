@@ -66,7 +66,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             data = getData(DateUtils.PreviousTradeDay(tradeDays[0],3), underlying);
             data.AddRange(getData(DateUtils.PreviousTradeDay(tradeDays[0], 2), underlying));
             data.AddRange(getData(DateUtils.PreviousTradeDay(tradeDays[0], 1), underlying));
-            //逐日获取K线数据
+            //逐日获取K线数据（频率为1分钟）
             for (int i = 0; i < tradeDays.Count(); i++)
             {
                 var data0 = getData(tradeDays[i], underlying);
@@ -82,8 +82,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //double[] ERRatioSet = new double[5] { 0.5, 0.6, 0.7, 0.8, 0.9 };
 
 #if DEBUG
-            int[] frequencySet = new int[1] { 2};
-            int[] numbersSet = new int[1] { 3 };
+            int[] frequencySet = new int[1] { 5};
+            int[] numbersSet = new int[1] { 5 };
             double[] lossPercentSet = new double[1] { 0.005};
             double[] ERRatioSet = new double[1] { 0.7};
 #endif
@@ -127,17 +127,19 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             for (int i = 0; i < dataModified.Count(); i++) //开始按日期遍历
                             {
                                 var now = dataModified[i];
+                                //在5分钟K线数据表dataModified中，找到首个交易日 tradeDays[0]开始位置对应的index
                                 if (now.tradeday < tradeDays[0])
                                 {
                                     continue;
                                 }
                                 pairs.tradeday = now.tradeday;
-                                //当日最后一根K线，进入结算。
-                                if (i>=dataModified.Count() || (i+1 < dataModified.Count() && dataModified[i+1].tradeday>now.tradeday)) 
+                                //当日最后一根K线，进入结算。 
+                                if (i==dataModified.Count()-1 || (i+1 < dataModified.Count() && dataModified[i+1].tradeday>now.tradeday)) 
                                 {
                                     //强制平仓
                                     if (positionVolume!=0)
                                     {
+                                        //减去2倍的滑点，是因为买入和卖出均有手续费
                                         profitInDay += positionVolume * (now.open - openPrice)-2*slipPoint;
                                         Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
                                     }
@@ -156,7 +158,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                     for (int k = i - numbers; k < i; k++)
                                     {
                                         //导入收盘价
-                                        prices[k - (i - numbers)] = data[k].close;
+                                        prices[k - (i - numbers)] = dataModified[k].close;
+                                      //  prices[k - (i - numbers)] = data[k].close;
                                     }
                                     //计算出ER值
                                     double ER = computeER(prices);
