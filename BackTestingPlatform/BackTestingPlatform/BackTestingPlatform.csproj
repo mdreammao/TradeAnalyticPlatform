@@ -156,6 +156,7 @@
     <Compile Include="Model\Common\Constants.cs" />
     <Compile Include="Model\Common\HoldingStatus.cs" />
     <Compile Include="Model\Common\KLine.cs" />
+    <Compile Include="Model\Common\NetValue.cs" />
     <Compile Include="Model\Common\PerformanceStatisics.cs" />
     <Compile Include="Model\Common\Position.cs" />
     <Compile Include="Model\Common\Sequential.cs" />
