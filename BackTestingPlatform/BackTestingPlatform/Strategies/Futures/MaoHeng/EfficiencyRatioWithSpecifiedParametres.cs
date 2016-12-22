@@ -20,13 +20,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using BackTestingPlatform.AccountOperator.Minute.maoheng;
+using BackTestingPlatform.Strategies.Futures.MaoHeng.Model;
 
 namespace BackTestingPlatform.Strategies.Futures.MaoHeng
 {
     /// <summary>
     /// Perry Kaufman在他 1995年的着作 " Smarter Trading"首次提出了效率比值 （ER）。它是一种趋势强度的衡量,用以调整市场的波动程度.它的计算方法如下 Efficiency Ratio = direction / volatility ER = （N 期间内价格总变化的绝对值）/ （N 期间内个别价格变化的绝对值） 如果个别价格变化都是正值 （或负值），那么 ER 将等于 1.0，这代表了强劲的趋势行情。然而，如果有正面和负面价格变动造成相互的抵消，代表公式中的分子将会缩小，ER 将会减少。ER 反映价格走势的一致性。ER 的所有值将都介于 0.0 ~ 1.0  另外一种计算方式为ER = （N 期间内价格总变化）/ （N 期间内个别价格变化的绝对值）此时 ER值的变化范围就会落在 -1.0 ~ 1.0 之间 , 分别代表涨势与跌势的方向 , 其中 0 代表无方向性的波动
     /// </summary>
-    public class EfficiencyRatio
+    public class EfficiencyRatioWithSpecifiedParametres
     {
         //回测参数设置
         private double initialCapital = 3000;
@@ -41,6 +42,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private List<DateTime> tradeDays = new List<DateTime>();
         private Dictionary<DateTime, int> timeList = new Dictionary<DateTime, int>();
         private List<NetValue> netValue = new List<NetValue>();
+        Dictionary<DateTime, FourParameterPairs> parameters = new Dictionary<DateTime, FourParameterPairs>();
         /// <summary>
         /// 策略的构造函数
         /// </summary>
@@ -49,26 +51,21 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// <param name="underlying"></param>
         /// <param name="frequency"></param>
         /// <param name="numbers"></param>
-        /// <param name="longLevel"></param>
+        /// <param name="longLevel"></param>FourParameterPairs
         /// <param name="shortLevel"></param>
-        public EfficiencyRatio(int startDate, int endDate,string underlying,int frequency=1,int numbers=3,double longLevel=0.75,double shortLevel=-0.75,double ERRatio=0.8,double lossPercent=0.005)
+        public EfficiencyRatioWithSpecifiedParametres(int startDate, int endDate,string underlying, Dictionary<DateTime, FourParameterPairs> parameters)
         {
             this.startDate = Kit.ToDate(startDate);
             this.endDate = Kit.ToDate(endDate);
             this.underlying = underlying;
-            this.frequency = frequency;
-            this.numbers = numbers;
-            this.longLevel = longLevel;
-            this.shortLevel = shortLevel;
-            this.ERRatio = ERRatio;
-            this.lossPercent = lossPercent;
             this.tradeDays = DateUtils.GetTradeDays(startDate, endDate);
+            this.parameters = parameters;
             if (underlying.IndexOf("RB")>-1) //螺纹钢手续费为每手万一，一手乘数为10
             {
                 initialCapital = 3000;
                 slipPoint = initialCapital*0.0001;
             }
-            else if (underlying.IndexOf("A") > -1 && underlying.IndexOf("AU") < 0) //大豆的手续费为每手2块钱，一手乘数为10
+            else if (underlying.IndexOf("A")>-1 && underlying.IndexOf("AU") <0) //大豆的手续费为每手2块钱，一手乘数为10
             {
                 initialCapital = 4000;
                 slipPoint = 0.2;
@@ -78,11 +75,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 3000;
                 slipPoint = 0.15;
             }
-            else if (underlying.IndexOf("AU") > -1)
+            else if (underlying.IndexOf("AU")>-1)
             {
                 initialCapital = 300;
                 slipPoint = 0.02;
             }
+            else if (underlying.IndexOf("NI") > -1)
+            {
+                initialCapital = 12000;
+                slipPoint = 1;
+            }
+            compute();
         }
 
         /// <summary>
@@ -158,9 +161,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             for (int i = 0; i < tradeDays.Count(); i++)
             {
                 DateTime today = tradeDays[i];
+                //找到当日参数
+                FourParameterPairs pair = parameters[today];
+                frequency = pair.frequency;
+                numbers = pair.numbers;
+                ERRatio = pair.ERRatio;
+                lossPercent = pair.lossPercent;
                 //从wind或本地CSV获取相应交易日的数据list，并转换成FuturesMinute分钟线频率
                 var dataOnlyToday = getData(today, underlying);//一个交易日里有多条分钟线数据
-                var data = getData(DateUtils.PreviousTradeDay(today), underlying);//前一交易日的分钟线频率数据list
+                var data = getData(DateUtils.PreviousTradeDay(today,3), underlying);//前3交易日的分钟线频率数据list
+                data.AddRange(getData(DateUtils.PreviousTradeDay(today, 2), underlying));
+                data.AddRange(getData(DateUtils.PreviousTradeDay(today, 1), underlying));
                 int indexStart = data.Count();
                 if (indexStart==0) //前一天没数据
                 {
