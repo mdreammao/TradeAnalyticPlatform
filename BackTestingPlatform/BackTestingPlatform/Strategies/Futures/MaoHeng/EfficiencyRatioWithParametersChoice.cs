@@ -59,6 +59,9 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             }
         }
 
+        /// <summary>
+        /// 计算每一套参数对
+        /// </summary>
         public void computeParameters()
         {
             List<FuturesMinute> data = new List<FuturesMinute>();
@@ -216,6 +219,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 }                
             }
         }
+
         /// <summary>
         /// 计算ER值...................
         /// 
