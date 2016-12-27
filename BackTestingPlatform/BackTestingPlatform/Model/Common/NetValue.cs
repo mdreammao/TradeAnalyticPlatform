@@ -12,6 +12,8 @@ namespace BackTestingPlatform.Model.Common
     public class NetValue
     {
         public DateTime time { get; set; }
+        public double netvalueReturn { get; set; }
+        public double benchmarkReturn { get; set; }
         public double netvalue { get; set; }
         public double benchmark { get; set; }
     }

@@ -71,6 +71,24 @@ namespace BackTestingPlatform.DataAccess.Futures
                 }
                 
             }
+            if (str[0].IndexOf("AU") > -1 && str[1] == "SHF")
+            {
+                    var nightData1 = readByParameters(code, date, "periodstart=21:00:00;periodend=23:59:59");
+                    var nightData2 = readByParameters(code, date, "periodstart=00:00:00;periodend=2:29:59");
+                    var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                    nightData1.AddRange(nightData2);
+                    nightData1.AddRange(dayData);
+                    return nightData1;
+            }
+            if (str[0].IndexOf("NI") > -1 && str[1] == "SHF")
+            {
+                var nightData1 = readByParameters(code, date, "periodstart=21:00:00;periodend=23:59:59");
+                var nightData2 = readByParameters(code, date, "periodstart=00:00:00;periodend=1:00:00");
+                var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                nightData1.AddRange(nightData2);
+                nightData1.AddRange(dayData);
+                return nightData1;
+            }
             items = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
             return items;
         }

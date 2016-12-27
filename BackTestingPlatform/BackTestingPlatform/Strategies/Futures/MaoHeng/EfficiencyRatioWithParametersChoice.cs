@@ -4,6 +4,7 @@ using BackTestingPlatform.DataAccess.Futures;
 using BackTestingPlatform.Model.Futures;
 using BackTestingPlatform.Strategies.Futures.MaoHeng.Model;
 using BackTestingPlatform.Utilities;
+using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.DataApplication;
 using System;
 using System.Collections.Generic;
@@ -28,11 +29,12 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private double ERRatio;
         private int frequency;
         private int numbers;
-        private double longLevel,shortLevel;
         private List<DateTime> tradeDays = new List<DateTime>();
        //private Dictionary<ParameterPairs, double> result = new Dictionary<ParameterPairs, double>();
         //每种参数组合，在所有交易日的盈利结果
         private Dictionary<FourParameterPairs, SortedDictionary<DateTime, double>> newResult = new Dictionary<FourParameterPairs, SortedDictionary<DateTime, double>>();
+        //按交易日选取出对应的参数组合
+        public Dictionary<DateTime, FourParameterPairs> parameters = new Dictionary<DateTime, FourParameterPairs>();
         private Dictionary<DateTime, int> tradeIndexStart = new Dictionary<DateTime, int>();
         private Dictionary<DateTime, int> timeList = new Dictionary<DateTime, int>();
 
@@ -47,7 +49,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 3000;
                 slipPoint = initialCapital * 0.0001;
             }
-            else if (underlying.IndexOf("A") > -1) //大豆的手续费为每手2块钱，一手乘数为10
+            else if (underlying.IndexOf("A") > -1 && underlying.IndexOf("AU") < 0) //大豆的手续费为每手2块钱，一手乘数为10
             {
                 initialCapital = 4000;
                 slipPoint = 0.2;
@@ -57,12 +59,22 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 3000;
                 slipPoint = 0.15;
             }
+            else if (underlying.IndexOf("AU") > -1)
+            {
+                initialCapital = 300;
+                slipPoint = 0.02;
+            }
+            else if (underlying.IndexOf("NI") > -1)
+            {
+                initialCapital = 12000;
+                slipPoint = 1;
+            }
+            computeParameters();
+            parameters = chooseParameters(newResult, this.startDate, this.endDate, choicePeriod, serviceLife);
         }
 
-        /// <summary>
-        /// 计算每一套参数对
-        /// </summary>
-        public void computeParameters()
+        private void computeParameters()
+
         {
             List<FuturesMinute> data = new List<FuturesMinute>();
             //获取回测期之间的三日日数据
@@ -79,17 +91,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //按交易日逐日计算，每日遍历所有的参数，结果记入字典结构的变量中
             ParameterPairs pairs = new ParameterPairs();
 
-            //int[] frequencySet = new int[6] { 2, 5, 10, 15, 20,30 };
-            //int[] numbersSet = new int[6] { 3, 4, 5, 6, 8, 10 };
-            //double[] lossPercentSet = new double[3] { 0.005, 0.01, 0.015 };
-            //double[] ERRatioSet = new double[5] { 0.5, 0.6, 0.7, 0.8, 0.9 };
+            int[] frequencySet = new int[5] { 5, 10, 15, 20, 30 };
+            int[] numbersSet = new int[6] { 3, 4, 5, 6, 8, 10 };
+            double[] lossPercentSet = new double[6] {0.000625,0.00125, 0.0025,0.005, 0.01, 0.015 };
+            double[] ERRatioSet = new double[10] { 0.5, 0.55,0.6, 0.65,0.7,0.75, 0.8,0.85, 0.9,0.95 };
 
-#if DEBUG
-            int[] frequencySet = new int[1] { 5};
-            int[] numbersSet = new int[1] { 5 };
-            double[] lossPercentSet = new double[1] { 0.005};
-            double[] ERRatioSet = new double[1] { 0.7};
-#endif
+//#if DEBUG
+//            int[] frequencySet = new int[1] { 5};
+//            int[] numbersSet = new int[1] { 5 };
+//            double[] lossPercentSet = new double[1] { 0.005};
+//            double[] ERRatioSet = new double[1] { 0.7};
+//#endif
 
 
             foreach (var fre in frequencySet)
@@ -144,7 +156,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                     {
                                         //减去2倍的滑点，是因为买入和卖出均有手续费
                                         profitInDay += positionVolume * (now.open - openPrice)-2*slipPoint;
-                                        Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
+                                     //   Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
                                     }
 
                                     //记录该组参数当日收益
@@ -162,7 +174,6 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                     {
                                         //导入收盘价
                                         prices[k - (i - numbers)] = dataModified[k].close;
-                                      //  prices[k - (i - numbers)] = data[k].close;
                                     }
                                     //计算出ER值
                                     double ER = computeER(prices);
@@ -172,13 +183,13 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                         {
                                             openPrice = now.open;
                                             positionVolume = 1;
-                                            Console.WriteLine("时间：{0}，价格：{1}, volume：1", dataModified[i].time, now.open);
+                                           // Console.WriteLine("时间：{0}，价格：{1}, volume：1", dataModified[i].time, now.open);
                                         }
                                         if (ER<-ERRatio && now.open<now.high) //开空仓
                                         {
                                             openPrice = now.open;
                                             positionVolume = -1;
-                                            Console.WriteLine("时间：{0}，价格：{1}, volume：-1", dataModified[i].time, now.open);
+                                           // Console.WriteLine("时间：{0}，价格：{1}, volume：-1", dataModified[i].time, now.open);
                                         }
                                     }
                                     else if (positionVolume==1) //持多仓
@@ -193,7 +204,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                             profitInDay += now.open - openPrice-2*slipPoint;
                                             positionVolume = 0;
                                             maxIncomeIndividual = 0;
-                                            Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
+                                           // Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
                                         }
                                     }
                                     else if (positionVolume==-1) //持空仓
@@ -207,7 +218,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                             profitInDay += openPrice - now.open - 2 * slipPoint;
                                             positionVolume = 0;
                                             maxIncomeIndividual = 0;
-                                            Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
+                                           // Console.WriteLine("时间：{0}，价格：{1}, volume：0", dataModified[i].time, now.open);
                                         }
                                     }
                                 }
@@ -219,6 +230,97 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 }                
             }
         }
+
+        private Dictionary<DateTime, FourParameterPairs> chooseParameters(Dictionary<FourParameterPairs, SortedDictionary<DateTime, double>> result, DateTime startDate, DateTime endDate, int choicePeriod, int serviceLife)
+        {
+            Dictionary<DateTime, FourParameterPairs> paras = new Dictionary<DateTime, FourParameterPairs>();
+            DateTime start = startDate;
+            DateTime end =DateUtils.NextTradeDay(start,choicePeriod-1);
+            DateTime paraStart = DateUtils.NextTradeDay(start, choicePeriod);
+            DateTime paraEnd = DateUtils.NextTradeDay(start, choicePeriod + serviceLife - 1);
+            if (end>endDate)
+            {
+                end = endDate;
+                paraStart = start;
+                paraEnd =end;
+            }
+            double marks = 0;
+            FourParameterPairs bestPara = new FourParameterPairs();
+            while (end<=endDate)
+            {
+                foreach (var item in result)
+                {
+                    double mark0 = getMarks(result, item.Key, start, end);
+                    if (mark0>marks)
+                    {
+                        marks = mark0;
+                        bestPara = item.Key;
+                    }
+                }
+
+                if (paras.Count()==0)
+                {
+                    List<DateTime> dates0 = DateUtils.GetTradeDays(start, end);
+                    foreach (var item in dates0)
+                    {
+                        paras.Add(item, bestPara);
+                    }
+                }
+                List<DateTime> dates= DateUtils.GetTradeDays(paraStart,paraEnd);
+                foreach (var item in dates)
+                {
+                    paras.Add(item, bestPara);
+                }
+                //初始化
+                start= DateUtils.NextTradeDay(start, serviceLife);
+                end= DateUtils.NextTradeDay(end, serviceLife);
+                paraStart = DateUtils.NextTradeDay(paraStart, serviceLife);
+                paraEnd = DateUtils.NextTradeDay(paraEnd, serviceLife);
+                marks = 0;
+                bestPara = new FourParameterPairs();
+                if (end>=endDate)
+                {
+                    break;
+                }
+            }
+            return paras;
+        }
+        private double getMarks(Dictionary<FourParameterPairs, SortedDictionary<DateTime, double>> result, FourParameterPairs pair,DateTime startDate,DateTime endDate)
+        {
+            List<double> netvalue = new List<double>();
+            List<double> returnRatio = new List<double>();
+            netvalue.Add(1);
+            double total = initialCapital;
+            foreach (var item in result)
+            {
+                if (item.Key.ERRatio==pair.ERRatio && item.Key.frequency==pair.frequency && item.Key.lossPercent==pair.lossPercent && item.Key.numbers==pair.numbers)
+                {
+                    foreach (var num in item.Value)
+                    {
+                        if (num.Key>=startDate && num.Key<=endDate)
+                        {
+                            total += num.Value;
+                            netvalue.Add(total / initialCapital);
+                            returnRatio.Add(num.Value / initialCapital);
+                        }
+                    }
+                    break;
+                }
+            }
+            double MDD = Math.Round(PerformanceStatisicsUtils.computeMaxDrawDown(netvalue), 4);
+            double sum = 0, squareSum = 0 ;
+            for (int i = 0; i < returnRatio.Count(); i++)
+            {
+                sum += returnRatio[i];
+                squareSum += Math.Pow(returnRatio[i], 2);
+            }
+            double average = sum / returnRatio.Count();
+            double std = Math.Sqrt(squareSum / returnRatio.Count() - average * average);
+            double sharpe = average * 252 / (std * Math.Sqrt(252));
+            double calmar = average * 252 / MDD;
+            return 0.5*sharpe+0.5*calmar;
+        }
+        
 
         /// <summary>
         /// 计算ER值...................

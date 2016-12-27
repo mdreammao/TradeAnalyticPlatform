@@ -179,7 +179,7 @@ namespace BackTestingPlatform.Utilities.Common
         /// </summary>
         /// <param name="price"></param>传入double数组的价格序列
         /// <returns></returns>
-        private static double computeMaxDrawDown(List<double> price)
+        public static double computeMaxDrawDown(List<double> price)
         {
             double maxDrawDown = 0;
             double[] MDDArray = new double[price.Count];
@@ -201,7 +201,7 @@ namespace BackTestingPlatform.Utilities.Common
         /// </summary>
         /// <param name="price"></param>传入double数组的价格序列
         /// <returns></returns>
-        private static double computeMaxProfitRate(List<double> price)
+        public static double computeMaxProfitRate(List<double> price)
         {
             double maxProfitRate = 0;
             double[] MPRArray = new double[price.Count];
