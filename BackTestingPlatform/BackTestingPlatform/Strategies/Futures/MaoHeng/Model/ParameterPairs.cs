@@ -11,11 +11,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng.Model
     /// </summary>
     public class ParameterPairs
     {
-        public DateTime tradeday; 
-        public int frequency;
-        public int numbers;
-        public double lossPercent;
-        public double ERRatio;
+        public DateTime tradeday { get; set; }
+        public int frequency { get; set; }
+        public int numbers { get; set; }
+        public double lossPercent { get; set; }
+        public double ERRatio { get; set; }
     }
 
     /// <summary>
@@ -27,5 +27,18 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng.Model
         public int numbers;
         public double lossPercent;
         public double ERRatio;
+    }
+
+    /// <summary>
+    /// 包含分数的参数对
+    /// </summary>
+    public class ParameterPairsWithScore
+    {
+        public DateTime tradeday { get; set; }
+        public int frequency { get; set; }
+        public int numbers { get; set; }
+        public double lossPercent { get; set; }
+        public double ERRatio { get; set; }
+        public double Score { get; set; }
     }
 }

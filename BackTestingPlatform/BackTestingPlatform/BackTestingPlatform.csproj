@@ -165,6 +165,7 @@
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
     <Compile Include="Model\Positions\ExecutionReport.cs" />
+    <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithParasStability.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithSpecifiedParametres.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatio.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithParametersChoice.cs" />
