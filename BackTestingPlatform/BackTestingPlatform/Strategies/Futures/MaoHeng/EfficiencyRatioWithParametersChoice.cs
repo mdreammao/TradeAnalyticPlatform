@@ -90,10 +90,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //按交易日逐日计算，每日遍历所有的参数，结果记入字典结构的变量中
             ParameterPairs pairs = new ParameterPairs();
 
-            int[] frequencySet = new int[5] { 5, 10, 15, 20, 30 };
+            int[] frequencySet = new int[7] {2,3, 5, 10, 15, 20, 30 };
             int[] numbersSet = new int[6] { 3, 4, 5, 6, 8, 10 };
-            double[] lossPercentSet = new double[6] {0.000625,0.00125, 0.0025,0.005, 0.01, 0.015 };
-            double[] ERRatioSet = new double[10] { 0.5, 0.55,0.6, 0.65,0.7,0.75, 0.8,0.85, 0.9,0.95 };
+            double[] lossPercentSet = new double[3] {0.005, 0.01, 0.015 };
+            double[] ERRatioSet = new double[5] { 0.5, 0.6, 0.7, 0.8, 0.9 };
 
 //#if DEBUG
 //            int[] frequencySet = new int[1] { 5};
