@@ -2,6 +2,7 @@
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Model.Option;
+using BackTestingPlatform.Monitor.Option.Model;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Option;
 using System;
@@ -19,20 +20,136 @@ namespace BackTestingPlatform.Monitor.Option
         Dictionary<string, OptionGreek> optionPrice = new Dictionary<string, OptionGreek>();
         double[,] volSurface = new double[181,1001];
         List<double> duration = new List<double>();
+        List<LongDeltaPair> pairs = new List<LongDeltaPair>();
         DateTime today = new DateTime();
-        DateTime now = new DateTime();
         WindAPI w = Platforms.GetWindAPI();
-        double r = 0.04;
+        double riskFreeRate = 0.02;
         double etfPrice = 0;
         public LongDeltaMonitor(int todayInt)
         {
             today = Kit.ToDate(todayInt);
             optionList = getExistingOption(today);
-            now = DateTime.Now;
             optionPrice=getOptionPrice(optionList,ref etfPrice);
             duration = getDuartion(optionPrice);
             volSurface = getVolSurface(optionPrice);
+            pairs=getLongDeltaPair(10);
+            displayPairs();
         }
+
+        private void displayPairs()
+        {
+            foreach (var item in pairs)
+            {
+                var option1 = OptionUtilities.getOptionByCode(optionList, item.option1);
+                var option2= OptionUtilities.getOptionByCode(optionList, item.option2);
+                var price1 = optionPrice[option1.optionCode];
+                var price2 = optionPrice[option2.optionCode];
+                double delta = price1.delta - price2.delta;
+                double gamma = price1.gamma - price2.gamma;
+                double vega = price1.vega - price2.vega;
+                double theta = price1.theta - price2.theta;
+                Console.WriteLine("代码:{0}, 名称:{1}, 价格:{2} ask:{3}  bid:{4}, 波动率:{5}", option1.optionCode, option1.optionName, optionPrice[option1.optionCode].lastPrice, optionPrice[option1.optionCode].ask, optionPrice[option1.optionCode].bid,price1.impv);
+                Console.WriteLine("代码:{0}, 名称:{1}, 价格:{2} ask:{3}  bid:{4}, 波动率:{5}", option2.optionCode, option2.optionName, optionPrice[option2.optionCode].lastPrice, optionPrice[option2.optionCode].ask, optionPrice[option2.optionCode].bid,price2.impv);
+                Console.WriteLine("mark:{0}, delta:{1}, gamma:{2}, vega:{3}, theta:{4}, profit:{5}, loss:{6}", item.mark, delta, gamma, vega, theta, item.profit, item.loss);
+                Console.WriteLine("==============================================");
+            }
+        }
+
+        /// <summary>
+        /// 两两配对的longdelta期权的筛选
+        /// </summary>
+        /// <param name="days"></param>
+        /// <returns></returns>
+        private List<LongDeltaPair> getLongDeltaPair(int days)
+        {
+            List<LongDeltaPair> pairs = new List<LongDeltaPair>();
+            double etfUpper = etfPrice * Math.Exp(2*volSurface[days, 500] * Math.Sqrt(days / 252.0));
+            double etfLower= etfPrice * Math.Exp(-2*volSurface[days, 500] * Math.Sqrt(days / 252.0));
+            //两两循环选择最优配对
+            foreach (var item1 in optionPrice)
+            {
+                OptionGreek option1 = item1.Value;
+                double price1 = computeFuturePrice(days, option1.code, etfPrice);
+                foreach (var item2 in optionPrice)
+                {
+                    OptionGreek option2 = item2.Value;
+                    if (option1.code!=option2.code && option1.duration>=days && option2.duration>=days)
+                    {
+                        //选取delta为正的组合开始计算。
+                        LongDeltaPair pair = new LongDeltaPair();
+                        double profit = 0;
+                        double loss = 0;
+                        if (option1.delta>option2.delta)
+                        {
+                            pair.option1 = option1.code;
+                            pair.option2 = option2.code;
+                            pair.mark=Math.Abs(computeMarkOfPairs(option1.code, option2.code, days, etfUpper, etfLower, ref profit, ref loss));
+                            pair.profit = profit;
+                            pair.loss = loss;
+
+                        }
+                        else
+                        {
+                            pair.option1 = option2.code;
+                            pair.option2 = option1.code;
+                            pair.mark =Math.Abs(computeMarkOfPairs(option2.code, option1.code, days, etfUpper, etfLower, ref profit, ref loss));
+                            pair.profit = profit;
+                            pair.loss = loss;
+                        }
+                        if (pair.profit>0 && pair.mark>0.5 && pair.profit / Convert.ToDouble(days) * 252.0 > 1)
+                        {
+                            pairs.Add(pair);
+                        }
+                    }
+                }
+            }
+            return pairs.OrderBy(f=>-f.mark).ToList();
+        }
+
+        /// <summary>
+        /// 以收益损失比给期权组合打分
+        /// </summary>
+        /// <param name="code1"></param>
+        /// <param name="code2"></param>
+        /// <param name="days"></param>
+        /// <param name="upperPrice"></param>
+        /// <param name="lowerPrice"></param>
+        /// <param name="up"></param>
+        /// <param name="low"></param>
+        /// <returns></returns>
+        private double computeMarkOfPairs(string code1,string code2,int days,double upperPrice,double lowerPrice,ref double up,ref double low)
+        {
+            double marks = -100;
+            double initialValue = optionPrice[code1].lastPrice - optionPrice[code2].lastPrice;
+            double upperValue= computeFuturePrice(days, code1, upperPrice)- computeFuturePrice(days, code2, upperPrice);
+            double lowerValue = computeFuturePrice(days, code1, lowerPrice) - computeFuturePrice(days, code2, lowerPrice);
+            var option2 = OptionUtilities.getOptionByCode(optionList,code2);
+            double margin = OptionMargin.ComputeOpenMargin(etfPrice, optionPrice[code2].lastPrice, option2.strike, option2.optionType, 1, etfPrice)+(upperPrice-lowerPrice)/2;
+            double capitalOccupied = margin - initialValue;
+            up = (upperValue-initialValue)/capitalOccupied;
+            low = (lowerValue-initialValue)/capitalOccupied;
+            marks = up / low;
+            return marks;
+        }
+        /// <summary>
+        /// 估算未来的期权价格
+        /// </summary>
+        /// <param name="days"></param>
+        /// <param name="code"></param>
+        /// <param name="etfPrice"></param>
+        /// <returns></returns>
+        private double computeFuturePrice(int days,string code,double etfPrice)
+        {
+            double price = 0;
+            var option = OptionUtilities.getOptionByCode(optionList,code);
+            int x = Convert.ToInt32(optionPrice[code].duration - days);
+            int y = Convert.ToInt32(Math.Round(1000 * Math.Log(option.strike / etfPrice), 0) + 500);
+            double vol = volSurface[x, y];
+            price = ImpliedVolatilityUtilities.ComputeOptionPrice(option.strike, (optionPrice[code].duration - days)/252.0, riskFreeRate, 0, option.optionType, vol, etfPrice);
+            return price;
+        }
+        
+
 
         /// <summary>
         /// 获取近似的波动率曲面
