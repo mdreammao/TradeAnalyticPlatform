@@ -74,6 +74,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         }
 
         private void computeParameters()
+
         {
             List<FuturesMinute> data = new List<FuturesMinute>();
             //获取回测期之间的三日日数据
@@ -229,6 +230,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 }                
             }
         }
+
         private Dictionary<DateTime, FourParameterPairs> chooseParameters(Dictionary<FourParameterPairs, SortedDictionary<DateTime, double>> result, DateTime startDate, DateTime endDate, int choicePeriod, int serviceLife)
         {
             Dictionary<DateTime, FourParameterPairs> paras = new Dictionary<DateTime, FourParameterPairs>();
@@ -319,6 +321,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             return 0.5*sharpe+0.5*calmar;
         }
         
+
         /// <summary>
         /// 计算ER值...................
         /// 
