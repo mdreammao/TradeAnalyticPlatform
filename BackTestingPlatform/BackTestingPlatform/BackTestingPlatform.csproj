@@ -188,6 +188,7 @@
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Utilities\DataApplication\KLineDataUtils.cs" />
     <Compile Include="Utilities\Futures\FutureMargin.cs" />
+    <Compile Include="Utilities\GetData\Futures\GetDataFromWind.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />

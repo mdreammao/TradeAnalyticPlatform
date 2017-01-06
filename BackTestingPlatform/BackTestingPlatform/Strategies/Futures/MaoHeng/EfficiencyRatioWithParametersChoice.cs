@@ -109,10 +109,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.75, 0.8, 0.9 };
             #endregion
 
-            int[] frequencySet = new int[] {3,5,7,10 };
-            int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10,15 };
-            double[] lossPercentSet = new double[] { 0.000625, 0.00125, 0.0025, 0.005, 0.01,0.015 };
-            double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.75, 0.8, 0.9,0.95 };
+            int[] frequencySet = new int[] { 3, 5, 7, 10 };
+            int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
+            double[] lossPercentSet = new double[] { 0.000625, 0.00125, 0.0025, 0.005, 0.01, 0.015 };
+            double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9, 0.95 };
 
             //记录frequency的边际分布
             List<double> frequencyDistrbution = new List<double>();
