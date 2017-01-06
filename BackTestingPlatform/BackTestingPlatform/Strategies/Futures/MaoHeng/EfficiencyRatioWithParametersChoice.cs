@@ -73,6 +73,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             }
             //调用computeParameters，计算出newResult
             computeParameters();
+            //调用chooseParameters，使用前choicePeriod交易日的数据，计算出最优参数对，作为接下来serviceLife时间段的参数配置
             parameters = chooseParameters(newResult, this.startDate, this.endDate, choicePeriod, serviceLife);
         }
 
@@ -96,15 +97,22 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //按交易日逐日计算，每日遍历所有的参数，结果记入字典结构的变量中
             ParameterPairs pairs = new ParameterPairs();
 
-            //int[] frequencySet = new int[1] { 20 };
-            //int[] numbersSet = new int[1] { 10 };
-            //double[] lossPercentSet = new double[2] { 0.005, 0.00125 };
-            //double[] ERRatioSet = new double[1] { 0.9 };
+            #region debug数据，请勿删除
+            //int[] frequencySet = new int[] { 5 };
+            //int[] numbersSet = new int[] { 10 };
+            //double[] lossPercentSet = new double[] { 0.01 };
+            //double[] ERRatioSet = new double[] { 0.75 };
 
-            int[] frequencySet = new int[5] { 5, 10, 15, 20, 30 };
-            int[] numbersSet = new int[6] { 3, 4, 5, 6, 8, 10 };
-            double[] lossPercentSet = new double[5] { 0.000625, 0.00125, 0.0025, 0.005, 0.01};
-            double[] ERRatioSet = new double[5] { 0.5, 0.6, 0.7, 0.8, 0.9 };
+            //int[] frequencySet = new int[] { 5, 10, 15, 20, 30 };
+            //int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10 };
+            //double[] lossPercentSet = new double[] { 0.000625, 0.00125, 0.0025, 0.005, 0.01 };
+            //double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.75, 0.8, 0.9 };
+            #endregion
+
+            int[] frequencySet = new int[] {3,5,7,10 };
+            int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10,15 };
+            double[] lossPercentSet = new double[] { 0.000625, 0.00125, 0.0025, 0.005, 0.01,0.015 };
+            double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.75, 0.8, 0.9,0.95 };
 
             //记录frequency的边际分布
             List<double> frequencyDistrbution = new List<double>();
@@ -345,7 +353,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         }
 
         /// <summary>
-        /// 获得每个参数对的评分
+        /// 获得所有参数对的评分
         /// </summary>
         /// <param name="result"></param>
         /// <param name="pair"></param>
@@ -393,8 +401,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //return (0.5 * sharpe + 0.5 * calmar) / 8;
 
             //不处理MDD为0的情况
-            double calmar = (MDD == 0 ? 4 : average  / MDD);//Calmar比率
-            return (0.5 * sharpe + 0.5 * calmar)/8;
+            //double calmar = (MDD == 0 ? 4 : average  / MDD);//Calmar比率
+            //return (0.5 * sharpe + 0.5 * calmar)/8;
+
+            //只用年化收益率来打分
+            return average * 252;
         }
 
         /// <summary>
@@ -432,27 +443,5 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             List<FuturesMinute> data = KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
             return data;
         }
-
-        /// <summary>
-        /// 转换格式（方便输出每一个交易日的最优参数对）
-        /// </summary>
-        /// <param name="paras"></param>
-        /// <returns></returns>
-        //private List<ParameterPairs> convertType(Dictionary<DateTime, FourParameterPairs> paras)
-        //{
-        //    List<ParameterPairs> tradeDaysWithBestParas = new List<ParameterPairs>();
-        //    foreach (var item in paras)
-        //    {
-        //        tradeDaysWithBestParas.Add(new ParameterPairs
-        //        {
-        //            tradeday = item.Key,
-        //            frequency = item.Value.frequency,
-        //            numbers = item.Value.numbers,
-        //            lossPercent = item.Value.lossPercent,
-        //            ERRatio = item.Value.ERRatio
-        //        });
-        //    }
-        //    return tradeDaysWithBestParas;
-        //}
     }
 }

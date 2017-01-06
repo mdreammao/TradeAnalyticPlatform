@@ -29,12 +29,19 @@ namespace BackTestingPlatform.Charts
         //PL曲线输入字典
         private Dictionary<string, double[]> lineChart = new Dictionary<string, double[]>();
         private string[] date = { };
+        private string formTitleString=String.Empty;
+        private string XAxisTitleString = String.Empty;
+        private string YAxisTitleString = String.Empty;
 
-        public PLChart(Dictionary<string, double[]> line, string[] datePeriod)
+
+        public PLChart(Dictionary<string, double[]> line, string[] datePeriod,string formTitle="净值曲线",string XAxisTitle="时间",string YAxisTitle="净值")
         {
             InitializeComponent();
             lineChart = line;
             date = datePeriod;
+            formTitleString = formTitle;
+            XAxisTitleString = XAxisTitle;
+            YAxisTitleString = YAxisTitle;
         }
 
         protected override void Dispose(bool disposing)
@@ -109,11 +116,11 @@ namespace BackTestingPlatform.Charts
             myPane.XAxis.Type = AxisType.Text;
 
             //设置X轴和Y轴的名称
-            myPane.XAxis.Title.Text = "时间";//X轴
-            myPane.YAxis.Title.Text = "净值";//Y轴
+            myPane.XAxis.Title.Text =XAxisTitleString;//X轴
+            myPane.YAxis.Title.Text = YAxisTitleString;//Y轴
 
             //设置图的title
-            myPane.Title.Text = "净值曲线";
+            myPane.Title.Text = formTitleString;
 
             // Fill the axis area with a gradient
             //myPane.AxisFill = new Fill(Color.White,
