@@ -172,6 +172,8 @@
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithSpecifiedParametres.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatio.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithParametersChoice.cs" />
+    <Compile Include="Strategies\Futures\MaoHeng\ERParametersChoice.cs" />
+    <Compile Include="Strategies\Futures\MaoHeng\ERSpecifiedParameters.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\Model\ParameterPairs.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
