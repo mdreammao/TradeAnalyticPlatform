@@ -164,8 +164,11 @@
     <Compile Include="Model\Futures\FuturesDaily.cs" />
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
+    <Compile Include="Model\Option\OptionGreek.cs" />
     <Compile Include="Model\Positions\ExecutionReport.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithParasStability.cs" />
+    <Compile Include="Monitor\Option\LongDeltaMonitor.cs" />
+    <Compile Include="Monitor\Option\Model\MonitorModel.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithSpecifiedParametres.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatio.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithParametersChoice.cs" />
