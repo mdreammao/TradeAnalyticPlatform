@@ -99,19 +99,19 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
 
             #region debug数据，请勿删除
             //int[] frequencySet = new int[] { 5 };
-            //int[] numbersSet = new int[] { 10 };
-            //double[] lossPercentSet = new double[] { 0.01 };
-            //double[] ERRatioSet = new double[] { 0.75 };
+            //int[] numbersSet = new int[] { 3 };
+            //double[] lossPercentSet = new double[] { 0.015 };
+            //double[] ERRatioSet = new double[] { 0.6 };
 
-            //int[] frequencySet = new int[] { 5, 10, 15, 20, 30 };
-            //int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10 };
-            //double[] lossPercentSet = new double[] { 0.000625, 0.00125, 0.0025, 0.005, 0.01 };
-            //double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.75, 0.8, 0.9 };
+            //int[] frequencySet = new int[] { 3, 5, 7, 10 };
+            //int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
+            //double[] lossPercentSet = new double[] { 0.000625, 0.00125, 0.0025, 0.005, 0.01, 0.015 };
+            //double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
             #endregion
 
-            int[] frequencySet = new int[] { 3, 5, 7, 10 };
+            int[] frequencySet = new int[] { 3, 4, 5, 6, 7, 8 };
             int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
-            double[] lossPercentSet = new double[] { 0.000625, 0.00125, 0.0025, 0.005, 0.01, 0.015 };
+            double[] lossPercentSet = new double[] { 0.005, 0.01, 0.015, 0.02 };
             double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
 
             //记录frequency的边际分布
@@ -139,7 +139,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             double positionVolume = 0;
                             double openPrice = 0;
                             double maxIncomeIndividual = 0;
-                            Console.WriteLine("开始回测参数，K线：{0},回望时间：{1}，ER值：{2}，追踪止损：{3}", pairs.frequency, pairs.numbers, pairs.ERRatio, pairs.lossPercent);
+                            Console.WriteLine("开始回测参数，K线：{0},回望时间：{1}，追踪止损：{2}，ER值：{3}", pairs.frequency, pairs.numbers, pairs.lossPercent, pairs.ERRatio);
 
                             //[新版]记录该组参数对应的, 所有交易日的收益
                             FourParameterPairs newPairs0 = new FourParameterPairs
@@ -284,13 +284,25 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //记录每个交易日使用的参数对（List类型）,用于输出到CSV文件
             List<ParameterPairsWithScore> parasWithScore = new List<ParameterPairsWithScore>();
 
+            #region debug专用
+            //debug专用：存贮所有参数组合在规定start, end期间的得分...
+            Dictionary<FourParameterPairs,double> scoreWithParameterPair=new Dictionary<FourParameterPairs,double>();
+            #endregion
+
             while (end <= endDate)
             {
                 //循环所有的参数组合，选出（在choicePeriod时间段中）得分最高的参数对
                 foreach (var item in result)
                 {
-                    
-                    double mark0 = getMarks(result, item.Key, start, end);
+                    var mark0 = getMarks(result, item.Key, start, end);
+
+                    #region debug专用 
+                    //debug专用：存贮debug信息...
+                    if (mark0>0.1)
+                        scoreWithParameterPair.Add(item.Key,mark0);
+                    #endregion
+                   
+
                     if (mark0 > marks)
                     {
                         marks = mark0;
@@ -342,6 +354,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 {
                     break;
                 }
+                #region debug专用
+                scoreWithParameterPair = new Dictionary<FourParameterPairs, double>();
+                #endregion
+
             }
 
             //每个交易日使用的策略，写入CSV文件
@@ -377,6 +393,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                             total += num.Value;
                             netvalue.Add(total / initialCapital);
                             returnRatio.Add(num.Value / initialCapital);
+
+                            #region debug专用
+                            //Console.WriteLine("chiocePeriod数据-->时间:{0},利润:{1}",num.Key,num.Value);
+                            #endregion
                         }
                     }
                     break;

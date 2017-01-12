@@ -325,7 +325,19 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
             line.Add("Base", netWorthOfBenchmark.ToArray());
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
-            Application.Run(new PLChart(line, datestr));
+
+            //绘制图形的标题
+            string formTitle = this.startDate.ToShortDateString() + "--" + this.endDate.ToShortDateString()+"  "+this.underlying+" 净值曲线" 
+                + "\r\n"+ "\r\n"+"净利润："+myStgStats.netProfit+"  "+"夏普率："+myStgStats.anualSharpe+"  "+"最大回撤："+myStgStats.maxDrawDown
+                + "\r\n" + "\r\n"+ "参数包含: frequency，numbers，lossPercent，longER，shortER";
+            //生成图像
+            PLChart plc=new PLChart(line, datestr,formTitle: formTitle);
+            //运行图像
+            Application.Run(plc);
+            //保存图像
+            plc.SaveZed(GetType().FullName,this.startDate,this.endDate, myStgStats.netProfit.ToString(),myStgStats.anualSharpe.ToString(),myStgStats.maxDrawDown.ToString());
+            //plc.SaveZed("D:\\BTP\\Result\\" + GetType().FullName + "\\aa.png");
+            
         }
 
         /// <summary>
