@@ -18,6 +18,52 @@ namespace BackTestingPlatform.Utilities
     /// </summary>
     public static class FreqTransferUtils
     {
+        #region 备份：原始版本的minuteToNMinutes
+        /// <summary>
+        /// 转换分钟线频率的函数。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="orignalList">原始K线</param>
+        /// <param name="frequency">转换分钟数</param>
+        /// <returns></returns>
+        //public static List<T> minuteToNMinutes<T>(List<T> orignalList,int frequency) where T: KLine, new ()
+        //{
+        //    if (orignalList==null)
+        //    {
+        //        return new List<T>();
+        //    }
+        //    List<T> list = new List<T>();
+        //    if (frequency==1)
+        //    {
+        //        return orignalList;
+        //    }
+        //    int len = orignalList.Count() / frequency;
+        //    for (int i = 0; i < len; i++)
+        //    {
+        //        double close=0, high=0, low=0, openInterest=0,amount=0,volume=0;
+        //        DateTime time = new DateTime();
+        //        DateTime tradeday = new DateTime();
+        //        for (int j = 0; j < frequency; j++)
+        //        {
+        //            int index = i * frequency + j;
+        //            time = orignalList[index].time;
+        //            tradeday = orignalList[index].tradeday;
+        //            if (index<orignalList.Count())
+        //            {
+        //                close = orignalList[index].close;
+        //                openInterest = orignalList[index].openInterest;
+        //                amount = amount + orignalList[index].amount;
+        //                volume = volume + orignalList[index].volume;
+        //                //time = orignalList[index].time;
+        //                high = high > orignalList[index].high ? high : orignalList[index].high;
+        //                low = (low < orignalList[index].low && low>0) ? low : orignalList[index].low;
+        //            }
+        //        }
+        //       list.Add(new T { open = orignalList[i * frequency].open, tradeday=tradeday,time = time, close = close, amount = amount, volume = volume, high = high, low = low,openInterest=openInterest});
+        //    }
+        //    return list;
+        //}
+        #endregion
 
         /// <summary>
         /// 转换分钟线频率的函数。
@@ -26,29 +72,38 @@ namespace BackTestingPlatform.Utilities
         /// <param name="orignalList">原始K线</param>
         /// <param name="frequency">转换分钟数</param>
         /// <returns></returns>
-        public static List<T> minuteToNMinutes<T>(List<T> orignalList,int frequency) where T: KLine, new ()
+        public static List<T> minuteToNMinutes<T>(List<T> orignalList, int frequency) where T : KLine, new()
         {
-            if (orignalList==null)
+            if (orignalList == null)
             {
                 return new List<T>();
             }
             List<T> list = new List<T>();
-            if (frequency==1)
+            if (frequency == 1)
             {
                 return orignalList;
             }
-            int len = orignalList.Count() / frequency;
-            for (int i = 0; i < len; i++)
+            
+            int index = 0; //orignalList数组中的索引值
+
+            while (index<=orignalList.Count)
             {
-                double close=0, high=0, low=0, openInterest=0,amount=0,volume=0;
+                double close = 0, high = 0, low = 0, openInterest = 0, amount = 0, volume = 0;
                 DateTime time = new DateTime();
                 DateTime tradeday = new DateTime();
-                for (int j = 0; j < frequency; j++)
+                int KLineStartIndex = 0;//每根frequency频率的K线的起点（1分钟K线），在orignalList中的索引值
+
+                for (int j = 0; j < frequency; j++)// index走过frequency根 1分钟K线
                 {
-                    int index = i * frequency + j;
+                    //只有在KLineStartIndex为0时，才会重新确定该值
+                    if (KLineStartIndex == 0)
+                    {
+                        KLineStartIndex = index;
+                    }
+
                     time = orignalList[index].time;
                     tradeday = orignalList[index].tradeday;
-                    if (index<orignalList.Count())
+                    if (index < orignalList.Count())
                     {
                         close = orignalList[index].close;
                         openInterest = orignalList[index].openInterest;
@@ -56,14 +111,45 @@ namespace BackTestingPlatform.Utilities
                         volume = volume + orignalList[index].volume;
                         //time = orignalList[index].time;
                         high = high > orignalList[index].high ? high : orignalList[index].high;
-                        low = (low < orignalList[index].low && low>0) ? low : orignalList[index].low;
+                        low = (low < orignalList[index].low && low > 0) ? low : orignalList[index].low;
                     }
-                    
+
+                    //累加index
+                    index++;
+
+                    //如果index大于了orignalList的count值，也要break
+                    if (index >= orignalList.Count)
+                    {
+                        break;
+                    }
+
+                    //当一个交易日的1分钟K线数量，无法整除frequency时，“余数”那部分K单独组合成一根
+                    //增加判断条件：如果当前根K线的时间是下午，下一根K线的时间就变成了上午或者晚上，则说明横跨了交易日。
+                    if (
+                        (orignalList[index-1].time.TimeOfDay >= new TimeSpan(13, 30, 00) &&
+                         orignalList[index-1].time.TimeOfDay <= new TimeSpan(14, 59, 00))
+                        &&
+                        (orignalList[index].time.TimeOfDay >= new TimeSpan(21, 00, 00) ||
+                         (orignalList[index].time.TimeOfDay >= new TimeSpan(9, 00, 00)&& orignalList[index].time.TimeOfDay <= new TimeSpan(11, 30, 00) ))
+                        )
+                    {
+                        break;
+                    }
+                                                        
                 }
-               list.Add(new T { open = orignalList[i * frequency].open, tradeday=tradeday,time = time, close = close, amount = amount, volume = volume, high = high, low = low,openInterest=openInterest});
+
+                list.Add(new T { open = orignalList[KLineStartIndex].open, tradeday = tradeday, time = time, close = close, amount = amount, volume = volume, high = high, low = low, openInterest = openInterest });
+                
+                //如果index大于了orignalList的count值，要break
+                if (index >= orignalList.Count)
+                {
+                    break;
+                }
             }
             return list;
         }
+
+
         /// <summary>
         /// 股票tick,3秒切片数据转化我Nmin周期K线数据
         /// </summary>

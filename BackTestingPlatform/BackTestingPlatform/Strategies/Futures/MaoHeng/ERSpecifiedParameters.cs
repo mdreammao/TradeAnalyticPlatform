@@ -1,33 +1,29 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Autofac;
 using BackTestingPlatform.Charts;
 using BackTestingPlatform.Core;
 using BackTestingPlatform.DataAccess.Futures;
-using BackTestingPlatform.DataAccess.Option;
 using BackTestingPlatform.Model.Common;
 using BackTestingPlatform.Model.Futures;
 using BackTestingPlatform.Model.Positions;
 using BackTestingPlatform.Model.Signal;
+using BackTestingPlatform.Strategies.Futures.MaoHeng.Model;
 using BackTestingPlatform.Transaction.Minute.maoheng;
 using BackTestingPlatform.Utilities;
 using BackTestingPlatform.Utilities.Common;
 using BackTestingPlatform.Utilities.DataApplication;
 using BackTestingPlatform.Utilities.SaveResult.Common;
 using BackTestingPlatform.Utilities.SaveResult.Option;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using BackTestingPlatform.AccountOperator.Minute.maoheng;
-using BackTestingPlatform.Strategies.Futures.MaoHeng.Model;
 
 namespace BackTestingPlatform.Strategies.Futures.MaoHeng
 {
-    /// <summary>
-    /// Perry Kaufman在他 1995年的着作 " Smarter Trading"首次提出了效率比值 （ER）。它是一种趋势强度的衡量,用以调整市场的波动程度.它的计算方法如下 Efficiency Ratio = direction / volatility ER = （N 期间内价格总变化的绝对值）/ （N 期间内个别价格变化的绝对值） 如果个别价格变化都是正值 （或负值），那么 ER 将等于 1.0，这代表了强劲的趋势行情。然而，如果有正面和负面价格变动造成相互的抵消，代表公式中的分子将会缩小，ER 将会减少。ER 反映价格走势的一致性。ER 的所有值将都介于 0.0 ~ 1.0  另外一种计算方式为ER = （N 期间内价格总变化）/ （N 期间内个别价格变化的绝对值）此时 ER值的变化范围就会落在 -1.0 ~ 1.0 之间 , 分别代表涨势与跌势的方向 , 其中 0 代表无方向性的波动
-    /// </summary>
-    public class EfficiencyRatioWithSpecifiedParametres
+    //ERSpecifiedParameters
+    public class ERSpecifiedParameters
     {
         //回测参数设置
         private double initialCapital = 3000;
@@ -37,12 +33,13 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private int frequency = 1;
         private int numbers = 5;
         private double longLevel = 0.8, shortLevel = -0.8;
-        private double ERRatio = 0.8;
+        private double longER = 0.8; 
+        private double shortER = -0.8;
         private double lossPercent = 0.005;
         private List<DateTime> tradeDays = new List<DateTime>();
         private Dictionary<DateTime, int> timeList = new Dictionary<DateTime, int>();
         private List<NetValue> netValue = new List<NetValue>();
-        Dictionary<DateTime, FourParameterPairs> parameters = new Dictionary<DateTime, FourParameterPairs>();
+        Dictionary<DateTime, FiveParameterPairs> parameters = new Dictionary<DateTime, FiveParameterPairs>();
         /// <summary>
         /// 策略的构造函数
         /// </summary>
@@ -53,19 +50,19 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// <param name="numbers"></param>
         /// <param name="longLevel"></param>FourParameterPairs
         /// <param name="shortLevel"></param>
-        public EfficiencyRatioWithSpecifiedParametres(int startDate, int endDate,string underlying, Dictionary<DateTime, FourParameterPairs> parameters)
+        public ERSpecifiedParameters(int startDate, int endDate, string underlying, Dictionary<DateTime, FiveParameterPairs> parameters)
         {
             this.startDate = Kit.ToDate(startDate);
             this.endDate = Kit.ToDate(endDate);
             this.underlying = underlying;
             this.tradeDays = DateUtils.GetTradeDays(startDate, endDate);
             this.parameters = parameters;
-            if (underlying.IndexOf("RB")>-1) //螺纹钢手续费为每手万一，一手乘数为10
+            if (underlying.IndexOf("RB") > -1) //螺纹钢手续费为每手万一，一手乘数为10
             {
                 initialCapital = 3000;
-                slipPoint = initialCapital*0.0001;
+                slipPoint = initialCapital * 0.0001;
             }
-            else if (underlying.IndexOf("A")>-1 && underlying.IndexOf("AU") <0) //大豆的手续费为每手2块钱，一手乘数为10
+            else if (underlying.IndexOf("A") > -1 && underlying.IndexOf("AU") < 0) //大豆的手续费为每手2块钱，一手乘数为10
             {
                 initialCapital = 4000;
                 slipPoint = 0.2;
@@ -75,7 +72,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 3000;
                 slipPoint = 0.15;
             }
-            else if (underlying.IndexOf("AU")>-1)
+            else if (underlying.IndexOf("AU") > -1)
             {
                 initialCapital = 300;
                 slipPoint = 0.02;
@@ -94,11 +91,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// <param name="today">今天的日期</param>
         /// <param name="code">代码</param>
         /// <returns></returns>
-        private  List<FuturesMinute> getData(DateTime today,string code)
+        private List<FuturesMinute> getData(DateTime today, string code)
         {
             //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
-            List<FuturesMinute> data =KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
-            var dataModified=FreqTransferUtils.minuteToNMinutes(data, frequency);
+            List<FuturesMinute> data = KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
+            var dataModified = FreqTransferUtils.minuteToNMinutes(data, frequency);
             return dataModified;
         }
 
@@ -130,7 +127,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        private Dictionary<DateTime,int> getTimeList<T>(List<T> data) where T : KLine, new()
+        private Dictionary<DateTime, int> getTimeList<T>(List<T> data) where T : KLine, new()
         {
             Dictionary<DateTime, int> timeList = new Dictionary<DateTime, int>();
             for (int i = 0; i < data.Count(); i++)
@@ -162,18 +159,19 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             {
                 DateTime today = tradeDays[i];
                 //找到当日参数
-                FourParameterPairs pair = parameters[today];
+                FiveParameterPairs pair = parameters[today];
                 frequency = pair.frequency;
                 numbers = pair.numbers;
-                ERRatio = pair.ERRatio;
+                longER = pair.longER;
+                shortER = pair.shortER;
                 lossPercent = pair.lossPercent;
                 //从wind或本地CSV获取相应交易日的数据list，并转换成FuturesMinute分钟线频率
                 var dataOnlyToday = getData(today, underlying);//一个交易日里有多条分钟线数据
-                var data = getData(DateUtils.PreviousTradeDay(today,3), underlying);//前3交易日的分钟线频率数据list
+                var data = getData(DateUtils.PreviousTradeDay(today, 3), underlying);//前3交易日的分钟线频率数据list
                 data.AddRange(getData(DateUtils.PreviousTradeDay(today, 2), underlying));
                 data.AddRange(getData(DateUtils.PreviousTradeDay(today, 1), underlying));
                 int indexStart = data.Count();
-                if (indexStart==0) //前一天没数据
+                if (indexStart == 0) //前一天没数据
                 {
                     indexStart = numbers;
                 }
@@ -186,7 +184,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 #region 第二层循环
 
                 //这里减1：最后一个周期只平仓，不开仓
-                for (int j = indexStart; j < data.Count()-1; j++)
+                for (int j = indexStart; j < data.Count() - 1; j++)
                 {
                     DateTime now = data[j].time;
                     double[] prices = new double[numbers];
@@ -206,18 +204,18 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         //计算开盘价和头寸当前价的差价
                         double incomeNow = individualIncome(positions.Last().Value[underlying], data[j].open);
                         //若当前收入大于最大收入值，则更新最大收入值
-                        if (incomeNow>maxIncome)
+                        if (incomeNow > maxIncome)
                         {
                             maxIncome = incomeNow;
                         }
                         //若盈利回吐大于5个点 或者 最大收入大于45，则进行平仓
                         //&& ((positionVolume>0 && ER<longLevel) || (positionVolume<0 && ER>shortLevel))
 
-                        else if ((maxIncome-incomeNow)> lossPercent * Math.Abs(data[j].open) || incomeNow<-lossPercent * Math.Abs(data[j].open)) //从最高点跌下来3%，就止损
+                        else if ((maxIncome - incomeNow) > lossPercent * Math.Abs(data[j].open) || incomeNow < -lossPercent * Math.Abs(data[j].open)) //从最高点跌下来3%，就止损
 
                         {
                             positionVolume = 0;
-                            Console.WriteLine("追踪止损！平仓价格: {0}",data[j].open);
+                            Console.WriteLine("追踪止损！平仓价格: {0}", data[j].open);
                             MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, now, j, slipPoint);
                             maxIncome = 0;
                         }
@@ -238,7 +236,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     }
 
                     #endregion
-                    if (ER>= ERRatio && positionVolume==0) //多头信号,无头寸，则开多仓
+                    if (ER >= longER && positionVolume == 0) //多头信号,无头寸，则开多仓
 
                     {
                         double volume = 1;
@@ -254,12 +252,12 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                         //单笔最大收益重置
                         maxIncome = 0;
                     }
-                    else if (ER<= -ERRatio && positionVolume == 0) //空头信号，无头寸，则开空仓
+                    else if (ER <= shortER && positionVolume == 0) //空头信号，无头寸，则开空仓
                     {
                         double volume = -1;
                         maxIncome = 0;
                         MinuteSignal shortSignal = new MinuteSignal() { code = underlying, volume = volume, time = now, tradingVarieties = "futures", price = data[j].open, minuteIndex = j };
-                        Console.WriteLine("做空期货！空头开仓价格: {0}",data[j].open);
+                        Console.WriteLine("做空期货！空头开仓价格: {0}", data[j].open);
                         Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                         signal.Add(underlying, shortSignal);
                         positionVolume += volume;
@@ -279,7 +277,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     MinuteCloseAllWithBar.CloseAllPosition(dataToday, ref positions, ref myAccount, data[closeIndex].time, closeIndex, slipPoint);
                     Console.WriteLine("{2}   每日收盘前强制平仓，平仓价格:{0},账户价值:{1}", data[closeIndex].open, myAccount.totalAssets, today);
                 }
-                if (data.Count>0)
+                if (data.Count > 0)
                 {
                     //更新当日属性信息
 
@@ -288,16 +286,16 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     //记录历史仓位信息
                     accountHistory.Add(new BasicAccount(myAccount.time, myAccount.totalAssets, myAccount.freeCash, myAccount.positionValue, myAccount.margin, myAccount.initialAssets));
                     benchmark.Add(data.Last().close);
-                    if (netValue.Count()==0)
+                    if (netValue.Count() == 0)
                     {
-                        netValue.Add(new NetValue { time = today, netvalueReturn = 0, benchmarkReturn = 0 ,netvalue=myAccount.totalAssets,benchmark=data.Last().close});
+                        netValue.Add(new NetValue { time = today, netvalueReturn = 0, benchmarkReturn = 0, netvalue = myAccount.totalAssets, benchmark = data.Last().close });
                     }
                     else
                     {
                         var netValueLast = netValue.Last();
-                        netValue.Add(new NetValue { time = today, netvalueReturn = myAccount.totalAssets / netValueLast.netvalue-1, benchmarkReturn = data.Last().close / netValueLast.benchmark-1, netvalue = myAccount.totalAssets, benchmark = data.Last().close });
+                        netValue.Add(new NetValue { time = today, netvalueReturn = myAccount.totalAssets / netValueLast.netvalue - 1, benchmarkReturn = data.Last().close / netValueLast.benchmark - 1, netvalue = myAccount.totalAssets, benchmark = data.Last().close });
                     }
-                    
+
                 }
             }
             //策略绩效统计及输出
@@ -308,7 +306,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             Dictionary<string, double[]> line = new Dictionary<string, double[]>();
             double[] netWorth = accountHistory.Select(a => a.totalAssets / initialCapital).ToArray();
             line.Add("NetWorth", netWorth);
-            string recordName = underlying.Replace(".", "_") + "_ER_"+"numbers_"+numbers.ToString()+"_frequency_"+frequency.ToString()+"_level_"+shortLevel.ToString();
+            string recordName = underlying.Replace(".", "_") + "_ER_" + "numbers_" + numbers.ToString() + "_frequency_" + frequency.ToString() + "_level_" + shortLevel.ToString();
             //记录净值数据
             RecordUtil.recordToCsv(accountHistory, GetType().FullName, "account", parameters: recordName, performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
             RecordUtil.recordToCsv(netValue, GetType().FullName, "netvalue", parameters: recordName, performance: myStgStats.anualSharpe.ToString("N").Replace(".", "_"));
@@ -329,18 +327,19 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
 
             //绘制图形的标题
-            string formTitle = this.startDate.ToShortDateString() + "--" + this.endDate.ToShortDateString() + "  " + this.underlying + " 净值曲线"
-                + "\r\n" + "\r\n" + "净利润：" + myStgStats.netProfit + "  " + "夏普率：" + myStgStats.anualSharpe + "  " + "最大回撤：" + myStgStats.maxDrawDown
-                + "\r\n" + "\r\n" + "参数包含: frequency，numbers，lossPercent，ER";
+            string formTitle = this.startDate.ToShortDateString() + "--" + this.endDate.ToShortDateString()+"  "+this.underlying+" 净值曲线" 
+                + "\r\n"+ "\r\n"+"净利润："+myStgStats.netProfit+"  "+"夏普率："+myStgStats.anualSharpe+"  "+"最大回撤："+myStgStats.maxDrawDown
+                + "\r\n" + "\r\n"+ "参数包含: frequency，numbers，lossPercent，longER，shortER";
             //生成图像
-            PLChart plc = new PLChart(line, datestr, formTitle: formTitle);
+            PLChart plc=new PLChart(line, datestr,formTitle: formTitle);
             //运行图像
             Application.Run(plc);
             //保存图像
-            plc.SaveZed(GetType().FullName, this.startDate, this.endDate, myStgStats.netProfit.ToString(), myStgStats.anualSharpe.ToString(), myStgStats.maxDrawDown.ToString());
-            //Application.Run(new PLChart(line, datestr));
+            plc.SaveZed(GetType().FullName,this.startDate,this.endDate, myStgStats.netProfit.ToString(),myStgStats.anualSharpe.ToString(),myStgStats.maxDrawDown.ToString());
+            //plc.SaveZed("D:\\BTP\\Result\\" + GetType().FullName + "\\aa.png");
+            
         }
-        
+
         /// <summary>
         /// 计算单独头寸的收入
         /// </summary>
@@ -350,22 +349,22 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private double individualIncome(PositionsWithDetail position, double price)
         {
             double income = 0;
-            if (position.LongPosition.volume!=0)
+            if (position.LongPosition.volume != 0)
             {
                 return (price - position.LongPosition.averagePrice);
             }
-            if (position.ShortPosition.volume!=0)
+            if (position.ShortPosition.volume != 0)
             {
-                return (position.ShortPosition.averagePrice-price);
+                return (position.ShortPosition.averagePrice - price);
             }
             return income;
         }
 
-        private bool stopLossOrProfit(PositionsWithDetail position,double price)
+        private bool stopLossOrProfit(PositionsWithDetail position, double price)
         {
             bool stop = false;
             //多头止损
-            if (position.LongPosition.volume>0 &&　(price-position.LongPosition.averagePrice)/ position.LongPosition.averagePrice<-0.01)
+            if (position.LongPosition.volume > 0 && (price - position.LongPosition.averagePrice) / position.LongPosition.averagePrice < -0.01)
             {
                 stop = true;
             }
@@ -375,7 +374,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 stop = true;
             }
             //空头止损
-            if (position.ShortPosition.volume < 0 && (price-position.ShortPosition.averagePrice) / position.ShortPosition.averagePrice > 0.01)
+            if (position.ShortPosition.volume < 0 && (price - position.ShortPosition.averagePrice) / position.ShortPosition.averagePrice > 0.01)
             {
                 stop = true;
             }
