@@ -58,6 +58,7 @@ namespace BackTestingPlatform.Utilities
                         high = high > orignalList[index].high ? high : orignalList[index].high;
                         low = (low < orignalList[index].low && low>0) ? low : orignalList[index].low;
                     }
+                    
                 }
                list.Add(new T { open = orignalList[i * frequency].open, tradeday=tradeday,time = time, close = close, amount = amount, volume = volume, high = high, low = low,openInterest=openInterest});
             }
