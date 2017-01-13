@@ -164,10 +164,16 @@
     <Compile Include="Model\Futures\FuturesDaily.cs" />
     <Compile Include="Model\Futures\FuturesInfo.cs" />
     <Compile Include="Model\Futures\FuturesTick.cs" />
+    <Compile Include="Model\Option\OptionGreek.cs" />
     <Compile Include="Model\Positions\ExecutionReport.cs" />
+    <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithParasStability.cs" />
+    <Compile Include="Monitor\Option\LongDeltaMonitor.cs" />
+    <Compile Include="Monitor\Option\Model\MonitorModel.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithSpecifiedParametres.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatio.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithParametersChoice.cs" />
+    <Compile Include="Strategies\Futures\MaoHeng\ERParametersChoice.cs" />
+    <Compile Include="Strategies\Futures\MaoHeng\ERSpecifiedParameters.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\Model\ParameterPairs.cs" />
     <Compile Include="Strategies\Option\MaoHeng\BullSpreadWithTickData.cs" />
     <Compile Include="Strategies\Option\MaoHeng\Model\Straddle.cs" />
@@ -187,6 +193,7 @@
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Utilities\DataApplication\KLineDataUtils.cs" />
     <Compile Include="Utilities\Futures\FutureMargin.cs" />
+    <Compile Include="Utilities\GetData\Futures\GetDataFromWind.cs" />
     <Compile Include="Utilities\LogicFunction\Cross.cs" />
     <Compile Include="Model\Option\OptionInfo.cs" />
     <Compile Include="Model\Positions\BasicAccount.cs" />

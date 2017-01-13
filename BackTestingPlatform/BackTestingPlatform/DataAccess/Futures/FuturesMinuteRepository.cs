@@ -21,11 +21,24 @@ namespace BackTestingPlatform.DataAccess.Futures
         {
             List<FuturesMinute> items = new List<FuturesMinute>();
             string[] str = code.Split('.');
-            if (str[1]=="CFE")
+
+            //CFE中国期货交易所
+            if (str[1]=="CFE")//CFE中国期货交易所
             {
-                return readByParameters(code, date, "periodstart=09:30:00;periodend=15:00:00");
+                DateTime modifiedDate1 = new DateTime(2015,12,31);
+                if (date <= modifiedDate1)
+                {
+                    return readByParameters(code, date, "periodstart=09:15:00;periodend=15:15:00");
+                }
+                else
+                {
+                    return readByParameters(code, date, "periodstart=09:30:00;periodend=15:00:00");
+                }
+                
             }
-            if (str[1] == "DCE") //大商所目前所有品种交易时间最晚时间为2点半
+
+            //DCE大连商品交易所
+            if (str[1] == "DCE") //DCE大连商品交易所 目前所有品种交易时间最晚时间为2点半
             {
                 DateTime modifiedDate1 = new DateTime(2015, 5, 8);
                 if (date<=modifiedDate1)
@@ -45,7 +58,18 @@ namespace BackTestingPlatform.DataAccess.Futures
                     return nightData;
                 }
             }
-            if (str[0].IndexOf("RB")>-1 &&　str[1]=="SHF")
+
+            //CZC郑州商品交易所
+            if (str[1] == "CZC")
+            {
+                var nightData = readByParameters(code, date, "periodstart=21:00:00;periodend=23:30:00");
+                var dayData = readByParameters(code, date, "periodstart=09:00:00;periodend=15:00:00");
+                nightData.AddRange(dayData);
+                return nightData;
+            }
+
+            //SHF上海期货交易所
+            if (str[0].IndexOf("RB")>-1 &&　str[1]=="SHF")//SHF上海期货交易所
             {
                 DateTime modifiedDate1 = new DateTime(2014, 12, 26);
                 DateTime modifiedDate2 = new DateTime(2016, 5, 3);

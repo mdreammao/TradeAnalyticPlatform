@@ -225,7 +225,9 @@ namespace BackTestingPlatform.Strategies.Stock.StockSample
             //初始化净值曲线类
             PLChart plc = new PLChart(line, datestr);
             Application.Run(plc);
-            plc.SaveZed("D:\\BTP\\Result\\BackTestingPlatform.Strategies.Stock.StockSample.MABreak\\aa.png");
+
+            //【注意】PLChart的SaveZed函数已经进行了修改，使用前请确定参数正确
+            //plc.SaveZed("D:\\BTP\\Result\\BackTestingPlatform.Strategies.Stock.StockSample.MABreak\\aa.png");
         }
 
         //爬山策略,15K数据有16个周期，这里粗暴一些，直接写死在程序中了

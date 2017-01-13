@@ -81,7 +81,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             else if (underlying.IndexOf("AU") > -1)
             {
                 initialCapital = 300;
-                slipPoint = 0.02;
+                slipPoint = 0.01;
             }
         }
 

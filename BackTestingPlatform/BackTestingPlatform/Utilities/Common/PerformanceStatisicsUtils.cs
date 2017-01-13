@@ -186,13 +186,13 @@ namespace BackTestingPlatform.Utilities.Common
 
             for (int i = 0; i < price.Count; i++)
             {
-                double tempMax = price.GetRange(0, i + 1).Max();
-                if (tempMax == price[i])
+                double tempMax = price.GetRange(0, i + 1).Max();//获取从0到i的最大值
+                if (tempMax == price[i])//如果当前值price[i]就是这段时期的max，则MDDArray[i]设为0
                     MDDArray[i] = 0;
-                else
+                else//如果不是max，就计算和这段时期max的回撤比例
                     MDDArray[i] = Math.Abs((price[i] - tempMax) / tempMax);
             }
-            maxDrawDown = MDDArray.Max();
+            maxDrawDown = MDDArray.Max();//最后MDDArray数组中，最大的数组即为最大回撤比率
             return maxDrawDown;
         }
 
