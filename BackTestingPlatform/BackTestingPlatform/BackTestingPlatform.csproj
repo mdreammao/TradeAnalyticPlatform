@@ -216,6 +216,7 @@
     <Compile Include="Model\Stock\StockMinute.cs" />
     <Compile Include="Utilities\Option\OptionInfoReform.cs" />
     <Compile Include="Utilities\Option\OptionMargin.cs" />
+    <Compile Include="Utilities\Spline\MatrixInverse.cs" />
     <Compile Include="Utilities\TALibrary\TA_MA.cs" />
     <Compile Include="Service\Option\OptionDailyService.cs" />
     <Compile Include="Service\Stock\StockService.cs" />
