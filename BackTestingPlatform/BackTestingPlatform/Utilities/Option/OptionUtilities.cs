@@ -302,5 +302,27 @@ namespace BackTestingPlatform.Utilities.Option
             }
             return listUnmodified;
         }
+
+
+        /// <summary>
+        /// 根据给定的期权，得到他对应的期权。看涨期权给出对应的看跌期权，看跌去期权给出其对应的看涨期权。
+        /// </summary>
+        /// <param name="list">期权备选列表</param>
+        /// <param name="optionSelected">给定的期权</param>
+        /// <returns></returns>
+        public static OptionInfo getCallByPutOrPutByCall(List<OptionInfo> list, OptionInfo optionSelected)
+        {
+            OptionInfo optionChosen = new OptionInfo();
+            foreach (var option in list)
+            {
+                if (option.endDate==optionSelected.endDate && option.strike==optionSelected.strike && option.contractMultiplier==optionSelected.contractMultiplier && option.optionType!=optionSelected.optionType)
+                {
+                    optionChosen = option;
+                    break;
+                }
+                
+            }
+            return optionChosen;
+        }
     }
 }
