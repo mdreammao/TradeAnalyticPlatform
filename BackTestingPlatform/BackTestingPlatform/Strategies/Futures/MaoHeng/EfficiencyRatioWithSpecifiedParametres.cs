@@ -85,6 +85,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 12000;
                 slipPoint = 1;
             }
+            else if (underlying.IndexOf("IF") > -1)
+            {
+                initialCapital = 6000;
+                slipPoint = 1 * 6000 / 10000;
+            }
             compute();
         }
 

@@ -71,6 +71,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 12000;
                 slipPoint = 1;
             }
+            else if (underlying.IndexOf("IF") > -1)
+            {
+                initialCapital = 6000;
+                slipPoint = 1*6000/10000;
+            }
             //调用computeParameters，计算出newResult
             computeParameters();
             //调用chooseParameters，使用前choicePeriod交易日的数据，计算出最优参数对，作为接下来serviceLife时间段的参数配置
@@ -109,9 +114,13 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
             #endregion
 
+            //int[] frequencySet = new int[] { 3, 4, 5, 6, 7, 8 };
+            //int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
+            //double[] lossPercentSet = new double[] { 0.005, 0.01, 0.015, 0.02 };
+            //double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
             int[] frequencySet = new int[] { 3, 4, 5, 6, 7, 8 };
             int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
-            double[] lossPercentSet = new double[] { 0.005, 0.01, 0.015, 0.02 };
+            double[] lossPercentSet = new double[] { 0.0025,0.005, 0.01,0.015,0.02};
             double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
 
             //记录frequency的边际分布
