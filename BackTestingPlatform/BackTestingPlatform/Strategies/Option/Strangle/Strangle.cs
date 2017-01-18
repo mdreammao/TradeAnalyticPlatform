@@ -183,6 +183,23 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
 
         }
 
+        private void tradeAssistant(ref Dictionary<string, List<KLine>> dataToday,ref Dictionary<string, MinuteSignal> signal,string code,double volume,DateTime today,DateTime now,int index)
+        {
+
+            List<OptionMinute> myData = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today);
+            //获取给定的期权合约的当日分钟数据
+            if (dataToday.ContainsKey(code)==false)
+            {
+                dataToday.Add(code, myData.Cast<KLine>().ToList());
+            }
+            if (volume != 0)
+            {
+                MinuteSignal signal0 = new MinuteSignal() { code = code, volume = volume, time = now, tradingVarieties = "option", price = myData[index].open, minuteIndex = index };
+                signal.Add(code, signal0);
+            }
+
+        }
+
 
 
     }
