@@ -26,6 +26,9 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
     {
         static Logger log = LogManager.GetCurrentClassLogger();
         private DateTime startDate, endDate;
+        List<DateTime> tradeDays = new List<DateTime>();
+        List<OptionInfo> optionInfoList = new List<OptionInfo>();
+        
         //回测参数设置
         private double initialCapital = 10000;
         private double slipPoint = 0.001;
@@ -36,13 +39,15 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
         {
             startDate = Kit.ToDate(start);
             endDate = Kit.ToDate(end);
+            //交易日信息
+            tradeDays = DateUtils.GetTradeDays(startDate, endDate);
         }
 
         public void compute()
         {
             log.Info("开始回测(回测期{0}到{1})", Kit.ToInt_yyyyMMdd(startDate), Kit.ToInt_yyyyMMdd(endDate));
             var repo = Platforms.container.Resolve<OptionInfoRepository>();
-            var optionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
+             optionInfoList = repo.fetchFromLocalCsvOrWindAndSaveAndCache(1);
             Caches.put("OptionInfo", optionInfoList);
             //初始化头寸信息
             SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions = new SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>>();
@@ -56,8 +61,7 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
             //记录历史账户信息
             List<BasicAccount> accountHistory = new List<BasicAccount>();
             List<double> benchmark = new List<double>();
-            //交易日信息
-            List<DateTime> tradeDays = DateUtils.GetTradeDays(startDate, endDate);
+            
             //50ETF的日线数据准备，从回测期开始之前100个交易开始取
             int number = 100;
             List<StockDaily> dailyData = new List<StockDaily>();
@@ -93,88 +97,82 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
                 }
                 
                 //策略思路，当前没有持仓的时候开仓，如果有持仓就判断需不需要止盈或者换月
-                if (pairs.Count()==0) //没有持仓则开仓，简单的在开盘1分钟的时候开仓
+                if (pairs.Count==0 || (pairs.Count>0 && pairs.Last().Value.Last().closePrice!=0)) //没有持仓则开仓，简单的在开盘1分钟的时候开仓
                 {
                     int openIndex = 0;// 开盘1分钟开仓
-                    DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(tradeDays[day]), openIndex);
-                    double etfPriceNow = etfData[openIndex].open;
-                    //选取指定的看涨期权
-                    var list = OptionUtilities.getOptionListByDate(OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, tradeDays[day], duration), "认购"), etfPriceNow, etfPriceNow + 0.5), Kit.ToInt_yyyyMMdd(today)).OrderBy(x => x.strike).ToList();
-                    OptionInfo call = list[0];
-                    //根据给定的看涨期权选取对应的看跌期权
-                    OptionInfo put = OptionUtilities.getCallByPutOrPutByCall(optionInfoList, call);
-                    if (call.strike!=0 && put.strike!=0) //跨式期权组合存在进行开仓
-                    {
-                        //获取给定的期权合约的当日分钟数据
-                        List<OptionMinute> callData=Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(call.optionCode, today);
-                        List<OptionMinute> putData = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(put.optionCode, today);
-                        dataToday.Add(call.optionCode, callData.Cast<KLine>().ToList());
-                        dataToday.Add(put.optionCode, putData.Cast<KLine>().ToList());
-                        MinuteSignal openCall = new MinuteSignal() { code = call.optionCode, volume = call.contractMultiplier, time = now, tradingVarieties = "option", price = callData[openIndex].open, minuteIndex = openIndex };
-                        MinuteSignal openPut = new MinuteSignal() { code = put.optionCode, volume = put.contractMultiplier, time = now, tradingVarieties = "option", price = putData[openIndex].open, minuteIndex = openIndex };
-                        Console.WriteLine("开仓！call: {0}, 价格 :{1}, put: {2}, 价格: {3}",call.optionName,callData[openIndex].open,put.optionName,putData[openIndex].open);
-                        signal.Add(call.optionCode, openCall);
-                        signal.Add(put.optionCode,openPut);
-                        StranglePair openPair = new StranglePair() {callCode=call.optionCode,putCode=put.optionCode,callPosition=1,putPosition=1,endDate=call.endDate,etfPrice= etfPriceNow,callStrike=call.strike,putStrike=put.strike,modifiedDate=now,strangleOpenPrice= callData[openIndex].open + putData[openIndex].open,closeDate=new DateTime(),closePrice=0};
-                        List<StranglePair> pairList = new List<StranglePair>();
-                        pairList.Add(openPair);
-                        pairs.Add(now, pairList);
-                    }
-                    MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: openIndex);
+                    openStrangle(ref dataToday, ref signal, ref positions, ref myAccount, ref pairs, today, openIndex, duration);
                 }
                 else //逐一检查每一个配对，看看需不需要调仓或者止盈止损
                 {
-                    //在当日开盘时候，先判断要不要挪仓
-                    foreach (var item in pairs)
-                    {
-                        StranglePair pair = item.Value.Last();
-                        //若该组跨式组合已经关闭，则跳过统计
-                        if (pair.closePrice!=0)
-                        {
-                            continue;
-                        }
-                        //若离交割超过20个交易日，则跳过统计
-                        if (DateUtils.GetSpanOfTradeDays(today,pair.endDate)>=20)
-                        {
-                            continue;
-                        }
-                        int modifiedIndex = 0; //开盘第一分钟调仓。
-                        DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(tradeDays[day]),modifiedIndex);
-                        double etfPriceNow = etfData[modifiedIndex].open;
-                        //写入对应call和put的数据
-                       
-                        //List<OptionMinute> callData = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(call.optionCode, today);
-                        //List<OptionMinute> putData = Platforms.container.Resolve<OptionMinuteRepository>().fetchFromLocalCsvOrWindAndSave(put.optionCode, today);
-                        if (etfPriceNow>=pair.etfPrice+motion) //向上运动超过一定幅度，则换call
-                        {
-
-                        }
-                        else if (etfPriceNow<=pair.etfPrice-motion) //向下运动超过一定幅度，则换put
-                        {
-
-                        }
-                        else  //简单的关闭该组合，并重新开仓平值跨式期权
-                        {
-
-                            //MinuteSignal closeCall = new MinuteSignal() { code = call.optionCode, volume = call.contractMultiplier, time = now, tradingVarieties = "option", price = callData[openIndex].open, minuteIndex = openIndex };
-                            //MinuteSignal closePut = new MinuteSignal() { code = put.optionCode, volume = put.contractMultiplier, time = now, tradingVarieties = "option", price = putData[openIndex].open, minuteIndex = openIndex };
-                        }
-
-                    }
-
                     for (int index = 0; index < 234; index++) //遍历日内的逐个分钟(不包括最后5分钟)
                     {
                         DateTime now= TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(tradeDays[day]), index);
                         double etfPriceNow = etfData[index].open;
-                        foreach (var item in pairs)
+                        StranglePair pair = pairs.Last().Value.Last();
+                        double durationNow = DateUtils.GetSpanOfTradeDays(today, pair.endDate);
+                        //检查每一个跨式或者宽跨式组合，看看需不需要调整
+                        if (durationNow<10 && etfPriceNow<pair.callStrike+motion && etfPriceNow>pair.putStrike-motion) //不用调仓直接平仓
                         {
-                            StranglePair pair = item.Value.Last();
-                            //检查每一个跨式或者宽跨式组合，看看需不需要调整
-                            
-                            double etfPriceLast = pair.etfPrice;
-                            
-                            
+                            closeStrangle(ref dataToday, ref signal, ref positions, ref myAccount, ref pairs, today, index);
                         }
+                        else if (durationNow<20 && !(etfPriceNow < pair.callStrike + motion && etfPriceNow > pair.putStrike - motion)) //跨期调仓
+                        {
+                            //先进行平仓，然后开仓
+                            closeStrangle(ref dataToday, ref signal, ref positions, ref myAccount, ref pairs, today, index);//平仓
+                            StranglePair newPair = new StranglePair();
+                            if (etfPriceNow > pair.callStrike + motion) 
+                            {
+                                OptionInfo call = getOptionCode(duration, etfPriceNow, "认购", today);
+                                OptionInfo put = getOptionCode(duration, pair.putStrike, "认沽", today);
+                                if (call.strike != 0 && put.strike != 0) //开仓
+                                {
+                                    newPair = new StranglePair() { callCode = call.optionCode, callStrike = call.strike, callPosition = call.contractMultiplier, putCode = put.optionCode, putStrike = put.strike, putPosition = put.contractMultiplier, closeDate = new DateTime(), closePrice = 0, endDate = call.endDate, etfPrice = etfPriceNow, modifiedDate = today, strangleOpenPrice = dataToday[call.optionCode][index].open + dataToday[put.optionCode][index].open };
+                                    modifyStrangle(ref dataToday, ref signal, ref positions, ref myAccount, ref pairs, ref newPair, today, index);
+                                }
+                            }
+                            else if (etfPriceNow<pair.putStrike-motion)
+                            {
+                                OptionInfo call = getOptionCode(duration, pair.callStrike, "认购", today);
+                                OptionInfo put = getOptionCode(duration, etfPriceNow, "认沽", today);
+                                if (call.strike != 0 && put.strike != 0) //开仓
+                                {
+                                    newPair = new StranglePair() { callCode = call.optionCode, callStrike = call.strike, callPosition = call.contractMultiplier, putCode = put.optionCode, putStrike = put.strike, putPosition = put.contractMultiplier, closeDate = new DateTime(), closePrice = 0, endDate = call.endDate, etfPrice = etfPriceNow, modifiedDate = today, strangleOpenPrice = dataToday[call.optionCode][index].open + dataToday[put.optionCode][index].open };
+                                    modifyStrangle(ref dataToday, ref signal, ref positions, ref myAccount, ref pairs, ref newPair, today, index);
+                                }
+                        }
+                        else if (durationNow >= 20 && !(etfPriceNow < pair.callStrike + motion && etfPriceNow > pair.putStrike - motion)) //不跨期调仓
+                        {
+                            if (etfPriceNow > pair.callStrike + motion)
+                            {
+                                //认购期权向上移仓
+                                OptionInfo call = getOptionCode(durationNow, etfPriceNow, "认购", today);
+                                if (call.strike!=0)
+                                {
+                                    tradeAssistant(ref dataToday, ref signal, pair.callCode, -pair.callPosition, today, now, index);
+                                    tradeAssistant(ref dataToday, ref signal, call.optionCode, call.contractMultiplier, today, now, index);
+                                    pair.closeDate = now;
+                                    pair.closePrice = dataToday[pair.callCode][index].open + dataToday[pair.putCode][index].open;
+                                    newPair = new StranglePair() { callCode = call.optionCode, callStrike = call.strike, callPosition = call.contractMultiplier, putCode = pair.putCode, putStrike = pair.putStrike, putPosition = pair.putPosition, closeDate = new DateTime(), closePrice = 0, endDate = call.endDate, etfPrice = etfPriceNow, modifiedDate = now, strangleOpenPrice = dataToday[call.optionCode][index].open + dataToday[pair.putCode][index].open };
+                                    pairs.Last().Value.Add(newPair);
+                                }
+                                }
+                            else if (etfPriceNow < pair.putStrike - motion)
+                            {
+                                //认沽期权向下移仓
+                                OptionInfo put = getOptionCode(durationNow, etfPriceNow, "认沽", today);
+                                if (put.strike != 0)
+                                {
+                                    tradeAssistant(ref dataToday, ref signal, pair.putCode, -pair.putPosition, today, now, index);
+                                    tradeAssistant(ref dataToday, ref signal, put.optionCode, put.contractMultiplier, today, now, index);
+                                    pair.closeDate = now;
+                                    pair.closePrice = dataToday[pair.callCode][index].open + dataToday[pair.putCode][index].open;
+                                    newPair = new StranglePair() { callCode = pair.callCode, callStrike = pair.callStrike, callPosition = pair.callPosition, putCode = put.optionCode, putStrike = put.strike, putPosition = put.contractMultiplier, closeDate = new DateTime(), closePrice = 0, endDate = put.endDate, etfPrice = etfPriceNow, modifiedDate = now, strangleOpenPrice = dataToday[pair.callCode][index].open + dataToday[put.optionCode][index].open };
+                                    pairs.Last().Value.Add(newPair);
+                                }
+                             }
+                        }
+
+
                     }
                     
                 }
@@ -182,7 +180,79 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
 
 
         }
+        /// <summary>
+        /// 跨式期权调仓
+        /// </summary>
+        /// <param name="dataToday"></param>
+        /// <param name="signal"></param>
+        /// <param name="positions"></param>
+        /// <param name="myAccount"></param>
+        /// <param name="pairs"></param>
+        /// <param name="today"></param>
+        /// <param name="index"></param>
+        /// <param name="duration"></param>
+        private void modifyStrangle(ref Dictionary<string, List<KLine>> dataToday, ref Dictionary<string, MinuteSignal> signal, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, ref SortedDictionary<DateTime, List<StranglePair>> pairs,ref StranglePair newPair, DateTime today, int index)
+        {
+            DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), index);
+            tradeAssistant(ref dataToday, ref signal, newPair.callCode, newPair.callPosition, today, now, index);
+            tradeAssistant(ref dataToday, ref signal,newPair.putCode, newPair.putPosition, today, now, index);
+            pairs.Last().Value.Add(newPair);
+        }
 
+        /// <summary>
+        /// 跨式期权平仓
+        /// </summary>
+        /// <param name="dataToday"></param>
+        /// <param name="signal"></param>
+        /// <param name="positions"></param>
+        /// <param name="myAccount"></param>
+        /// <param name="pairs"></param>
+        /// <param name="today"></param>
+        /// <param name="index"></param>
+        private void closeStrangle(ref Dictionary<string, List<KLine>> dataToday, ref Dictionary<string, MinuteSignal> signal, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, ref SortedDictionary<DateTime, List<StranglePair>> pairs,DateTime today, int index)
+        {
+            DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), index);
+            double etfPriceNow = dataToday[targetVariety][index].open;
+            List<StranglePair> holdPairs = pairs.Last().Value;
+            StranglePair pair = holdPairs.Last();
+            //关闭当前组合，为挪仓做准备
+            tradeAssistant(ref dataToday, ref signal, pair.callCode, -pair.callPosition, today, now, index);
+            tradeAssistant(ref dataToday, ref signal, pair.putCode, -pair.putPosition, today, now, index);
+            pair.closeDate = now;
+            pair.closePrice = dataToday[pair.callCode][index].open + dataToday[pair.putCode][index].open;
+        }
+
+        /// <summary>
+        /// 跨式期权开仓
+        /// </summary>
+        /// <param name="dataToday"></param>
+        /// <param name="signal"></param>
+        /// <param name="positions"></param>
+        /// <param name="myAccount"></param>
+        /// <param name="pairs"></param>
+        /// <param name="today"></param>
+        /// <param name="index"></param>
+        /// <param name="duration"></param>
+        private void openStrangle(ref Dictionary<string, List<KLine>> dataToday, ref Dictionary<string, MinuteSignal> signal, ref SortedDictionary<DateTime, Dictionary<string, PositionsWithDetail>> positions, ref BasicAccount myAccount, ref SortedDictionary<DateTime, List<StranglePair>> pairs,DateTime today, int index,double duration)
+        {
+            DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), index);
+            double etfPriceNow = dataToday[targetVariety][index].open;
+            //选取指定的看涨期权
+            var list = OptionUtilities.getOptionListByDate(OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, today, duration), "认购"), etfPriceNow, etfPriceNow + 0.5), Kit.ToInt_yyyyMMdd(today)).OrderBy(x => x.strike).ToList();
+            OptionInfo call = list[0];
+            //根据给定的看涨期权选取对应的看跌期权
+            OptionInfo put = OptionUtilities.getCallByPutOrPutByCall(optionInfoList, call);
+            if (call.strike != 0 && put.strike != 0) //跨式期权组合存在进行开仓
+            {
+                tradeAssistant(ref dataToday, ref signal, call.optionCode, call.contractMultiplier, today, now, index);
+                tradeAssistant(ref dataToday, ref signal, put.optionCode, put.contractMultiplier, today, now, index);
+                StranglePair openPair = new StranglePair() { callCode = call.optionCode, putCode = put.optionCode, callPosition = call.contractMultiplier, putPosition = put.contractMultiplier, endDate = call.endDate, etfPrice = etfPriceNow, callStrike = call.strike, putStrike = put.strike, modifiedDate = now, strangleOpenPrice = dataToday[call.optionCode][index].open + dataToday[put.optionCode][index].open, closeDate = new DateTime(), closePrice = 0 };
+                List<StranglePair> pairList = new List<StranglePair>();
+                pairList.Add(openPair);
+                pairs.Add(now, pairList);
+            }
+            MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: index);
+        }
         private void tradeAssistant(ref Dictionary<string, List<KLine>> dataToday,ref Dictionary<string, MinuteSignal> signal,string code,double volume,DateTime today,DateTime now,int index)
         {
 
@@ -200,6 +270,34 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
 
         }
 
+        /// <summary>
+        /// 获取对应的期权合约
+        /// </summary>
+        /// <param name="duration"></param>
+        /// <param name="strike"></param>
+        /// <param name="etfPriceNow"></param>
+        /// <param name="type"></param>
+        /// <param name="today"></param>
+        /// <returns></returns>
+        private OptionInfo getOptionCode(double duration,double etfPriceNow,string type,DateTime today)
+        {
+            OptionInfo option = new OptionInfo();
+            if (type=="认购")
+            {
+                //选取指定的看涨期权
+                var list = OptionUtilities.getOptionListByDate(OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, today, duration), "认购"), etfPriceNow, etfPriceNow + 0.5), Kit.ToInt_yyyyMMdd(today)).OrderBy(x => x.strike).ToList();
+                OptionInfo call = list[0];
+                option = call;
+            }
+            else if (type=="认沽")
+            {
+                //选取指定的看跌期权
+                var list = OptionUtilities.getOptionListByDate(OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, today, duration), "认沽"), etfPriceNow-0.5, etfPriceNow), Kit.ToInt_yyyyMMdd(today)).OrderBy(x => x.strike).ToList();
+                OptionInfo put = list[0];
+                option = put;
+            }
+            return option;
+        }
 
 
     }
