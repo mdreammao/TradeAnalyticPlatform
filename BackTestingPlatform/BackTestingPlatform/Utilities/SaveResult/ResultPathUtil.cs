@@ -15,11 +15,11 @@ namespace BackTestingPlatform.Utilities.SaveResult
         }
 
         //获得储存图片的本地路径
-        public static string GetImageLocalPath(string fullPath, string tag, string dateStr, string startDate, string endDate, string netProfit, string anualSharp, string MDD)
-        {
+        public static string GetImageLocalPath(string fullPath, string tag, string dateStr,string underlying, string startDate, string endDate, string netProfit, string anualSharp, string MDD)
+        { 
             string resultPath = String.Empty;
-            resultPath= fullPath.Replace("{tag}", tag).Replace("{date_image}", dateStr).Replace("{startDate}", startDate).Replace("{endDate}", 
-                endDate).Replace("{netProfit}", netProfit).Replace("{anualSharp}", anualSharp).Replace("{MDD}", MDD);
+            resultPath= fullPath.Replace("{tag}", tag).Replace("{date_image}", dateStr).Replace("{underlying}",underlying).Replace("{startDate}", startDate).
+                Replace("{endDate}", endDate).Replace("{netProfit}", netProfit).Replace("{anualSharp}", anualSharp).Replace("{MDD}", MDD);
             return resultPath;
         }
 
