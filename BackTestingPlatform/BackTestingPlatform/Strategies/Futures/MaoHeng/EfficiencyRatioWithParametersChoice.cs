@@ -51,12 +51,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 3000;
                 slipPoint = initialCapital * 0.0001;
             }
+            else if (underlying.IndexOf("RU") > -1)//橡胶的手续费为万分之0.45,一手乘数为10
+            {
+                initialCapital = 30000;
+                slipPoint = 2;//30000*0.000045=1.35约等于2
+            }
             else if (underlying.IndexOf("A") > -1 && underlying.IndexOf("AU") < 0) //大豆的手续费为每手2块钱，一手乘数为10
             {
                 initialCapital = 4000;
                 slipPoint = 0.2;
             }
-            else if (underlying.IndexOf("M") > -1) //大豆的手续费为每手2块钱，一手乘数为10
+            else if (underlying.IndexOf("M") > -1) //豆粕的手续费为每手1.5块钱，一手乘数为10
             {
                 initialCapital = 3000;
                 slipPoint = 0.15;
@@ -434,7 +439,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //return (0.5 * sharpe + 0.5 * calmar)/8;
 
             //只用年化收益率来打分
-            return average * 252;
+            //return average * 252;
+
+            //年化收益率 / 最大回撤
+            return average * 252 / MDD;
         }
 
         /// <summary>

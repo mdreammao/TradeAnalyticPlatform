@@ -62,12 +62,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 3000;
                 slipPoint = initialCapital * 0.0001;
             }
+            else if (underlying.IndexOf("RU") > -1)//橡胶的手续费为万分之0.45,一手乘数为10
+            {
+                initialCapital = 30000;
+                slipPoint = 2;//30000*0.000045=1.35约等于2
+            }
             else if (underlying.IndexOf("A") > -1 && underlying.IndexOf("AU") < 0) //大豆的手续费为每手2块钱，一手乘数为10
             {
                 initialCapital = 4000;
                 slipPoint = 0.2;
-            }
-            else if (underlying.IndexOf("M") > -1) //大豆的手续费为每手2块钱，一手乘数为10
+            }          
+            else if (underlying.IndexOf("M") > -1) //豆粕的手续费为每手1.5块钱，一手乘数为10
             {
                 initialCapital = 3000;
                 slipPoint = 0.15;
@@ -82,6 +87,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 12000;
                 slipPoint = 1;
             }
+            else if (underlying.IndexOf("IF") > -1)
+            {
+                initialCapital = 6000;
+                slipPoint = 1 * 6000 / 10000;
+            }
             compute();
         }
 
@@ -93,9 +103,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         /// <returns></returns>
         private List<FuturesMinute> getData(DateTime today, string code)
         {
+            List<FuturesMinute> orignalList = Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today);
+            List<FuturesMinute> data = KLineDataUtils.leakFilling(orignalList);
+
             //从本地csv 或者 wind获取数据，从wind拿到额数据会保存在本地
-            List<FuturesMinute> data = KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
+            //List<FuturesMinute> data = KLineDataUtils.leakFilling(Platforms.container.Resolve<FuturesMinuteRepository>().fetchFromLocalCsvOrWindAndSave(code, today));
+
+            #region 20170118更新
+            //下面这行需要注释掉，因为可能data的count为0
             var dataModified = FreqTransferUtils.minuteToNMinutes(data, frequency);
+            #endregion
+
             return dataModified;
         }
 
@@ -165,17 +183,27 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 longER = pair.longER;
                 shortER = pair.shortER;
                 lossPercent = pair.lossPercent;
-                //从wind或本地CSV获取相应交易日的数据list，并转换成FuturesMinute分钟线频率
+
+                //从wind或本地CSV获取相应交易日的数据list
+                //这里不能直接去调用FreqTransferUtils.minuteToNMinutes(data, frequency),因为data.count可能为0
                 var dataOnlyToday = getData(today, underlying);//一个交易日里有多条分钟线数据
                 var data = getData(DateUtils.PreviousTradeDay(today, 3), underlying);//前3交易日的分钟线频率数据list
                 data.AddRange(getData(DateUtils.PreviousTradeDay(today, 2), underlying));
                 data.AddRange(getData(DateUtils.PreviousTradeDay(today, 1), underlying));
+
                 int indexStart = data.Count();
                 if (indexStart == 0) //前一天没数据
                 {
                     indexStart = numbers;
                 }
-                data.AddRange(dataOnlyToday);//将当天的数据add到前一天的数据之后
+                //将当天的数据add到前一天的数据之后
+                data.AddRange(dataOnlyToday);
+
+                #region 20170118更新
+                //将data转换成FuturesMinute分钟线频率
+                //data= FreqTransferUtils.minuteToNMinutes(data, frequency);
+                #endregion
+
                 //将获取的数据，储存为KLine格式
                 Dictionary<string, List<KLine>> dataToday = new Dictionary<string, List<KLine>>();
                 dataToday.Add(underlying, data.Cast<KLine>().ToList());
@@ -333,9 +361,10 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //生成图像
             PLChart plc=new PLChart(line, datestr,formTitle: formTitle);
             //运行图像
-            Application.Run(plc);
+            //Application.Run(plc);
+            plc.LoadForm();
             //保存图像
-            plc.SaveZed(GetType().FullName,this.startDate,this.endDate, myStgStats.netProfit.ToString(),myStgStats.anualSharpe.ToString(),myStgStats.maxDrawDown.ToString());
+            plc.SaveZed(GetType().FullName,this.underlying,this.startDate,this.endDate, myStgStats.netProfit.ToString(),myStgStats.anualSharpe.ToString(),myStgStats.maxDrawDown.ToString());
             //plc.SaveZed("D:\\BTP\\Result\\" + GetType().FullName + "\\aa.png");
             
         }

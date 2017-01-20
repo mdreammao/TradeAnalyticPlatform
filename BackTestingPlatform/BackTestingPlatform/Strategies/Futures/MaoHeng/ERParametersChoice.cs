@@ -48,12 +48,17 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 3000;
                 slipPoint = initialCapital * 0.0001;
             }
+            else if (underlying.IndexOf("RU") > -1)//橡胶的手续费为万分之0.45,一手乘数为10
+            {
+                initialCapital = 30000;
+                slipPoint = 2;//30000*0.000045=1.35约等于2
+            }
             else if (underlying.IndexOf("A") > -1 && underlying.IndexOf("AU") < 0) //大豆的手续费为每手2块钱，一手乘数为10
             {
                 initialCapital = 4000;
                 slipPoint = 0.2;
             }
-            else if (underlying.IndexOf("M") > -1) //大豆的手续费为每手2块钱，一手乘数为10
+            else if (underlying.IndexOf("M") > -1) //豆粕的手续费为每手1.5块钱，一手乘数为10
             {
                 initialCapital = 3000;
                 slipPoint = 0.15;
@@ -68,6 +73,11 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 initialCapital = 12000;
                 slipPoint = 1;
             }
+            else if (underlying.IndexOf("IF") > -1)
+            {
+                initialCapital = 6000;
+                slipPoint = 1 * 6000 / 10000;
+            }
             //调用computeParameters，计算出newResult
             computeParameters();
             //调用chooseParameters，使用前choicePeriod交易日的数据，计算出最优参数对，作为接下来serviceLife时间段的参数配置
@@ -80,10 +90,28 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
         private void computeParameters()
         {
             List<FuturesMinute> data = new List<FuturesMinute>();
+
+            #region 20170118更新
+            //回测开始的首个日期，在tradeDays数组的第一个索引值：
+            //当回测期第一个交易日的前三天没有一天有数据，会引发后续代码出现数组索引为负值的情况。
+            //bool OutOfRange = false;
+            #endregion
+
             //获取首个回测日之前的三日（日）数据
             data = getData(DateUtils.PreviousTradeDay(tradeDays[0], 3), underlying);
             data.AddRange(getData(DateUtils.PreviousTradeDay(tradeDays[0], 2), underlying));
             data.AddRange(getData(DateUtils.PreviousTradeDay(tradeDays[0], 1), underlying));
+
+            #region 20170118更新
+            //当无法获取回测日之前的三日（日）数据，也就是data.count=0时，就需要...
+            //if (data.Count == 0)
+            //{
+            //    Console.WriteLine("回测开始日期错误，自动调整到有数据记录的开始日期...");
+            //    OutOfRange = true;
+            //}
+            #endregion
+
+            //如果回测开始时间早于该品种有数据的时间，
             //逐日获取K线数据（频率为1分钟）
             for (int i = 0; i < tradeDays.Count(); i++)
             {
@@ -103,14 +131,14 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
 
             //int[] frequencySet = new int[] { 3, 4, 5, 6, 7, 8 };
             //int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
-            //double[] lossPercentSet = new double[] { 0.005, 0.01, 0.015, 0.02, 0.025 };
+            //double[] lossPercentSet = new double[] { 0.005, 0.01, 0.015, 0.02 };
             //double[] longERSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
             //double[] shortERSet = new double[] { -0.5, -0.6, -0.7, -0.8, -0.9 };
             #endregion
 
             int[] frequencySet = new int[] { 3, 4, 5, 6, 7, 8 };
             int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
-            double[] lossPercentSet = new double[] { 0.005, 0.01, 0.015, 0.02 };
+            double[] lossPercentSet = new double[] { 0.005, 0.01, 0.015, 0.02};
             double[] longERSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
             double[] shortERSet = new double[] { -0.5, -0.6, -0.7, -0.8, -0.9 };
 
@@ -164,11 +192,27 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                                 for (int i = 0; i < dataModified.Count(); i++) //开始按日期遍历
                                 {
                                     var now = dataModified[i];
+
+                                    #region 20170118更新
+                                    //if (OutOfRange)
+                                    //{
+                                    //    if (now.tradeday <DateUtils.NextTradeDay(dataModified[0].tradeday))
+                                    //    {
+                                    //        continue;
+                                    //    }
+                                    //}
+                                    //else
+                                    //{
+                                    //}
+
                                     //在5分钟K线数据表dataModified中，找到首个交易日 tradeDays[0]开始位置对应的index
                                     if (now.tradeday < tradeDays[0])
-                                    {
-                                        continue;
-                                    }
+                                        {
+                                            continue;
+                                        }
+                                   
+                                    #endregion
+
                                     pairs.tradeday = now.tradeday;
                                     //当日最后一根K线，进入结算。 
                                     if (i == dataModified.Count() - 1 || (i + 1 < dataModified.Count() && dataModified[i + 1].tradeday > now.tradeday))
@@ -421,20 +465,26 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                 sum += returnRatio[i];
                 squareSum += Math.Pow(returnRatio[i], 2);
             }
+            //日收益率
             double average = sum / returnRatio.Count();
+            //标准差
             double std = Math.Sqrt(squareSum / returnRatio.Count() - average * average);
+            //夏普率
             double sharpe = average * 252 / (std * Math.Sqrt(252));//夏普率   //average * 252=年化收益
 
             //处理MDD为0的情况
-            //double calmar = (MDD == 0 ? 4 : average * 252 / MDD);//Calmar比率
-            //return (0.5 * sharpe + 0.5 * calmar) / 8;
+            double calmar = (MDD == 0.0 ? 4 : average * 252 / MDD);//Calmar比率
+            return (0.3 * sharpe + 0.7 * calmar) / 8;
 
             //不处理MDD为0的情况
             //double calmar = (MDD == 0 ? 4 : average  / MDD);//Calmar比率
             //return (0.5 * sharpe + 0.5 * calmar)/8;
 
             //只用年化收益率来打分
-            return average * 252;
+            //return average * 252;
+
+            //年化收益率 / 最大回撤
+            //return average * 252 / MDD;
         }
 
         /// <summary>

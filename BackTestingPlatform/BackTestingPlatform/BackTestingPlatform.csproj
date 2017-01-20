@@ -40,8 +40,8 @@
       <HintPath>..\packages\Accord.3.3.0\lib\net45\Accord.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Autofac, Version=4.2.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.4.2.0\lib\net45\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.2.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.2.1\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="IronPython, Version=2.7.5.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
@@ -127,6 +127,12 @@
     <Compile Include="AccountOperator\Tick\CalculatePositionsMarginForTick.cs" />
     <Compile Include="Charts\CandleStick.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Charts\DynamicCharts.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Charts\DynamicCharts.Designer.cs">
+      <DependentUpon>DynamicCharts.cs</DependentUpon>
     </Compile>
     <Compile Include="Charts\PLChart.cs">
       <SubType>Form</SubType>
