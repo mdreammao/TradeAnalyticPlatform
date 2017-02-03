@@ -173,6 +173,8 @@ namespace BackTestingPlatform.DataAccess
                 catch (Exception e)
                 {
                     log.Error(e, "尝试从csv获取失败！");
+                    //debug 输出失败信息
+                    Console.WriteLine("尝试从本地csv失败！品种{0},时间{1}",code,date.ToShortDateString());
                 }
                 if (result != null) csvHasData = true;
             }
@@ -187,6 +189,8 @@ namespace BackTestingPlatform.DataAccess
                 catch (Exception e)
                 {
                     log.Error(e, "尝试从Wind获取失败！");
+                    //debug 输出失败信息
+                    Console.WriteLine("尝试从本地csv失败！品种{0},时间{1}", code, date.ToShortDateString());
                 }
             }
             if (result == null && tryMssql0)

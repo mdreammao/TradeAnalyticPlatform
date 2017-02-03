@@ -147,10 +147,31 @@ namespace BackTestingPlatform.DataAccess.Futures
                     });
                 }
             }
-            if (items.Count>0 && double.IsNaN(items[0].close)==true)
+
+            //【原版】如果该时间段第1个时间点的close为NAN，则放弃该时间段的所有数据
+            //if (items.Count>0 && double.IsNaN(items[0].close)==true)
+            //{
+            //    return new List<FuturesMinute>();
+            //}
+
+            //判断该时间段前25条数据是否含有真正的数据(至少一条数据)
+            List<FuturesMinute> tempItem = items.GetRange(0, 25);
+            bool haveData = items.Any(x => double.IsNaN(x.close) != true);
+
+            //【新版1】如果该时间段前5个时间点的close为NAN，则放弃该时间段的所有数据
+            //if (items.Count > 0 && double.IsNaN(items[0].close) && double.IsNaN(items[1].close) && 
+            //    double.IsNaN(items[2].close) && double.IsNaN(items[3].close) && double.IsNaN(items[4].close))
+            //{
+            //    return new List<FuturesMinute>();
+            //}
+
+            //【新版2】如果该时间段前20个时间点的close为NAN，则放弃该时间段的所有数据
+            if (items.Count > 0 && haveData==false)
             {
                 return new List<FuturesMinute>();
             }
+
+
             return items;
         }
     }
