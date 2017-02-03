@@ -39,7 +39,8 @@ namespace BackTestingPlatform.DataAccess.Stock
                         low = (double)dataList[k * fieldLen + 2],
                         close = (double)dataList[k * fieldLen + 3],
                         volume = (double)dataList[k * fieldLen + 4],
-                        amount = (double)dataList[k * fieldLen + 5]
+                        amount = (double)dataList[k * fieldLen + 5],
+                        tradeday = date
                     });
                 }
             }

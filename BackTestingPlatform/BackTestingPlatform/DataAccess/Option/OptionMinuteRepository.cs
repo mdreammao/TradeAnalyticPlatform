@@ -40,7 +40,8 @@ namespace BackTestingPlatform.DataAccess.Option
                         close = (double)dataList[k * fieldLen + 3],
                         volume = (double)dataList[k * fieldLen + 4],
                         amount = (double)dataList[k * fieldLen + 5],
-                        openInterest=(double)dataList[k*fieldLen+6]
+                        openInterest=(double)dataList[k*fieldLen+6],
+                        tradeday=date
                     });
                 }
             }
