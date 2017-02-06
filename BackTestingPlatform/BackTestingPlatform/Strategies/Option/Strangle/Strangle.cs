@@ -77,7 +77,6 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
             //按交易日回测
             for (int day = 0; day < tradeDays.Count(); day++)
             {
-               
                 benchmark.Add(closePrice[day + number]);
                 double lastETFPrice = dailyData[number + day - 1].close;
                 var today = tradeDays[day];
@@ -130,7 +129,13 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
                     {
                         tradeAssistant(ref dataToday, ref signal, pair.callCode, 0, today, now, index);
                         tradeAssistant(ref dataToday, ref signal, pair.putCode, 0, today, now, index);
+                        var callInfo = OptionUtilities.getOptionByCode(optionInfoList, pair.callCode);
+                        if (today.AddDays(1)>=callInfo.modifiedDate && !(today.AddDays(-10000)>callInfo.modifiedDate))
+                        {
+                            closeStrangle(ref dataToday, ref signal, ref positions, ref myAccount, ref pairs, today, index);
+                        }
                     }
+                    
                     //检查每一个跨式或者宽跨式组合，看看需不需要调整
                     if (durationNow < 10 && etfPriceNow < pair.callStrike + motion && etfPriceNow > pair.putStrike - motion) //不用调仓直接平仓
                     {
@@ -307,12 +312,13 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
         {
             DateTime now = TimeListUtility.IndexToMinuteDateTime(Kit.ToInt_yyyyMMdd(today), index);
             double etfPriceNow = dataToday[targetVariety][index].open;
+            var optionInfoList = OptionUtilities.getUnmodifiedOptionInfoList(this.optionInfoList, today);
             //选取指定的看涨期权
             var list = OptionUtilities.getOptionListByDate(OptionUtilities.getOptionListByStrike(OptionUtilities.getOptionListByOptionType(OptionUtilities.getOptionListByDuration(optionInfoList, today, duration), "认购"), etfPriceNow, etfPriceNow + 0.5), Kit.ToInt_yyyyMMdd(today)).OrderBy(x => x.strike).ToList();
             OptionInfo call = list[0];
             //根据给定的看涨期权选取对应的看跌期权
             OptionInfo put = OptionUtilities.getCallByPutOrPutByCall(optionInfoList, call);
-            if (call.strike != 0 && put.strike != 0) //跨式期权组合存在进行开仓
+            if (call.strike != 0 && put.strike != 0 &&(call.modifiedDate>today.AddDays(10) || call.modifiedDate<today)) //跨式期权组合存在进行开仓
             {
                 tradeAssistant(ref dataToday, ref signal, call.optionCode, call.contractMultiplier, today, now, index);
                 tradeAssistant(ref dataToday, ref signal, put.optionCode, put.contractMultiplier, today, now, index);
@@ -320,8 +326,8 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
                 List<StranglePair> pairList = new List<StranglePair>();
                 pairList.Add(openPair);
                 pairs.Add(now, pairList);
+                MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: index);
             }
-            MinuteTransactionWithBar.ComputePosition(signal, dataToday, ref positions, ref myAccount, slipPoint: slipPoint, now: now, nowIndex: index);
         }
         private void tradeAssistant(ref Dictionary<string, List<KLine>> dataToday,ref Dictionary<string, MinuteSignal> signal,string code,double volume,DateTime today,DateTime now,int index)
         {
@@ -352,6 +358,7 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
         private OptionInfo getOptionCode(double duration,double etfPriceNow,string type,DateTime today)
         {
             OptionInfo option = new OptionInfo();
+            var optionInfoList = OptionUtilities.getUnmodifiedOptionInfoList(this.optionInfoList, today);
             if (type=="认购")
             {
                 //选取指定的看涨期权
