@@ -286,6 +286,7 @@
     <Content Include="Task\HuangZhenkun.txt" />
     <Content Include="Task\MaoHeng.txt" />
     <None Include="Task\TIPS.md" />
+    <Content Include="Task\mathnet使用说明1.txt" />
     <Content Include="Task\如何测试.txt" />
     <Content Include="Utilities\WAPIWrapperCSharp.dll" />
   </ItemGroup>
