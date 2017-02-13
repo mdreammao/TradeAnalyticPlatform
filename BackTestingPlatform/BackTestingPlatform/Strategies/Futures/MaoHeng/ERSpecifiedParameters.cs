@@ -364,7 +364,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //Application.Run(plc);
             plc.LoadForm();
             //保存图像
-            plc.SaveZed(GetType().FullName,this.underlying,this.startDate,this.endDate, myStgStats.netProfit.ToString(),myStgStats.anualSharpe.ToString(),myStgStats.maxDrawDown.ToString());
+            plc.SaveZed(GetType().FullName,this.underlying,this.startDate,this.endDate, 
+                myStgStats.netProfit.ToString(),myStgStats.anualSharpe.ToString(),myStgStats.maxDrawDown.ToString());
             //plc.SaveZed("D:\\BTP\\Result\\" + GetType().FullName + "\\aa.png");
             
         }
