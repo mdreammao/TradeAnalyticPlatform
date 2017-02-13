@@ -18,5 +18,6 @@ namespace BackTestingPlatform.Utilities.Spline
             var resultX = matrixA.LU().Solve(vectorB);
             return resultX;
         }
+        
     }
 }

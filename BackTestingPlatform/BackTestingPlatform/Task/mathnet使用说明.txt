@@ -1,0 +1,423 @@
+﻿在C#中使用mathnet，需要利用using引入相关类
+
+矩阵运算的相关类：
+
+using MathNet.Numerics.LinearAlgebra.Double;
+
+using MathNet.Numerics.LinearAlgebra.Generic;
+
+矩阵定义和初始化
+       常用矩阵初始化函数：
+
+        var matrix2 = new DenseMatrix(3);  //3维方阵
+
+        var matrix3 = new DenseMatrix(2, 3); //2×3矩阵
+
+         var matrix4 = new DenseMatrix(2, 3, 3.0); //2×3矩阵，所有值为3.0
+
+         var matrixI = DenseMatrix.Identity(5); //5维单位矩阵
+
+       矩阵操作和C#中的数组操作一致，matrix2[m,n]取其m行n列上的值或对其赋值
+
+ 
+
+         MathNet中重载了.ToString()函数，可以直接用matrix.ToString()输出整个数组，大大方便了调试和保存数据。
+
+      也可以利用C#中的double[,]直接创建
+
+         double[,] d_matrix = new double[2,3];
+
+ var matrix2 = new DenseMatrix(d_matrix); //2×3矩阵
+
+        小记：我曾做过测试，将double[,]先转成Math矩阵，然后进行矩阵运算，再利用matrix2.ToArray()将Math矩阵转换成double[,]，其运算时间和直接利用C#编写的矩阵运算相差很小。
+
+ 但如果是利用for循环将double数组的数值赋值给Math矩阵进行矩阵运算，然后再利用for循环将Math矩阵赋值给某个double[，]数组，其运算时间可以减少1/3。在开发效率和运算效率上，使用的时候可以根据需要进行取舍。
+
+ 
+
+2.矩阵操作
+
+     矩阵操作最常用的莫过于从一个矩阵中取值
+
+            var submatrix = matrix.SubMatrix(2, 2, 3, 3); //取从第二行开始的2行，第三列开始的三列 子矩阵
+
+            var row = matrix.Row(5, 3, 4); //取从第5行第3列开始的4个行元素
+
+            var column = matrix.Column(2, 6, 3); //取从第2列第6行开始的3个列元素
+
+             matrix.ColumnEnumerator(2, 4) //取从第2列开始的4列
+
+             matrix.RowEnumerator(4, 3)//取从第4行开始的3行
+
+            matrix.ToRowWiseArray()/matrix.ToColumnWiseArray() //矩阵变为行向量或者列向量
+
+           matrix.Diagonal()//取矩阵的对角线元素向量
+
+     向矩阵中插值
+
+          var result = matrix.InsertColumn(3, vector)/matrix.InsertRow(3, vector);//将向量vector插入到指定的行/列，原有的行列顺延
+
+           matrix.SetColumn(2, (Vector)vector);/matrix.SetRow(3, (double[])vector);  //用vector替换指定的行/列
+
+     matrix.SetSubMatrix(1, 3, 1, 3, DenseMatrix.Identity(3)); //用矩阵替换指定位置的块矩阵
+
+          matrix.SetDiagonal(new[] { 5.0, 4.0, 3.0, 2.0, 1.0 });  //替换矩阵的对角线元素
+
+          matrixA.Append(matrixB,result)/matrixA.Stack(matrixB,result) //将matrixB扩展到matrixA的右方/上方，将结果保存在result中
+
+    矩阵转换：   
+
+           var permutations = new Permutation(new[] { 0, 1, 3, 2, 4 });
+
+    matrix.PermuteRows(permutations);   //互换矩阵的3，4行
+
+ 
+
+            permutations = new Permutation(new[] { 1, 0, 4, 3, 2 });
+
+            matrix.PermuteColumns(permutations);  //互换矩阵的1，2列，3，5列。
+
+            可以看出，互换是由Permutation中的数字序号决定的。
+
+
+
+
+1.矩阵运算
+
+            matrixA = 3.0 * matrixB    //数乘
+
+            matrixA = vector * matrixB  /matrixA =  matrixB * vector  //向量乘
+
+            matrixC = matrixA + / - / * matrixB   //矩阵加、减、乘
+
+            resultM = (DenseMatrix)matrixA.PointwiseDivide(matrixB); //点乘
+
+           上述所有运算符都有对应的函数，也可是利用函数进行运算，如“+”可以写成   matrixC = (DenseMatrix)matrixA.Add(matrixB);或者matrixA.Add(matrixB, matrixC);
+
+            matrixB = matrixA.Inverse()/Transpose()  //求逆和转置
+
+2.求解线性方程组
+
+            对于一阶线性方程组
+
+     5*x + 2*y - 4*z = -7
+
+             3*x - 7*y + 6*z = 38
+
+             4*x + 1*y + 5*z = 43
+
+             可以如下求解：
+
+              var matrixA = new DenseMatrix(new[,] { { 5.00, 2.00, -4.00 }, { 3.00, -7.00, 6.00 }, { 4.00, 1.00, 5.00 } });
+
+              var vectorB = new DenseVector(new[] { -7.0, 38.0, 43.0 });
+
+ 
+
+               var resultX = matrixA.LU().Solve(vectorB);
+
+或者
+
+              resultX = matrixA.QR().Solve(vectorB);
+
+或者
+
+              matrixA.Svd(true).Solve(vectorB, resultX);
+
+或者
+
+              matrixA.GramSchmidt().Solve(vectorB, resultX);
+
+3.矩阵秩、行列式、trace和范数
+
+         matrix.Determinant()/Rank()/ConditionNumber()/Trace()   //行列式/秩/条件数/trace
+
+        matrix.L1Norm()/L2Norm()/FrobeniusNorm()/InfinityNorm()   //范数
+
+
+
+		下面讲述几个简单使用例程。
+
+统计量分析
+         若需要计算样本参数的统计量特征分析，可以直接调用Statistics类的扩展方法，也可以将样本传递给DescriptiveStatistics的构造函数一次性计算出全部特性。
+
+代码1是使用DescriptiveStatistics的例程：
+
+[csharp] view plain copy print?
+using MathNet.Numerics.Statistics;  
+//ChiSquare创建X~2检验样本，这里的样本值可以换成自己的样本集  
+var samples = new ChiSquare(5).Samples().Take(1000);  
+var statistics = new DescriptiveStatistics(samples);  
+  
+// 最大值，最小值，中位数  
+var largestElement = statistics.Maximum;  
+var smallestElement = statistics.Minimum;  
+var median = statistics.Median;  
+  
+// 平均数  
+var mean = statistics.Mean;  
+  
+// 方差，标准差  
+var variance = statistics.Variance;  
+var stdDev = statistics.StandardDeviation;  
+  
+// 峭度，不对称度  
+var kurtosis = statistics.Kurtosis;  
+var skewness = statistics.Skewness;  
+代码1 
+
+代码2是使用扩展方法的例程：
+[csharp] view plain copy print?
+using MathNet.Numerics.Statistics;  
+  
+// 扩展方法是基于 IEnumerable<double>定义的  
+// 所以需要调用ToArray做一下转化  
+var samples = new ChiSquare(5).Samples().Take(1000).ToArray()  
+;  
+  
+// Order Statistics  
+var largestElement = samples.Maximum();  
+var smallestElement = samples.Minimum();  
+var median = samples.Median();  
+var 250thOrderStatistic = samples.OrderStatistic(250);  
+  
+// Central Tendency  
+var mean = samples.Mean();  
+  
+// Dispersion  
+var variance = samples.Variance();  
+var biasedPopulationVariance = samples.PopulationVariance();  
+var stdDev = samples.StandardDeviation();  
+var biasedPopulationStdDev = samples.  
+PopulationStandardDeviation();  
+代码2
+其他统计量分析详见帮助文档。
+
+线性代数
+         关于线性代数的计算位于命名空间MathNet.Numerics.LinearAlgebra下，该命名空间下有四个子命名空间。
+
+l  MathNet.Numerics.LinearAlgebra.Double:双精度浮点数计算
+
+l  MathNet.Numerics.LinearAlgebra.Single:单精度浮点数计算
+
+l  MathNet.Numerics.LinearAlgebra.Complex:进行复杂的双精度浮点数计算
+
+l  MathNet.Numerics.LinearAlgebra.Complex32:进行复杂的单精度浮点数计算
+
+之所以分为四个子命名空间的原因是考虑了内存需求，双精度浮点矩阵至少需要4倍同样单精度浮点矩阵的内存。此外，好考虑了矩阵的存储情况，现在Math.net支持三种矩阵的存储：
+
+l  DenseMatrix: 任意矩阵
+
+l  SparseMatrix: 稀疏矩阵
+
+l  DiagonalMatrix:对角阵
+
+将矩阵分为这三种也也考虑了对应存储的优化，比如稀疏矩阵在存储时就使用了3数组的稀疏压缩行(Compressed-sparse-row, CSR)格式。
+
+代码3是矩阵乘以向量的例程：
+
+[csharp] view plain copy print?
+using MathNet.Numerics.LinearAlgebra.Double;  
+// Create a vector of dimension 5 with 4.0 in every entry.  
+var x = new DenseVector(5, 4.0);  
+// Create a 3 by 5 matrix with 2.0 in every entry.  
+var A = new DenseMatrix(3, 5, 2.0);  
+// Multiply the matrix and the vector.  
+var y = A * x;  
+代码3
+特殊函数
+l  阶乘：Factorial
+
+l  对数阶乘：FactorialLn
+
+l  伯努利系数：Binomial
+
+l  对数伯努利系数：BinomialLn
+
+l  多项式系数：Multinomial
+
+代码4 阶乘例程：
+
+[csharp] view plain copy print?
+using MathNet.Numerics;  
+double x = SpecialFunctions.Factorial(2);  
+// x will now have the value 2  
+  
+double y = SpecialFunctions.Factorial(4);  
+// y will now have the value 24  
+其他特殊函数如Gamma, Logistic见帮助文档http://mathnetnumerics.codeplex.com/wikipage?title=Special%20Functions&referringTitle=Documentation。
+
+函数插值
+         函数插值位于命名空间MathNet.Numerics.Interpolation。
+
+Math.net的插值有两种：
+
+1.      为选定算法和样本点创建一个插值结构，你将获得一个实现了IInterpolation接口的类。
+
+2.      使用该插值结构计算任意位置的点。一些插值算法还可以计算偏差和不定积分。
+
+静态类Interpolate提供了工厂方法来创建插值操作：
+
+l  RationalWithoutPoles：创建 Floater-Hormann重心插值
+
+l  RationalWithPoles：创建Bulirsch& Stoer有理插值
+
+l  LinearBetweenPoints：创建样条曲线插值
+
+如果不确定使用哪种插值方法，我们推荐使用Floater-Hormann重心插值。或者，你也可以直接使用别的插值算法，它们都位于子命名空间Algorithms ，下面是一些插值算法：
+
+等间距样本点插值：
+
+l  Polynomial:　重心算法，多项式插值
+
+任意样本点插值：
+
+·        Rational pole-free:Floater-Hormann重心算法
+
+·        Rational with poles: Bulirsch & Stoer算法
+
+·        Neville Polynomial: Neville算法。注意 Neville算法在处理等间距样本点时非常低效。.如果需要在等间距样本点上进行多项式插值，推荐使用barycentric算法。
+
+·        Linear Spline：样条曲线
+
+·        Cubic Spline 带边界条件的三次样条曲线
+
+·        Natural Cubic Spline：普通三次样条曲线
+
+·        Akima Cubic Spline：ａｋｉｍａ三次样条曲线
+
+其他数据插值：
+
+·        Generic Barycentric Interpolation,需要barycentric权重
+
+·        Generic Spline,需要样条系数
+
+·        Generic Cubic Hermite Spline,需要偏差
+
+代码５　插值例程：
+
+[csharp] view plain copy print?
+using MathNet.Numerics.Signals;  
+using MathNet.Numerics.Interpolation;  
+using MathNet.Numerics.Random;  
+  
+  
+namespace ConsoleApplication1  
+{  
+class Program  
+{  
+    static void Main(string[] args)  
+    {  
+        // 1. 利用函数1/(1+x*x) 在区间 [-5, 5]产生１０个样本点  
+//points是x坐标，values是y坐标值  
+        Console.WriteLine(@"1. Generate 10 samples of the   
+        function 1/(1+x*x) on interval [-5, 5]");  
+        double[] points;  
+        var values = SignalGenerator.EquidistantInterval(  
+        TargetFunction, -5, 5, 10, out points);  
+        Console.WriteLine();  
+  
+        // 2. Create a floater hormann rational pole-free   
+        interpolation based on arbitrary points  
+        // This method is used by default when create an   
+        interpolation using Interpolate.Common method  
+        var method = Interpolate.RationalWithoutPoles(points,  
+        values);  
+        Console.WriteLine(@"2. Create a floater hormann   
+        rational pole-free interpolation based on arbitrary   
+        points");  
+        Console.WriteLine();  
+  
+        // 3. 是否支持积分  
+        Console.WriteLine(@"3. Support integration = {0}",   
+        method.SupportsIntegration);  
+        Console.WriteLine();  
+  
+        // 4. 是否支持微分  
+        Console.WriteLine(@"4. Support differentiation = {0}  
+        ", method.SupportsDifferentiation);  
+        Console.WriteLine();  
+  
+        // 5. 将插值结果和函数计算结果做比较  
+        Console.WriteLine(@"5. Interpolate ten random points   
+        and compare to function results");  
+        var rng = new MersenneTwister(1);  
+        for (var i = 0; i < 10; i++)  
+        {  
+            // Generate random value from [0, 5]  
+            var point = rng.NextDouble() * 5;  
+            Console.WriteLine(@"Interpolate at {0} = {1}.   
+            Function({0}) = {2}", point.ToString("N05"),   
+            method.Interpolate(point).ToString("N05"),   
+            TargetFunction(point).ToString("N05"));  
+        }  
+        Console.ReadKey();  
+    }  
+    public static double TargetFunction(double x)  
+    {  
+        return 1 / (1 + (x * x));  
+    }  
+}  
+}  
+执行结果如图 1所示。
+
+
+图1 插值执行结果
+
+线性积分变换
+         math.net目前仅支持两种线性积分变换：离线傅立叶变换和离散哈特莱变换。它们都仅能在频域下进行变换，但傅立叶变换支持复杂数值，而哈特莱变换仅支持实数值。它们都支持正变换和反变换，这是靠方法中的options参数来区分的。
+
+傅立叶空间：离散傅立叶变换DFT和快速傅立叶变换FFT
+
+目前支持的算法有：
+
+·        Naive Discrete Fourier Transform (DFT): Out-placetransform for arbitrary vector lengths. Mainly intended for verifying fasteralgorithms: NaiveForward, NaiveInverse
+
+·        Radix-2 Fast Fourier Transform (FFT): In-placefast fourier transform for vectors with a power-of-two length (Radix-2): Radix2Forward, Radix2Inverse
+
+·        Bluestein Fast Fourier Transform (FFT): In-placefast fourier transform for arbitrary vector lengths:BluesteinForward, BluesteinInverse
+
+另外，Transform类提供了静态方法使我们能更容易地使用傅立叶正变换FourierForward和傅立叶反变换FourierInverse。如代码6所示。
+
+[csharp] view plain copy print?
+// create a complex sample vector of length 96  
+Complex[] samples = SignalGenerator.EquidistantInterval(  
+                        t => new Complex(1.0 / (t * t + 1.0),  
+                        t / (t * t + 1.0)),  
+-16, 16, 96);  
+  
+// inplace bluestein FFT with default options  
+Transform.FourierForward(samples);  
+代码6
+
+下面是一些傅立叶参数，由于我对傅立叶变换不是很明白，原文没有翻译：
+
+·        Default: Uses a negative exponent sign inforward transformations, and symmetric scaling (that is, sqrt(1/N) for bothforward and inverse transformation). This is the convention used in Maple andis widely accepted in the educational sector (due to the symmetry).
+
+·        AsymmetricScaling: Set this flag to suppress scalingon the forward transformation but scale the inverse transform with 1/N.
+
+·        NoScaling: Set this flag to suppress scaling forboth forward and inverse transformation. Note that in this case if you applyfirst the forward and then inverse transformation you won't get back theoriginal signal (by factor N/2).
+
+·        InverseExponent: Uses the positive instead of thenegative sign in the forward exponent, and the negative (instead of positive)exponent in the inverse transformation.
+
+·        Matlab: Use this flag if you need Matlab compatibility.Equals to setting the AsymmetricScaling flag.This matches the definition used in the wikipedia article.
+
+·        NumericalRecipes: Use this flag if you needNumerical Recipes compatibility. Equal to setting both theInverseExponent and the NoScaling flags.
+
+下面是一些傅立叶变换有用的常识，就是讲变换前后的奇偶性，很容易看懂：
+
+·        h(t) is real valued <=> real part of H(f) is even,imgainary part of H(f) is odd
+
+·        h(t) is imaginary valued <=> real part of H(f) isodd, imaginary part of H(f) is even
+
+·        h(t) is even <=> H(f) is even
+
+·        h(t) is odd <=> H(f) is odd
+
+·        h(t) is real-valued even <=> H(f) is real-valuedeven
+
+·        h(t) is real-valued odd <=> H(f) isimaginary-valued odd
+
+·        h(t) is imaginary-valued even <=> H(f) isimaginary-valued even
+
+·        h(t) is imaginary-valued odd <=> H(f) isreal-valued odd
