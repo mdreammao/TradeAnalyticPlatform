@@ -81,7 +81,7 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
                 double lastETFPrice = dailyData[number + day - 1].close;
                 var today = tradeDays[day];
                 //获取当日上市的期权合约列表
-                var optionInfoList = OptionUtilities.getUnmodifiedOptionInfoList(this.optionInfoList, today);
+                var optionInfoList2 = OptionUtilities.getUnmodifiedOptionInfoList(this.optionInfoList, today);
                 //初始化信号的数据结构
                 Dictionary<string, MinuteSignal> signal = new Dictionary<string, MinuteSignal>();
                 //获取今日日内50ETF数据
@@ -93,7 +93,7 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
                 myAccount.time = today;
 
                 //获取今日期权的到期日期
-                var dateStructure = OptionUtilities.getDurationStructure(optionInfoList, tradeDays[day]);
+                var dateStructure = OptionUtilities.getDurationStructure(optionInfoList2, tradeDays[day]);
                 //选定到日期在40个交易日至60个交易日的合约
                 double duration = 0;
                 for (int i = 0; i < dateStructure.Count(); i++)
@@ -129,7 +129,7 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
                     {
                         tradeAssistant(ref dataToday, ref signal, pair.callCode, 0, today, now, index);
                         tradeAssistant(ref dataToday, ref signal, pair.putCode, 0, today, now, index);
-                        var callInfo = OptionUtilities.getOptionByCode(optionInfoList, pair.callCode);
+                        var callInfo = OptionUtilities.getOptionByCode(optionInfoList2, pair.callCode);
                         if (today.AddDays(1)>=callInfo.modifiedDate && !(today.AddDays(-10000)>callInfo.modifiedDate))
                         {
                             closeStrangle(ref dataToday, ref signal, ref positions, ref myAccount, ref pairs, today, index);
@@ -251,7 +251,23 @@ namespace BackTestingPlatform.Strategies.Option.Strangle
             List<double> netWorthOfBenchmark = benchmark.Select(x => x / benchmark[0]).ToList();
             line.Add("Base", netWorthOfBenchmark.ToArray());
             string[] datestr = accountHistory.Select(a => a.time.ToString("yyyyMMdd")).ToArray();
-            Application.Run(new PLChart(line, datestr));
+
+            //maoheng 画图
+            //Application.Run(new PLChart(line, datestr));
+
+            //cuixun 画图
+            //绘制图形的标题
+            string formTitle = this.startDate.ToShortDateString() + "--" + this.endDate.ToShortDateString() + "  " + this.targetVariety + " 净值曲线"
+                + "\r\n" + "\r\n" + "净利润：" + myStgStats.netProfit + "  " + "夏普率：" + myStgStats.anualSharpe + "  " + "最大回撤：" + myStgStats.maxDrawDown
+                + "\r\n" + "\r\n" ;
+            //生成图像
+            PLChart plc = new PLChart(line, datestr, formTitle: formTitle);
+            //运行图像
+            //Application.Run(plc);
+            plc.LoadForm();
+            //保存图像
+            plc.SaveZed(GetType().FullName, this.targetVariety, this.startDate, this.endDate, myStgStats.netProfit.ToString(), myStgStats.anualSharpe.ToString(), myStgStats.maxDrawDown.ToString());
+
         }
         /// <summary>
         /// 跨式期权调仓
