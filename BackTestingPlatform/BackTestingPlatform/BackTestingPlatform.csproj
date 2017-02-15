@@ -192,7 +192,7 @@
     <Compile Include="Strategies\Option\MaoHeng\VolatilityTrade.cs" />
     <Compile Include="Strategies\Option\Strangle\Model\StranglePair.cs" />
     <Compile Include="Strategies\Option\Strangle\Strangle.cs" />
-    <Compile Include="Strategies\Option\TradeOptionByMA\model\Strangle.cs" />
+    <Compile Include="Strategies\Option\TradeOptionByMA\Model\StranglePair.cs" />
     <Compile Include="Strategies\Option\TradeOptionByMA\ShortOptionByMA.cs" />
     <Compile Include="Strategies\Stock\StockSample\MABreak.cs" />
     <Compile Include="Strategies\Stock\StockSample\MeanReverting15K.cs" />

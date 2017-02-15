@@ -52,9 +52,9 @@ namespace BackTestingPlatform.Charts
             //自定义配色方案，用于曲线的颜色设置（三个参数必须在0~255之间）
             colorList.Add(new ColorTemplate(249,108,216));//玫红色
             colorList.Add(new ColorTemplate(135,222,213));//深绿蓝色
-            colorList.Add(new ColorTemplate(164,233,124));//浅绿色
             colorList.Add(new ColorTemplate(247,183,110));//橙色
             colorList.Add(new ColorTemplate(191,114,243));//紫色
+            colorList.Add(new ColorTemplate(164, 233, 124));//浅绿色
 
         }
 
