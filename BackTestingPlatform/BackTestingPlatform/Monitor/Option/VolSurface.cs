@@ -20,7 +20,12 @@ namespace BackTestingPlatform.Monitor.Option
         DateTime today = new DateTime();
         List<OptionInfo> optionList = new List<OptionInfo>();
         Dictionary<string, Level1Data> dataList = new Dictionary<string, Level1Data>();
+        List<string> dataListKey = new List<string>();
+        Dictionary<string, OptionInfo> optionInfo = new Dictionary<string, OptionInfo>();
+        double duartion;
+        //Dictionary<string, double> optionDuration = new Dictionary<string, double>();
         double rate;
+        string ETF = "510050.SH";
 
         /// <summary>
         /// 构造函数
@@ -40,32 +45,65 @@ namespace BackTestingPlatform.Monitor.Option
             optionList =getExistingOption(today);
             //获取今日期权的到期日期
             var dateStructure = OptionUtilities.getDurationStructure(optionList, today);
+            //存储今日期权的基本信息
+            optionInfo = optionList.ToDictionary(x => x.optionCode, y => y);
             rate = riskFreeRate;
-            displayOptionVol(dateStructure[0],today);
+            duartion = dateStructure[0];
+            getOptionData(dateStructure[0],today);
             while (DateTime.Now.TimeOfDay<=new TimeSpan(11,30,0))
             {
-
+                GetVolAsync();
             }
         }
 
-        async public void displayOptionVol(double duration,DateTime today)
+        public void computeVol()
+        {
+            var etfPrice = dataList[ETF].last;
+            foreach (var code  in dataListKey)
+            {
+                var option = dataList[code];
+                var optionCode = code;
+                if (optionCode!=ETF) 
+                {
+                    var info = optionInfo[optionCode];
+                    var ask = option.ask1;
+                    var bid = option.bid1;
+                    var mid = (ask + bid) / 2;
+                    var strike = info.strike;
+                    var type = info.optionType;
+                    var vol = ImpliedVolatilityUtilities.ComputeImpliedVolatility(strike: strike, duration: duartion, riskFreeRate: rate, StockRate: 0, optionType: type, optionPrice: mid, underlyingPrice: etfPrice);
+                    Console.WriteLine("期权：{0},波动率：{1}", info.optionName, vol);
+                }
+            }
+        }
+
+        public void getOptionData(double duration,DateTime today)
         {
             var optionListNow= OptionUtilities.getOptionListByDuration(getExistingOption(today),today, duration);
-            string[] code = new string[2] { "510050.SH", "510300.SH" };
+            List<string> code = new List<string>();
+            dataListKey = code;
+            foreach (var item in optionListNow)
+            {
+                code.Add(item.optionCode);
+            }
+            code.Add(ETF);
             Execute(code);
            
         }
+
         
-        async Task<string> GetStringAsync()
+        async Task<string> GetVolAsync()
         {
+            computeVol();
             await Task.Delay(TimeSpan.FromSeconds(10));
             return "delay!";
         }
+
         /// <summary>
         /// 万德的查询函数
         /// </summary>
         /// <param name="code">查询对象代码</param>
-        private void Execute(string[] code)
+        private void Execute(List<string> code)
         {
             WindAPI w = new WindAPI();
             w.start();
@@ -106,7 +144,7 @@ namespace BackTestingPlatform.Monitor.Option
                     var second = time % 100;
                     now = new TimeSpan(hour, minute, second);
                     dataList[codeList[i]] = new Level1Data() { last = last, ask1 = ask1, askv1 = askv1, bid1 = bid1, bidv1 = bidv1,time=now};
-                    Console.WriteLine("time: {6}, localtime: {7}, code: {5}, last: {0},ask1: {1},askv1: {2},bid1: {3},bidv1: {4}", last, ask1, askv1, bid1, bidv1,codeList[i],now.ToString(),DateTime.Now.TimeOfDay.ToString());
+                    // Console.WriteLine("time: {6}, localtime: {7}, code: {5}, last: {0},ask1: {1},askv1: {2},bid1: {3},bidv1: {4}", last, ask1, askv1, bid1, bidv1,codeList[i],now.ToString(),DateTime.Now.TimeOfDay.ToString());
                 }
             }
         }
