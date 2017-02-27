@@ -9,6 +9,7 @@ namespace BackTestingPlatform.Utilities.Option
 {
     public class ImpliedVolatilityUtilities
     {
+        public static double[] erfList = new double[100000];
         public static double ComputeOptionDelta(double strike, double duration, double riskFreeRate, double StockRate, string optionType, double optionVolatility, double underlyingPrice)
         {
             double d1 = (Math.Log(underlyingPrice / strike) + (riskFreeRate + Math.Pow(optionVolatility, 2) / 2) * duration) / (optionVolatility * Math.Sqrt(duration));
@@ -28,15 +29,16 @@ namespace BackTestingPlatform.Utilities.Option
         }
         public static double ComputeImpliedVolatility(double strike,double duration,double riskFreeRate,double StockRate,string optionType,double optionPrice,double underlyingPrice)
         {
+
             double etfPirce = underlyingPrice * Math.Exp(-StockRate * duration);
             return sigma(etfPirce, optionPrice, strike, duration, riskFreeRate, optionType);
         }
         public static double _StartPoint(double K, double T, double r, double call, double s)///K 是 执行价格 
         {
-            double sigma = 0.5;
+            double sigma = 0.1;
             double x = K * Math.Exp(-r * T); ///x是折现值
             double radicand = Math.Pow(call - (s - x) / 2, 2) - Math.Pow(s - x, 2) / Math.PI * (1 + x / s) / 2;
-            if (radicand>0)
+            if (radicand > 0)
             {
                 sigma = 1 / Math.Sqrt(T) * Math.Sqrt(2 * Math.PI) / (s + x) * (call - (s - x) / 2 + Math.Sqrt(radicand));
             }
@@ -58,7 +60,7 @@ namespace BackTestingPlatform.Utilities.Option
            {
                 return 0;
            }
-            for (int num = 0; num <= 10; num++)
+            for (int num = 0; num <= 50; num++)
             {
                 sigmaold = sigma;
                 double d1 = (Math.Log(spotPrice / strike) + (r + sigma * sigma / 2) * duration) / (sigma * Math.Sqrt(duration));
@@ -70,7 +72,7 @@ namespace BackTestingPlatform.Utilities.Option
                     break;  
                 }
                 sigma = sigma + (callPrice - f_sigma) / df_sigma;
-                if (Math.Abs(sigma - sigmaold) < 0.0001)
+                if (Math.Abs(sigma - sigmaold) < 0.00001)
                 {
                     break;
                 }
@@ -189,6 +191,27 @@ namespace BackTestingPlatform.Utilities.Option
             return -normcdf(-d1) * spotPrice + normcdf(-d2) * strike * Math.Exp(-r * duration);
         }
 
+        //erf近似计算
+        private static double erfFast(double x)
+        {
+            double M = erfList.Count() / 10;
+            if (erfList[erfList.Count()-1]==0) //初始化
+            {
+                
+                for (int i = 0; i < erfList.Count(); i++)
+                {
+                    erfList[i] = erf(i / M);
+                }
+            }
+            if (x>=0)
+            {
+                return erfList[(int)Math.Round(Math.Min(x, 10) * M)];
+            }
+            else
+            {
+                return -erfList[-(int)Math.Round(Math.Max(x, -10) * M)];
+            }
+        }
         /// <summary>
         /// 辅助函数erf(x),利用近似的方法进行计算
         /// </summary>
