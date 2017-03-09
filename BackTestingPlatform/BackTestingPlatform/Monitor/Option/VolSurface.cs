@@ -32,7 +32,7 @@ namespace BackTestingPlatform.Monitor.Option
         /// </summary>
         /// <param name="todayInt"></param>
         /// <param name="riskFreeRate"></param>
-        public VolSurface(int todayInt=0,double riskFreeRate=0.043)
+        public VolSurface(int todayInt=0,double riskFreeRate=0.027)
         {
             if (todayInt==0)
             {
@@ -50,20 +50,25 @@ namespace BackTestingPlatform.Monitor.Option
             rate = riskFreeRate;
             duartion = dateStructure[0];
             getOptionData(dateStructure[0],today);
-            while (DateTime.Now.TimeOfDay<=new TimeSpan(11,30,0))
+            while (DateTime.Now.TimeOfDay<=new TimeSpan(15,00,0))
             {
-                GetVolAsync();
+                DateTime now1 = DateTime.Now;
+                computeVol();
+                DateTime now2 = DateTime.Now;
+                Console.WriteLine(now2 - now1);
+                Thread.Sleep(5000);
             }
         }
 
         public void computeVol()
         {
             var etfPrice = dataList[ETF].last;
+            Console.Clear();
             foreach (var code  in dataListKey)
             {
                 var option = dataList[code];
                 var optionCode = code;
-                if (optionCode!=ETF) 
+                if (optionCode!=ETF && etfPrice!=0) 
                 {
                     var info = optionInfo[optionCode];
                     var ask = option.ask1;
@@ -71,8 +76,8 @@ namespace BackTestingPlatform.Monitor.Option
                     var mid = (ask + bid) / 2;
                     var strike = info.strike;
                     var type = info.optionType;
-                    var vol = ImpliedVolatilityUtilities.ComputeImpliedVolatility(strike: strike, duration: duartion, riskFreeRate: rate, StockRate: 0, optionType: type, optionPrice: mid, underlyingPrice: etfPrice);
-                    Console.WriteLine("期权：{0},波动率：{1}", info.optionName, vol);
+                    var vol = ImpliedVolatilityUtilities.ComputeImpliedVolatility(strike: strike, duration: duartion / 252.0, riskFreeRate: rate, StockRate: 0, optionType: type, optionPrice: mid, underlyingPrice: etfPrice);
+                    Console.WriteLine("本地时间：{2}，数据时间：{3},期权：{0},波动率：{1}", info.optionName, Math.Round(vol, 3), DateTime.Now.TimeOfDay.ToString("hhmmss"), option.time.ToString("hhmmss"));
                 }
             }
         }
@@ -80,9 +85,10 @@ namespace BackTestingPlatform.Monitor.Option
         public void getOptionData(double duration,DateTime today)
         {
             var optionListNow= OptionUtilities.getOptionListByDuration(getExistingOption(today),today, duration);
+            var list = from OptionInfo in optionListNow orderby OptionInfo.optionType ascending, OptionInfo.strike ascending select OptionInfo;
             List<string> code = new List<string>();
             dataListKey = code;
-            foreach (var item in optionListNow)
+            foreach (var item in list)
             {
                 code.Add(item.optionCode);
             }
