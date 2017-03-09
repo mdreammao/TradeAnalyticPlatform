@@ -139,6 +139,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             }
             return direction / volatility;
         }
+
+        [Obsolete]//????
         /// <summary>
         /// 获取日期和下标对应的映射表
         /// </summary>
@@ -264,6 +266,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
                     }
 
                     #endregion
+
                     if (ER >= longER && positionVolume == 0) //多头信号,无头寸，则开多仓
 
                     {

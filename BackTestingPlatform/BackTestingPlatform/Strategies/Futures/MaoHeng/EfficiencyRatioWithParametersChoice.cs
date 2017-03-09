@@ -119,14 +119,14 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
             #endregion
 
+            int[] frequencySet = new int[] { 3,  5,  7, 10};
+            int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
+            double[] lossPercentSet = new double[] { 0.00125,0.0025,0.005, 0.01 };
+            double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
             //int[] frequencySet = new int[] { 3, 4, 5, 6, 7, 8 };
             //int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
-            //double[] lossPercentSet = new double[] { 0.005, 0.01, 0.015, 0.02 };
+            //double[] lossPercentSet = new double[] { 0.0025,0.005, 0.01,0.015,0.02};
             //double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
-            int[] frequencySet = new int[] { 3, 4, 5, 6, 7, 8 };
-            int[] numbersSet = new int[] { 3, 4, 5, 6, 8, 10, 15 };
-            double[] lossPercentSet = new double[] { 0.0025,0.005, 0.01,0.015,0.02};
-            double[] ERRatioSet = new double[] { 0.5, 0.6, 0.7, 0.8, 0.9 };
 
             //记录frequency的边际分布
             List<double> frequencyDistrbution = new List<double>();
@@ -431,8 +431,8 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             double sharpe = average * 252 / (std * Math.Sqrt(252));//夏普率   //average * 252=年化收益
 
             //处理MDD为0的情况
-            //double calmar = (MDD == 0 ? 4 : average * 252 / MDD);//Calmar比率
-            //return (0.5 * sharpe + 0.5 * calmar) / 8;
+            double calmar = (MDD == 0 ? 4 : average * 252 / MDD);//Calmar比率
+            return (0.5 * sharpe + 0.5 * calmar) / 8;
 
             //不处理MDD为0的情况
             //double calmar = (MDD == 0 ? 4 : average  / MDD);//Calmar比率
@@ -442,7 +442,7 @@ namespace BackTestingPlatform.Strategies.Futures.MaoHeng
             //return average * 252;
 
             //年化收益率 / 最大回撤
-            return average * 252 / MDD;
+            //return average * 252 / MDD;
         }
 
         /// <summary>
