@@ -200,6 +200,16 @@
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\ComputeReversionPoint02.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\NDaysReversion01.cs" />
     <Compile Include="Strategies\Stock\StockSample\NDaysReversionStg\StockSample01.cs" />
+    <Compile Include="Transaction\MinuteWithTick\MinuteTransactionWithTickData.cs" />
+    <Compile Include="Transaction\Minute\maoheng\MinuteCloseAllWithBar.cs" />
+    <Compile Include="Transaction\Minute\maoheng\MinuteTransactionWithBar.cs" />
+    <Compile Include="Transaction\Minute\MinuteCloseAllPositons.cs" />
+    <Compile Include="Transaction\Minute\MinuteCloseAllPositonsWithSlip.cs" />
+    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
+    <Compile Include="Transaction\Minute\MinuteTransactionWithSlip2.cs" />
+    <Compile Include="Transaction\Minute\TickTransactionWtihSlip.cs" />
+    <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
+    <Compile Include="Transaction\Tick\TickTransactionWtihSlip.cs" />
     <Compile Include="Utilities\DataApplication\KLineDataUtils.cs" />
     <Compile Include="Utilities\Futures\FutureMargin.cs" />
     <Compile Include="Utilities\GetData\Futures\GetDataFromWind.cs" />
