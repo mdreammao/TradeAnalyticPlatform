@@ -207,7 +207,6 @@
     <Compile Include="Transaction\Minute\MinuteCloseAllPositonsWithSlip.cs" />
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip.cs" />
     <Compile Include="Transaction\Minute\MinuteTransactionWithSlip2.cs" />
-    <Compile Include="Transaction\Minute\TickTransactionWtihSlip.cs" />
     <Compile Include="Transaction\Tick\TickCloseAllPositons.cs" />
     <Compile Include="Transaction\Tick\TickTransactionWtihSlip.cs" />
     <Compile Include="Utilities\DataApplication\KLineDataUtils.cs" />
