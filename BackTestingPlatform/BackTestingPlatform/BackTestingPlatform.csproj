@@ -173,6 +173,7 @@
     <Compile Include="Model\Option\OptionGreek.cs" />
     <Compile Include="Model\Positions\ExecutionReport.cs" />
     <Compile Include="Monitor\MDCE\MDCE.cs" />
+    <Compile Include="Monitor\Model\HistoricalVol.cs" />
     <Compile Include="Monitor\Model\Level1Data.cs" />
     <Compile Include="Monitor\Option\VolSurface.cs" />
     <Compile Include="Strategies\Futures\MaoHeng\EfficiencyRatioWithParasStability.cs" />
